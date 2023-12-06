@@ -314,7 +314,7 @@ namespace C {
     }
 
     template <typename F>
-    constexpr auto andThen(F&& f) CONST& 
+    EFLI_OPMUTCXPR_ auto andThen(F&& f) CONST& 
      -> remove_cvref_t<invoke_result_t<F, const T&>> {
       if(this->active()) {
         return EFLI_CXPRFWD_(f)(**this);
@@ -325,7 +325,7 @@ namespace C {
     }
 
     template <typename F>
-    constexpr auto andThen(F&& f) CONST&&
+    EFLI_OPMUTCXPR_ auto andThen(F&& f) CONST&&
      -> remove_cvref_t<invoke_result_t<F, const T&&>> {
       if(this->active()) {
         return EFLI_CXPRFWD_(f)(

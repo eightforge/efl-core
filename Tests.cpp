@@ -51,6 +51,7 @@ int main() {
   auto p = &Z::operator();
   Z1 z1 { };
   auto iz = HH::invoke(p, z1, 1.0f, &z1);
+  HH::invoke(&X::operator(), X{});
   assert(iz == 1);
   iz = HH::invoke(z1, 7.9f, &p);
   assert(iz == 7);
