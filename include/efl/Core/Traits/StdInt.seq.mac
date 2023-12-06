@@ -1,0 +1,48 @@
+//===- Core/Traits/StdInt.seq.mac -----------------------------------===//
+//
+// Copyright (C) 2023 Eightfold
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+//     limitations under the License.
+//
+//===----------------------------------------------------------------===//
+//
+//  This file implements specializations for `IntSeqBuilder<T>::Mk<N>`.
+//
+//===----------------------------------------------------------------===//
+
+#ifndef EFLI_SN_
+# define EFLI_SN_(...)
+#endif
+
+EFLI_SN_(0)
+EFLI_SN_(1, 0)
+EFLI_SN_(2, 0, 1)
+EFLI_SN_(3, 0, 1, 2)
+EFLI_SN_(4, 0, 1, 2, 3)
+EFLI_SN_(5, 0, 1, 2, 3, 4)
+EFLI_SN_(6, 0, 1, 2, 3, 4, 5)
+EFLI_SN_(7, 0, 1, 2, 3, 4, 5, 6)
+EFLI_SN_(8, 0, 1, 2, 3, 4, 5, 6, 7)
+EFLI_SN_(9, 0, 1, 2, 3, 4, 5, 6, 7, 8)
+EFLI_SN_(10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+EFLI_SN_(11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+EFLI_SN_(12, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+EFLI_SN_(13, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
+EFLI_SN_(14, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
+EFLI_SN_(15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
+EFLI_SN_(16, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
+
+#undef EFLI_SPECIALIZED_SEQ_N_
+#define EFLI_SPECIALIZED_SEQ_N_ 16
+
+#undef EFLI_SN_

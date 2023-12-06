@@ -1,0 +1,79 @@
+include_guard(DIRECTORY)
+include(FetchContent)
+
+macro(__efl_core_propagate __var)
+  set(${__var} ${${__var}} PARENT_SCOPE)
+endmacro()
+
+function(__efl_find_perl)
+  if(DEFINED PERL_VERSION AND DEFINED PERL_EXECUTABLE)
+    return()
+  endif()
+  find_package(Perl REQUIRED)
+  set(PERL_VERSION ${PERL_VERSION_STRING})
+  __efl_assert_propagate(PERL_VERSION)
+  __efl_assert_propagate(PERL_EXECUTABLE)
+endfunction()
+
+##=== Locate Implementation =================================##
+
+macro(Efl_Getmodules)
+  __efl_set_install_prefix()
+  foreach(__tgt ${ARGN})
+    if(TARGET ${__tgt})
+      continue()
+    endif()
+    __efl_parse_target(${__tgt})
+    __efl_get_target(${__tgt})
+    message("[efl::core] Found ${__tgt}")
+  endforeach()
+endmacro()
+
+macro(__efl_set_install_prefix)
+  if(NOT DEFINED EFL_INSTALL_PREFIX)
+    if(WIN32)
+      set(EFL_INSTALL_PREFIX "C:/Eightfold")
+    else()
+      set(EFL_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/Eightfold")
+    endif()
+  endif()
+endmacro()
+
+macro(__efl_parse_target __tgt)
+  string(REGEX REPLACE "::" "-" __EFL_TGT_NAME "${__tgt}")
+  if(__EFL_TGT_NAME MATCHES "(([_a-zA-Z-]+)-([_a-zA-Z-]+))$")
+    set(__EFL_TGT_DIR "${CMAKE_MATCH_2}/${CMAKE_MATCH_3}")
+    set(__EFL_TGT_URL "https://github.com/8ightfold/${__EFL_TGT_NAME}.git")
+  else()
+    message(SEND_ERROR "[efl::core] Invalid target `${__tgt}`")
+    continue()
+  endif()
+endmacro()
+
+macro(__efl_get_target __tgt)
+  set(__EFL_TGT_CURR "${__EFL_TGT_NAME}-tgt")
+  set(__EFL_TGT_SRC "${EFL_INSTALL_PREFIX}/${__EFL_TGT_DIR}")
+
+  if(NOT ${__EFL_TGT_CURR}_ADDED OR EFL_FORCE_FETCH)
+    FetchContent_Declare(${__EFL_TGT_CURR}
+      GIT_REPOSITORY ${__EFL_TGT_URL}
+      GIT_TAG main
+      SOURCE_DIR ${__EFL_TGT_SRC}
+    )
+
+    FetchContent_GetProperties(${__EFL_TGT_CURR}
+      SOURCE_DIR ${__EFL_TGT_CURR}_SOURCE_DIR
+      BINARY_DIR ${__EFL_TGT_CURR}_BINARY_DIR
+    )
+
+    if(NOT ${__EFL_TGT_CURR}_POPULATED)
+      FetchContent_Populate(${__EFL_TGT_CURR})
+      set(${__EFL_TGT_CURR}_BINARY_DIR ${${__EFL_TGT_CURR}_BINARY_DIR}
+        CACHE FILEPATH "" FORCE)
+    endif()
+  endif()
+
+  add_subdirectory(${__EFL_TGT_SRC} ${__EFL_TGT_CURR}_BINARY_DIR)
+  set(${__EFL_TGT_CURR}_ADDED ON 
+    CACHE BOOL "If the target has already been added.")
+endmacro()
