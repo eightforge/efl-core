@@ -26,6 +26,46 @@
 #ifndef EFL_CORE_TRAITS_MACROS_HPP
 #define EFL_CORE_TRAITS_MACROS_HPP
 
+/**
+ * Used for optional constraints. Do NOT expect this 
+ * to work if the constraint is involved with overload resolution.
+ */
+#define MEflOptRequires(...) EFLI_REQUIRES_(__VA_ARGS__)
+
+/// Unwraps types, following the `typename ...::t` process.
+#define MEflGTy(t, ...) typename t, ##__VA_ARGS__ ::type
+
+/// Unwraps values using statement expressions (GNU/LLVM only).
+#define MEflUnwrap(obj, ...) EFLI_UNWRAP_(obj, ##__VA_ARGS__)
+
+/// Wraps `std::enable_if` to improve readability.
+#define MEflEnableIf(...) MEflGTy(::std::enable_if< \
+  static_cast<bool>(__VA_ARGS__), bool>) = true
+
+/// Wraps `core::void_t` for trait stuffs.
+#define MEflVoidT(...) ::efl::C::void_t<__VA_ARGS__>
+
+/**
+ * Creates a trait utilizing `void_t`.
+ * The passed type is always `T`.
+ * @param name The name of the trait.
+ * @note C++20: The trait is a concept by default.
+ */
+#define MEflHasTrait(name, ...) \
+ EFLI_HAS_TRAIT_(name, __VA_ARGS__)
+
+/**
+ * Creates a trait utilizing `void_t`
+ * where the input is a value.
+ * The passed type is always `T`.
+ * @param name The name of the trait.
+ * @note C++20: The trait is a concept by default.
+ */
+#define MEflHasValueTrait(name, ...)     \
+ EFLI_HAS_TRAIT_(name, decltype(__VA_ARGS__))
+
+//=== Implementation ===//
+
 #include <CoreCommon/ConfigCache.hpp>
 
 #if CPPVER_LEAST(20)
@@ -91,42 +131,10 @@
 # endif // Concept check (C++20)
 #endif // Underlying trait check
 
-/**
- * Used for optional constraints. Do NOT expect this 
- * to work if the constraint is involved with overload resolution.
- */
-#define MEflOptRequires(...) EFLI_REQUIRES_(__VA_ARGS__)
-
-/// Unwraps types, following the `typename ...::t` process.
-#define MEflGTy(t, ...) typename t, ##__VA_ARGS__ ::type
-
-/// Unwraps values using statement expressions (GNU/LLVM only).
-#define MEflUnwrap(obj, ...) EFLI_UNWRAP_(obj, ##__VA_ARGS__)
-
-/// Wraps `std::enable_if` to improve readability.
-#define MEflEnableIf(...) MEflGTy(::std::enable_if< \
-  static_cast<bool>(__VA_ARGS__), bool>) = true
-
-/// Wraps `core::void_t` for trait stuffs.
-#define MEflVoidT(...) ::efl::C::void_t<__VA_ARGS__>
-
-/**
- * Creates a trait utilizing `void_t`.
- * The passed type is always `T`.
- * @param name The name of the trait.
- * @note C++20: The trait is a concept by default.
- */
-#define MEflHasTrait(name, ...) \
- EFLI_HAS_TRAIT_(name, __VA_ARGS__)
-
-/**
- * Creates a trait utilizing `void_t`
- * where the input is a value.
- * The passed type is always `T`.
- * @param name The name of the trait.
- * @note C++20: The trait is a concept by default.
- */
-#define MEflHasValueTrait(name, ...)     \
- EFLI_HAS_TRAIT_(name, decltype(__VA_ARGS__))
+#if CPPVER_LEAST(14)
+# define EFLI_MUTABLE_CXPR_ 1
+#else
+# define EFLI_MUTABLE_CXPR_ 0
+#endif
 
 #endif // EFL_CORE_TRAITS_MACROS_HPP

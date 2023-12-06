@@ -17,12 +17,18 @@
 //===----------------------------------------------------------------===//
 //
 //  This file implements constexpr versions of functions like
-//  std::move and std::forward for C++11.
+//  std::move, std::forward, and std::construct_at for C++11.
 //
 //===----------------------------------------------------------------===//
 
-#include "Macros.hpp"
+#pragma once
+
+#ifndef EFL_CORE_TRAITS_FUNCTIONS_HPP
+#define EFL_CORE_TRAITS_FUNCTIONS_HPP
+
 #include <type_traits>
+#include <memory>
+#include "Macros.hpp"
 
 // constexpr std::forward pre C++14 
 #define EFLI_CXPRFWD_(...) ::efl::C::H:: \
@@ -35,25 +41,62 @@
 
 namespace efl {
 namespace C {
-namespace H {
-  template <typename T>
-  NODISCARD FICONSTEXPR T&& cxpr_forward(
-   EFLI_RMREF_(T)& t) NOEXCEPT 
-  { return static_cast<T&&>(t); }
+  // TODO: Function traits
+  namespace H {
+    template <typename T>
+    NODISCARD FICONSTEXPR T&& cxpr_forward(
+     EFLI_RMREF_(T)& t) NOEXCEPT 
+    { return static_cast<T&&>(t); }
 
-  template <typename T>
-  NODISCARD FICONSTEXPR T&& cxpr_forward(
-   EFLI_RMREF_(T)&& t) NOEXCEPT {
-    static_assert(!std::is_lvalue_reference<T>::value,
-      "`cxpr_forward` cannot be used to "
-      "convert an l-value to an r-value.");
-    return static_cast<T&&>(t); 
-  }
+    template <typename T>
+    NODISCARD FICONSTEXPR T&& cxpr_forward(
+     EFLI_RMREF_(T)&& t) NOEXCEPT {
+      static_assert(!std::is_lvalue_reference<T>::value,
+        "`cxpr_forward` cannot be used to "
+        "convert an l-value to an r-value.");
+      return static_cast<T&&>(t); 
+    }
 
-  template <typename T>
-  NODISCARD FICONSTEXPR EFLI_RMREF_(T)&& 
-   cxpr_move(T&& t) NOEXCEPT 
-  { return static_cast<EFLI_RMREF_(T)&&>(t); }
-} // namespace H
+    template <typename T>
+    NODISCARD FICONSTEXPR EFLI_RMREF_(T)&& 
+     cxpr_move(T&& t) NOEXCEPT 
+    { return static_cast<EFLI_RMREF_(T)&&>(t); }
+
+    namespace xx11 {
+      template <typename T, typename = void>
+      struct HasOverloadedAddress : FalseType { };
+
+      template <typename T>
+      struct HasOverloadedAddress<T,
+        decltype(std::declval<T&>().operator&())>
+       : TrueType { };
+
+#    if CPPVER_LEAST(17)
+      using ::std::addressof;
+#    else
+      template <typename T, 
+        MEflEnableIf(!HasOverloadedAddress<T>::value)>
+      NODISCARD FICONSTEXPR T* addressof(T& t) 
+       NOEXCEPT { return &t; }
+
+      template <typename T, 
+        MEflEnableIf(HasOverloadedAddress<T>::value)>
+      NODISCARD ALWAYS_INLINE T* addressof(T& t)
+       NOEXCEPT { return std::addressof(t); }
+
+      template <typename T>
+      const T* addressof(const T&&) = delete;
+#    endif
+
+      template <typename T, typename...Args>
+      NODISCARD ALWAYS_INLINE T* construct(T* t, Args&&...args) 
+       NOEXCEPT(noexcept(T(std::forward<Args>(args)...))) {
+        return ::new(static_cast<void*>(t)) 
+          T(std::forward<Args>(args)...);
+      }
+    } // namespace xx11
+  } // namespace H
 } // namespace C
 } // namespace efl
+
+#endif // EFL_CORE_TRAITS_FUNCTIONS_HPP

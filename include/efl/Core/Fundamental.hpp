@@ -39,7 +39,8 @@
 # endif
 #endif
 
-static_assert(CHAR_BIT == 8, "This library only works on systems with 8-bit bytes!");
+static_assert(CHAR_BIT == 8, 
+  "This library only works on systems with 8-bit bytes!");
 static_assert(sizeof(float) == 4, "`float` is not 32-bit.");
 
 namespace efl {

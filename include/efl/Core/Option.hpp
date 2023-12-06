@@ -43,12 +43,10 @@
 # endif
 #endif
 
-#if CPPVER_LEAST(14)
+#if EFLI_MUTABLE_CXPR_ == 1
 # define EFLI_OPMUTCXPR_ constexpr
-# define MEflOptionMoveAccess() 1
 #else
 # define EFLI_OPMUTCXPR_
-# define MEflOptionMoveAccess() 0
 #endif
 
 #if CPPVER_LEAST(17)
@@ -65,6 +63,13 @@ namespace efl {
 namespace C {
   using H::NullOpt;
   using H::nullopt;
+
+  template <typename T>
+  struct Option;
+
+  /// Decays `T` before passing to `Option<...>`.
+  template <typename T>
+  using SOption = Option<MEflGTy(std::decay<T>)>;
 
   template <typename T>
   struct Option : private H::OptionBase<T> {
@@ -108,8 +113,6 @@ namespace C {
 
     constexpr Option() NOEXCEPT : H::OptionBase<T>() { }
     constexpr Option(NullOpt) NOEXCEPT : H::OptionBase<T>() { }
-    // constexpr Option(const T& t) : H::OptionBase<T>(t) { }
-    // constexpr Option(T&& t) NOEXCEPT : H::OptionBase<T>(EFLI_CXPRMV_(t)) { }
 
     template <typename U = T, MEflEnableIf(
       std::is_constructible<T, U&&>::value &&
@@ -130,6 +133,28 @@ namespace C {
      : H::OptionBase<T>() {
       if(op.hasValue()) {
         (void) H::xx11::construct(pdata(), std::move(*op));
+        H::OptionBase<T>::active_ = true;
+      }
+    }
+
+    template <typename U, MEflEnableIf(
+      std::is_constructible<T, const U&>::value)>
+    Option(const Option<T>& op)
+     : H::OptionBase<T>() {
+      if(op.hasValue()) {
+        (void) H::xx11::construct(pdata(), *op);
+        H::OptionBase<T>::active_ = true;
+      }
+    }
+
+    template <typename U, MEflEnableIf(
+      std::is_constructible<T, U&&>::value)>
+    Option(Option<T>&& op) NOEXCEPT(
+     std::is_nothrow_constructible<T, U&&>::value)
+     : H::OptionBase<T>() {
+      if(op.hasValue()) {
+        (void) H::xx11::construct(
+          pdata(), std::move(*op));
         H::OptionBase<T>::active_ = true;
       }
     }
@@ -241,8 +266,12 @@ namespace C {
       return this->unwrap();
     }
 
+    constexpr const T&& operator*() CONST&& {
+      return EFLI_CXPRMV_(this->unwrap());
+    }
+
     template <typename U>
-    constexpr T valueOr(U&& u) CONST& {
+    EFLI_OPMUTCXPR_ T unwrapOr(U&& u) CONST& {
       if(this->active()) {
         return this->unwrap();
       } else {
@@ -251,7 +280,7 @@ namespace C {
     }
 
     template <typename U>
-    EFLI_OPMUTCXPR_ T valueOr(U&& u)&& {
+    EFLI_OPMUTCXPR_ T unwrapOr(U&& u)&& {
       if(this->active()) {
         return EFLI_CXPRMV_(this->unwrap());
       } else {
@@ -259,12 +288,58 @@ namespace C {
       }
     }
 
-    //=== Monads ===//
+    //=== Monads (Not fully supported) ===//
 
+    template <typename F>
+    EFLI_OPMUTCXPR_ auto andThen(F&& f)& 
+     -> remove_cvref_t<invoke_result_t<F, T&>> {
+      if(this->active()) {
+        return EFLI_CXPRFWD_(f)(**this);
+      } else {
+        return remove_cvref_t<
+          invoke_result_t<F, T&>>{ };
+      }
+    }
 
+    template <typename F>
+    EFLI_OPMUTCXPR_ auto andThen(F&& f)&&
+     -> remove_cvref_t<invoke_result_t<F, T&&>> {
+      if(this->active()) {
+        return EFLI_CXPRFWD_(f)(
+          EFLI_CXPRMV_(**this));
+      } else {
+        return remove_cvref_t<
+          invoke_result_t<F, T&&>>{ };
+      }
+    }
+
+    template <typename F>
+    constexpr auto andThen(F&& f) CONST& 
+     -> remove_cvref_t<invoke_result_t<F, const T&>> {
+      if(this->active()) {
+        return EFLI_CXPRFWD_(f)(**this);
+      } else {
+        return remove_cvref_t<
+          invoke_result_t<F, const T&>>{ };
+      }
+    }
+
+    template <typename F>
+    constexpr auto andThen(F&& f) CONST&&
+     -> remove_cvref_t<invoke_result_t<F, const T&&>> {
+      if(this->active()) {
+        return EFLI_CXPRFWD_(f)(
+          EFLI_CXPRMV_(**this));
+      } else {
+        return remove_cvref_t<
+          invoke_result_t<F, const T&&>>{ };
+      }
+    }
 
     void reset() NOEXCEPT { this->clear(); }
   };
+
+
 } // namespace C
 } // namespace efl
 #endif

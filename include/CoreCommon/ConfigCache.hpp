@@ -47,7 +47,8 @@
 #if CPPVER_LEAST(17)
 # define EFLI_EMPTY_SASSERT_(...) static_assert(__VA_ARGS__)
 #else
-# define EFLI_EMPTY_SASSERT_(...) static_assert(__VA_ARGS__, "")
+# define EFLI_EMPTY_SASSERT_(...) static_assert(__VA_ARGS__, \
+  "Assertion `" #__VA_ARGS__ "` failed.")
 #endif
 
 namespace efl {

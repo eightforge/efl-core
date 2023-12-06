@@ -30,6 +30,7 @@
 #include "Traits/StdInt.hpp"
 #include "Traits/Strings.hpp"
 #include "Traits/Functions.hpp"
+#include "Traits/Invoke.hpp"
 #include "Fundamental.hpp"
 
 namespace efl {

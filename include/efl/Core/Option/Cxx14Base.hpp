@@ -27,13 +27,14 @@
 #define EFL_CORE_OPTION_CXX14BASE_HPP
 
 #include <cassert>
-#include <memory>
 #include <efl/Core/Traits.hpp>
-MEflCppverMost(14);
 
 namespace efl {
 namespace C {
 namespace H {
+  // Ensure it isn't used post C++14.
+  MEflCppverMost(14);
+
   /// Type representing a null state.
   struct NullOpt {
     enum class ENullOpt_ { enullopt_ };
@@ -42,36 +43,6 @@ namespace H {
 
   /// Instantiation of the `NullOpt` type.
   GLOBAL NullOpt nullopt { NullOpt::ENullOpt_::enullopt_ };
-
-  namespace xx11 {
-    template <typename T, typename = void>
-    struct HasOverloadedAddress : FalseType { };
-
-    template <typename T>
-    struct HasOverloadedAddress<T,
-      decltype(std::declval<T&>().operator&())>
-     : TrueType { };
-    
-    template <typename T, 
-      MEflEnableIf(!HasOverloadedAddress<T>::value)>
-    FICONSTEXPR T* addressof(T& t) 
-     NOEXCEPT { return &t; }
-    
-    template <typename T, 
-      MEflEnableIf(HasOverloadedAddress<T>::value)>
-    ALWAYS_INLINE T* addressof(T& t)
-     NOEXCEPT { return std::addressof(t); }
-    
-    template <typename T>
-    const T* addressof(const T&&) = delete;
-
-    template <typename T, typename...Args>
-    ALWAYS_INLINE T* construct(T* t, Args&&...args) 
-     NOEXCEPT(noexcept(T(std::forward<Args>(args)...))) {
-      return ::new(static_cast<void*>(t)) 
-        T(std::forward<Args>(args)...);
-    }
-  } // namespace xx11
 
   /// Storage for trivial objects.
   template <typename T, bool = 
@@ -111,6 +82,7 @@ namespace H {
     T data_;
   };
 
+  /// Base for trivial options.
   template <typename T, bool = 
     std::is_trivially_destructible<T>::value>
   struct OptionBase {
@@ -148,6 +120,7 @@ namespace H {
     bool active_ = false;
   };
 
+  /// Base for non-trivial options.
   template <typename T>
   struct OptionBase<T, false> {
   protected:
