@@ -44,6 +44,13 @@ namespace C {
   // TODO: Function traits
   namespace H {
     template <typename T>
+    auto Decl() NOEXCEPT
+     -> MEflGTy(std::add_rvalue_reference<T>) {
+        static_assert(sizeof(T) == 0, 
+          "declval not allowed in an evaluated context");
+    }
+
+    template <typename T>
     NODISCARD FICONSTEXPR T&& cxpr_forward(
      EFLI_RMREF_(T)& t) NOEXCEPT 
     { return static_cast<T&&>(t); }

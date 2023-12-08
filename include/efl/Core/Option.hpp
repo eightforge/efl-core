@@ -18,6 +18,8 @@
 //
 //  This file either implements a pre C++17 optional, or expands on
 //  the current std::optional API. Based on the N3793 implementation.
+//  Be warned: exceptions are not supported. Use unwrapping macros
+//  where possible.
 //
 //===----------------------------------------------------------------===//
 
@@ -27,13 +29,7 @@
 #define EFL_CORE_OPTION_HPP
 
 #include "AlignedStorage.hpp"
-
-#if CPPVER_LEAST(17)
-# include "Traits.hpp"
-# include <optional>
-#else
-# include "Option/Cxx14Base.hpp"
-#endif
+#include "Option/Cxx14Base.hpp"
 
 #ifndef EFLI_OPASSERT_
 # if NDEBUG
@@ -51,25 +47,44 @@
 
 #if CPPVER_LEAST(17)
 namespace efl::C {
-  /// Alias for std::nullopt_t.
-  using NullOpt = std::nullopt_t;
-  /// Alias for std::nullopt.
-  GLOBAL NullOpt nullopt = std::nullopt;
+  template <typename T>
+  struct Option : std::optional<T> {
+    using baseType_ = std::optional<T>;
+    using std::optional<T>::operator=;
 
-  // TODO: Option<...> interface
+    FICONSTEXPR bool hasValue() CNOEXCEPT {
+      return std::optional<T>::has_value();
+    }
+
+    FICONSTEXPR auto unwrap() NOEXCEPT {
+      return std::optional<T>::value();
+    }
+
+    FICONSTEXPR auto unwrap() CNOEXCEPT {
+      return std::optional<T>::value();
+    }
+
+    template <typename U>
+    FICONSTEXPR T unwrapOr(U&& u)&& {
+      return std::optional<T>::value_or(FWD(u));
+    }
+
+    template <typename U>
+    FICONSTEXPR T unwrapOr(U&& u) CONST& {
+      return std::optional<T>::value_or(FWD(u));
+    }
+  };
+
+#ifdef __cpp_deduction_guides
+  template <typename T>
+  Option(T) -> Option<T>;
+#endif // Deduction guides (C++17)
 } // namespace efl::C
 #else
 namespace efl {
 namespace C {
   using H::NullOpt;
   using H::nullopt;
-
-  template <typename T>
-  struct Option;
-
-  /// Decays `T` before passing to `Option<...>`.
-  template <typename T>
-  using SOption = Option<MEflGTy(std::decay<T>)>;
 
   template <typename T>
   struct Option : private H::OptionBase<T> {
@@ -207,10 +222,29 @@ namespace C {
       return *this;
     }
 
+    //=== Modifiers ===//
+
     template <typename...Args>
-    ALWAYS_INLINE void emplace(Args&&...args) {
+    void emplace(Args&&...args) {
       this->clear();
       this->initialize(FWD(args)...);
+    }
+
+    ALWAYS_INLINE void reset() NOEXCEPT { 
+      this->clear();
+    }
+
+    void swap(Option& op) {
+      if(this->active() && op.active()) {
+        using std::swap;
+        swap(**this, *op);
+      } else if(this->active()) {
+        op.emplace(std::move(**this));
+        this->clear();
+      } else if(op.active()) {
+        this->emplace(std::move(*op));
+        op.clear();
+      }
     }
 
     //=== Observers ===//
@@ -230,21 +264,24 @@ namespace C {
       return this->has_value();
     }
 
-    FICONSTEXPR const T& unwrap() CONST& {
-      return H::OptionBase<T>::data_.data_;
-    }
-
     ALWAYS_INLINE EFLI_OPMUTCXPR_ type_& unwrap()& {
+      EFLI_OPASSERT_(this->active());
       return H::OptionBase<T>::data_.data_;
     }
 
     EFLI_OPMUTCXPR_ type_&& unwrap()&& {
+      EFLI_OPASSERT_(this->active());
       return EFLI_CXPRMV_(
         H::OptionBase<T>::data_.data_);
     }
 
+    FICONSTEXPR const T& unwrap() CONST& {
+      // TODO: Add check
+      return H::OptionBase<T>::data_.data_;
+    }
+
     EFLI_OPMUTCXPR_ type_* operator->() {
-      EFLI_OPASSERT_(!this->active());
+      EFLI_OPASSERT_(this->active());
       return this->pdata();
     }
 
@@ -253,12 +290,12 @@ namespace C {
     }
 
     EFLI_OPMUTCXPR_ type_& operator*()& {
-      EFLI_OPASSERT_(!this->active());
+      EFLI_OPASSERT_(this->active());
       return this->unwrap();
     }
 
     EFLI_OPMUTCXPR_ type_&& operator*()&& {
-      EFLI_OPASSERT_(!this->active());
+      EFLI_OPASSERT_(this->active());
       return EFLI_CXPRMV_(this->unwrap());
     }
 
@@ -335,16 +372,14 @@ namespace C {
           invoke_result_t<F, const T&&>>{ };
       }
     }
-
-    void reset() NOEXCEPT { this->clear(); }
   };
-
-
 } // namespace C
 } // namespace efl
 #endif
 
 #undef EFLI_OPASSERT_
 #undef EFLI_OPMUTCXPR_
+
+#include "Option/Compare.hpp"
 
 #endif // EFL_CORE_OPTION_HPP

@@ -51,9 +51,6 @@ GLOBAL bool is_invokable_v = is_invokable<F, Args...>::value;
 //=== invoke(...) ===//
 namespace H {
   namespace H1 {
-    template <template <typename...> class TP, typename T, typename...Args>
-    using enable_else = MEflGTy(std::enable_if<!TP<Args...>::value, T>);
-
 #  define EFLI_MPINV_(b, mp, args) \
     ((b).*mp)(EFLI_CXPRFWD_(args)...)
 
@@ -70,7 +67,8 @@ namespace H {
       }
 
       template <typename Ret, typename...Args>
-      constexpr enable_else<is_invokable, Ret, Ret, Args...> 
+      constexpr MEflGTy(std::enable_if<
+        !is_invokable<Ret, Args...>::value, Ret>)
        operator()(Ret Base::* mp, U u, Args&&...args) CNOEXCEPT {
         return ((*EFLI_CXPRFWD_(u)).*mp);
       }
@@ -87,7 +85,8 @@ namespace H {
       }
 
       template <typename Ret, typename...Args>
-      constexpr enable_else<is_invokable, Ret, Ret, Args...> 
+      constexpr MEflGTy(std::enable_if<
+        !is_invokable<Ret, Args...>::value, Ret>)
        operator()(Ret Base::* mp, U u, Args&&...args) CNOEXCEPT {
         return ((*EFLI_CXPRFWD_(u)).*mp);
       }
@@ -128,11 +127,13 @@ namespace H {
   template <typename F, typename...Args>
   FICONSTEXPR auto invoke(F&& f, Args&&...args) NOEXCEPT(
    noexcept(H1::InvokeHelper<F>{}(
-     EFLI_CXPRFWD_(f), EFLI_CXPRFWD_(args)...)))
+     EFLI_CXPRFWD_(f), cxpr_forward<Args>(args)...)))
    -> decltype(H1::InvokeHelper<F>{}(
-     EFLI_CXPRFWD_(f), EFLI_CXPRFWD_(args)...)) {
+     EFLI_CXPRFWD_(f), cxpr_forward<Args>(args)...)) {
     return H1::InvokeHelper<F>{}(
-     EFLI_CXPRFWD_(f), EFLI_CXPRFWD_(args)...); 
+     // Use `cxpr_forward` directly here, 
+     // otherwise intellisense starts complaining.
+     EFLI_CXPRFWD_(f), cxpr_forward<Args>(args)...); 
   }
 } // namespace H
 

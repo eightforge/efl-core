@@ -31,10 +31,30 @@
 
 namespace efl {
 namespace C {
-namespace H {
-  // Ensure it isn't used post C++14.
-  MEflCppverMost(14);
+  template <typename T>
+  struct Option;
 
+  /// Decays `T` before passing to `Option<...>`.
+  template <typename T>
+  using SOption = Option<MEflGTy(std::decay<T>)>;
+} // namespace C
+} // namespace efl
+
+#if CPPVER_LEAST(17)
+# include <optional>
+
+namespace efl::C {
+  /// Alias for std::nullopt_t.
+  using NullOpt = std::nullopt_t;
+  /// Alias for std::nullopt.
+  GLOBAL NullOpt nullopt = std::nullopt;
+} // namespace efl::C
+
+#else
+
+namespace efl {
+namespace C {
+namespace H {
   /// Type representing a null state.
   struct NullOpt {
     enum class ENullOpt_ { enullopt_ };
@@ -168,5 +188,7 @@ namespace H {
 } // namespace H
 } // namespace C
 } // namespace efl
+
+#endif // C++17 Check
 
 #endif // EFL_CORE_OPTION_CXX14BASE_HPP

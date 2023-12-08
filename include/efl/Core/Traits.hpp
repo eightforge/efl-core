@@ -26,11 +26,11 @@
 #ifndef EFL_CORE_TRAITS_HPP
 #define EFL_CORE_TRAITS_HPP
 
-#include "Traits/Macros.hpp"
-#include "Traits/StdInt.hpp"
-#include "Traits/Strings.hpp"
-#include "Traits/Functions.hpp"
-#include "Traits/Invoke.hpp"
+#include "Traits/Macros.hpp"    // MEflUnwrap, MEflEnableIf, MEflHasTrait, ...
+#include "Traits/StdInt.hpp"    // [Int|Bool]C, Mk?[Int|Sz]Seq, ...
+#include "Traits/Strings.hpp"   // BLitC<...>, LitC
+#include "Traits/Functions.hpp" // forward, move, construct, addressof ...
+#include "Traits/Invoke.hpp"    // invoke, is_invokable, invoke_result
 #include "Fundamental.hpp"
 
 namespace efl {
@@ -66,11 +66,51 @@ namespace C {
   using ::std::in_place;
   using ::std::in_place_type;
   using ::std::in_place_index;
+  using ::std::is_swappable_with;
+  using ::std::is_swappable;
+  using ::std::is_nothrow_swappable_with;
+  using ::std::is_nothrow_swappable;
 #else
   namespace H {
     template <typename...>
     struct VoidTBase {
       using type = void;
+    };
+
+    namespace swap_ {
+      using std::swap;
+
+      struct TIsSwappableWith {
+        template <typename T, typename U,
+          typename = decltype(swap(Decl<T&>(), Decl<U&>()))>
+        static TrueType Test(int); // NOLINT
+
+        template <typename, typename>
+        static FalseType Test(...); // NOLINT
+      };
+
+      struct TIsNothrowSwappableWith {
+        template <typename T, typename U>
+        static BoolC<NOEXCEPT(swap(
+          Decl<T&>(), Decl<U&>()))> Test(int); // NOLINT
+
+        template <typename, typename>
+        static FalseType Test(...); // NOLINT
+      };
+    } // namespace swap_
+
+    template <typename T, typename U>
+    struct IsSwappableWith {
+      using type = decltype(
+        swap_::TIsSwappableWith::
+        template Test<T, U>(0));
+    };
+
+    template <typename T, typename U>
+    struct IsNothrowSwappableWith {
+      using type = decltype(
+        swap_::TIsNothrowSwappableWith::
+        template Test<T, U>(0));
     };
   } // namespace H
 
@@ -91,6 +131,24 @@ namespace C {
   struct in_place_index_t { 
     explicit in_place_index_t() = default; 
   };
+
+  template <typename T, typename U>
+  struct is_swappable_with 
+   : H::IsSwappableWith<T, U>::type { };
+  
+  template <typename T>
+  struct is_swappable
+   : H::IsSwappableWith<T, T>::type { };
+  
+  template <typename T, typename U>
+  struct is_nothrow_swappable_with 
+   : H::IsNothrowSwappableWith<T, U>::type { };
+  
+  template <typename T, typename U>
+  struct is_nothrow_swappable
+   : H::IsNothrowSwappableWith<T, T>::type { };
+  
+  //=== Globals ===//
 
   GLOBAL in_place_t in_place { };
 
