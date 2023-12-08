@@ -2,8 +2,9 @@
 #include <efl/Core/Traits.hpp>
 #include <efl/Core/Ref.hpp>
 #include <efl/Core/Option.hpp>
-// #include <efl/Core/Tuple.hpp>
-
+#if CPPVER_LEAST(17)
+# include <efl/Core/Tuple.hpp>
+#endif
 #include <iostream>
 
 namespace C = efl::C;
@@ -44,6 +45,8 @@ bool compare_all(const T& t, const U& u) {
   return eq && gt && ge;
 }
 
+//=== Tests ===//
+
 void invoke_tests() {
   auto p = &Z::operator();
   Z1 z1 { };
@@ -72,7 +75,7 @@ int option_tests() {
 
   C::Option<std::string> str_op;
   C::Option<const char*> ccp_op {"Hello world!!"};
-  str_op = "Hello world!";
+  str_op = C::make_option<std::string>({"Hello world!"});
   std::cout << "s: " << MEflUnwrap(str_op) << std::endl;
 
   C::Option<C::f32> f32_op;
@@ -81,6 +84,7 @@ int option_tests() {
   }
 
   C::Option<std::string> swap_op {"Success!"};
+  swap_op.swap(swap_op);
   std::swap(str_op, swap_op);
 
   std::cout << "opt :: cc[]: " 

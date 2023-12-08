@@ -7,7 +7,7 @@ project(
   LANGUAGES CXX
 )
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 11)
 include(EflGetModules)
 Efl_Getmodules(efl::config)
 

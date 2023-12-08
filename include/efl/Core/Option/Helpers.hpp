@@ -38,21 +38,27 @@ namespace C {
 
   template <typename T, typename...TT>
   constexpr Option<T> make_option(TT&&...tt) {
-    return Option<T> { FWD(tt)... };
+    return Option<T> { in_place, FWD(tt)... };
+  }
+
+  template <typename T, typename U, typename...TT>
+  constexpr Option<T> make_option(H::InitList<U> il, TT&&...tt) {
+    return Option<T> { in_place, il, FWD(tt)... };
   }
 } // namespace C
 } // namespace efl
 
-template <typename T, MEflEnableIf(
-  std::is_move_constructible<T>::value &&
-  efl::C::is_swappable<T>::value)>
+namespace std {
+  template <typename T, MEflEnableIf(
+    std::is_move_constructible<T>::value &&
+    efl::C::is_swappable<T>::value)>
 #if CPPVER_LEAST(20)
-constexpr
+  constexpr
 #endif
-void std::swap(
-  efl::C::Option<T>& lhs, 
-  efl::C::Option<T>& rhs)
- NOEXCEPT(noexcept(lhs.swap(rhs))) 
-{ lhs.swap(rhs); }
+  void swap(
+    efl::C::Option<T>& lhs, efl::C::Option<T>& rhs)
+   NOEXCEPT(noexcept(lhs.swap(rhs))) 
+  { lhs.swap(rhs); }
+} // namespace std
 
 #endif // EFL_CORE_OPTION_HELPERS_HPP

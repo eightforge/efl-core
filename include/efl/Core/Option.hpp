@@ -179,7 +179,8 @@ namespace C {
      : H::OptionBase<T>(ip, EFLI_CXPRFWD_(tt)...) { }
     
     template <typename U, typename...TT>
-    explicit constexpr Option(H::InitList<U> ls, TT&&...tt)
+    explicit constexpr Option(
+      in_place_t ip, H::InitList<U> ls, TT&&...tt)
      : H::OptionBase<T>(ls, EFLI_CXPRFWD_(tt)...) { } 
 
     ~Option() = default;
@@ -381,5 +382,6 @@ namespace C {
 #undef EFLI_OPMUTCXPR_
 
 #include "Option/Compare.hpp"
+#include "Option/Helpers.hpp"
 
 #endif // EFL_CORE_OPTION_HPP
