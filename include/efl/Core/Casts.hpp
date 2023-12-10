@@ -29,20 +29,47 @@
 
 namespace efl {
 namespace C {
-  /// `static_cast`s a value to `bool`.
-  template <typename T>
-  FICONSTEXPR bool bool_cast(T& t) NOEXCEPT(
-   noexcept(static_cast<bool>(t))) {
-    return static_cast<bool>(t);    
-  }
+/// `static_cast`s a value to `bool`.
+template <typename T>
+FICONSTEXPR bool bool_cast(T& t) NOEXCEPT(
+ noexcept(static_cast<bool>(t))) {
+  return static_cast<bool>(t);
+}
 
-  /// `static_cast`s a moved value to `bool`.
-  template <typename T>
-  FICONSTEXPR bool bool_cast(T&& t) NOEXCEPT(
-   noexcept(static_cast<bool>(EFLI_CXPRMV_(t)))) {
-    return static_cast<bool>(EFLI_CXPRMV_(t));    
-  }
+/// `static_cast`s a moved value to `bool`.
+template <typename T>
+FICONSTEXPR bool bool_cast(T&& t) NOEXCEPT(
+ noexcept(static_cast<bool>(EFLI_CXPRMV_(t)))) {
+  return static_cast<bool>(EFLI_CXPRMV_(t));    
+}
 
+namespace H {
+  template <typename T, typename U>
+  union PunHelper {
+    PunHelper(U u) : u(u) { }
+    PunHelper(T t) : t(t) { }
+  public:
+    U u;
+    T t;
+  };
+
+  template <typename T>
+  union PunHelper {
+    PunHelper(T t) : t(t) { }
+  public:
+    T t;
+  };
+} // namespace H
+
+/// VERY DANGEROUS!!! Use only when absolutely necessary
+/// (eg. std::bit_cast, std::memcpy, etc. when possible).
+template <typename T, typename U>
+ALWAYS_INLINE T pun_cast(U&& u) {
+  using UType = MEflGTy(std::decay<U>);
+  MEflESAssert(!std::is_reference<T>::value);
+  MEflESAssert(sizeof(T) == sizeof(UType));
+  return H::PunHelper<T, UType>(u).t;
+}
 } // namespace C
 } // namespace efl
 

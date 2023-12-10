@@ -31,12 +31,12 @@
 
 namespace efl {
 namespace C {
-  template <typename T>
-  struct Option;
+template <typename T>
+struct Option;
 
-  /// Decays `T` before passing to `Option<...>`.
-  template <typename T>
-  using SOption = Option<MEflGTy(std::decay<T>)>;
+/// Decays `T` before passing to `Option<...>`.
+template <typename T>
+using SOption = Option<MEflGTy(std::decay<T>)>;
 } // namespace C
 } // namespace efl
 
@@ -44,10 +44,10 @@ namespace C {
 # include <optional>
 
 namespace efl::C {
-  /// Alias for std::nullopt_t.
-  using NullOpt = std::nullopt_t;
-  /// Alias for std::nullopt.
-  GLOBAL NullOpt nullopt = std::nullopt;
+/// Alias for std::nullopt_t.
+using NullOpt = std::nullopt_t;
+/// Alias for std::nullopt.
+GLOBAL NullOpt nullopt = std::nullopt;
 } // namespace efl::C
 
 #else
@@ -55,136 +55,136 @@ namespace efl::C {
 namespace efl {
 namespace C {
 namespace H {
-  /// Type representing a null state.
-  struct NullOpt {
-    enum class ENullOpt_ { enullopt_ };
-    explicit constexpr NullOpt(ENullOpt_) NOEXCEPT { }
-  };
+/// Type representing a null state.
+struct NullOpt {
+  enum class ENullOpt_ { enullopt_ };
+  explicit constexpr NullOpt(ENullOpt_) NOEXCEPT { }
+};
 
-  /// Instantiation of the `NullOpt` type.
-  GLOBAL NullOpt nullopt { NullOpt::ENullOpt_::enullopt_ };
+/// Instantiation of the `NullOpt` type.
+GLOBAL NullOpt nullopt { NullOpt::ENullOpt_::enullopt_ };
 
-  /// Storage for trivial objects.
-  template <typename T, bool = 
-    std::is_trivially_destructible<T>::value>
-  union OptionStorage {
-    constexpr OptionStorage() NOEXCEPT : empty_() { }
+/// Storage for trivial objects.
+template <typename T, bool = 
+  std::is_trivially_destructible<T>::value>
+union OptionStorage {
+  constexpr OptionStorage() NOEXCEPT : empty_() { }
 
-    template <typename...TT>
-    constexpr OptionStorage(in_place_t, TT&&...tt)
-     : data_(EFLI_CXPRFWD_(tt)...) { }
-    
-    template <typename U, typename...TT>
-    constexpr OptionStorage(InitList<U> il, TT&&...tt)
-     : data_(il, EFLI_CXPRFWD_(tt)...) { }
-
-  public:
-    Dummy empty_;
-    T data_;
-  };
-
-  /// Storage for non-trivial objects.
-  template <typename T>
-  union OptionStorage<T, false> {
-    constexpr OptionStorage() NOEXCEPT : empty_() { }
-    ~OptionStorage() { }
-
-    template <typename...TT>
-    constexpr OptionStorage(in_place_t, TT&&...tt)
-     : data_(EFLI_CXPRFWD_(tt)...) { }
-    
-    template <typename U, typename...TT>
-    constexpr OptionStorage(InitList<U> il, TT&&...tt)
-     : data_(il, EFLI_CXPRFWD_(tt)...) { }
+  template <typename...TT>
+  constexpr OptionStorage(in_place_t, TT&&...tt)
+   : data_(EFLI_CXPRFWD_(tt)...) { }
   
-  public:
-    Dummy empty_;
-    T data_;
-  };
+  template <typename U, typename...TT>
+  constexpr OptionStorage(InitList<U> il, TT&&...tt)
+   : data_(il, EFLI_CXPRFWD_(tt)...) { }
 
-  /// Base for trivial options.
-  template <typename T, bool = 
-    std::is_trivially_destructible<T>::value>
-  struct OptionBase {
-  protected:
-    using type_ = MEflGTy(std::remove_const<T>);
-  public:
-    OptionBase() = default;
+public:
+  Dummy empty_;
+  T data_;
+};
 
-    explicit constexpr OptionBase(const T& t) 
-     : data_(in_place, t), active_(true) { }
-    
-    explicit constexpr OptionBase(T&& t) 
-     : data_(in_place, EFLI_CXPRMV_(t)), active_(true) { }
+/// Storage for non-trivial objects.
+template <typename T>
+union OptionStorage<T, false> {
+  constexpr OptionStorage() NOEXCEPT : empty_() { }
+  ~OptionStorage() { }
 
-    template <typename...TT>
-    constexpr OptionBase(
-      in_place_t ip, TT&&...tt)
-     : data_(ip, EFLI_CXPRFWD_(tt)...), 
-      active_(true) { }
-
-    template <typename U, typename...TT>
-    constexpr OptionBase(
-      InitList<U> il, TT&&...tt)
-     : data_(il, EFLI_CXPRFWD_(tt)...), 
-      active_(true) { }
-    
-    ~OptionBase() = default;
+  template <typename...TT>
+  constexpr OptionStorage(in_place_t, TT&&...tt)
+   : data_(EFLI_CXPRFWD_(tt)...) { }
   
-  public:
-    ALWAYS_INLINE void destroy() NOEXCEPT { }
-    void clear() NOEXCEPT { this->active_ = false; }
+  template <typename U, typename...TT>
+  constexpr OptionStorage(InitList<U> il, TT&&...tt)
+   : data_(il, EFLI_CXPRFWD_(tt)...) { }
 
-  public:
-    OptionStorage<type_, true> data_;
-    bool active_ = false;
-  };
+public:
+  Dummy empty_;
+  T data_;
+};
 
-  /// Base for non-trivial options.
-  template <typename T>
-  struct OptionBase<T, false> {
-  protected:
-    using type_ = MEflGTy(std::remove_const<T>);
-  public:
-    OptionBase() = default;
+/// Base for trivial options.
+template <typename T, bool = 
+  std::is_trivially_destructible<T>::value>
+struct OptionBase {
+protected:
+  using type_ = MEflGTy(std::remove_const<T>);
+public:
+  OptionBase() = default;
 
-    explicit constexpr OptionBase(const T& t) 
-     : data_(in_place, t), active_(true) { }
-    
-    explicit constexpr OptionBase(T&& t) 
-     : data_(in_place, EFLI_CXPRMV_(t)), active_(true) { }
-
-    template <typename...TT>
-    constexpr OptionBase(
-      in_place_t ip, TT&&...tt)
-     : data_(ip, EFLI_CXPRFWD_(tt)...), 
-      active_(true) { }
-
-    template <typename U, typename...TT>
-    constexpr OptionBase(
-      InitList<U> il, TT&&...tt)
-     : data_(il, EFLI_CXPRFWD_(tt)...), 
-      active_(true) { }
-    
-    ~OptionBase() {
-      if(active_) 
-        this->destroy();
-    }
+  explicit constexpr OptionBase(const T& t) 
+   : data_(in_place, t), active_(true) { }
   
-  public:
-    ALWAYS_INLINE void destroy() NOEXCEPT {
-      data_.data_.type_::~type_();
-    }
+  explicit constexpr OptionBase(T&& t) 
+   : data_(in_place, EFLI_CXPRMV_(t)), active_(true) { }
 
-    void clear() NOEXCEPT {
-      if(active_) this->destroy();
-      this->active_ = false; 
-    }
+  template <typename...TT>
+  constexpr OptionBase(
+    in_place_t ip, TT&&...tt)
+   : data_(ip, EFLI_CXPRFWD_(tt)...), 
+    active_(true) { }
 
-  public:
-    OptionStorage<type_, false> data_;
-    bool active_ = false;
-  };
+  template <typename U, typename...TT>
+  constexpr OptionBase(
+    InitList<U> il, TT&&...tt)
+   : data_(il, EFLI_CXPRFWD_(tt)...), 
+    active_(true) { }
+  
+  ~OptionBase() = default;
+
+public:
+  ALWAYS_INLINE void destroy() NOEXCEPT { }
+  void clear() NOEXCEPT { this->active_ = false; }
+
+public:
+  OptionStorage<type_, true> data_;
+  bool active_ = false;
+};
+
+/// Base for non-trivial options.
+template <typename T>
+struct OptionBase<T, false> {
+protected:
+  using type_ = MEflGTy(std::remove_const<T>);
+public:
+  OptionBase() = default;
+
+  explicit constexpr OptionBase(const T& t) 
+   : data_(in_place, t), active_(true) { }
+  
+  explicit constexpr OptionBase(T&& t) 
+   : data_(in_place, EFLI_CXPRMV_(t)), active_(true) { }
+
+  template <typename...TT>
+  constexpr OptionBase(
+    in_place_t ip, TT&&...tt)
+   : data_(ip, EFLI_CXPRFWD_(tt)...), 
+    active_(true) { }
+
+  template <typename U, typename...TT>
+  constexpr OptionBase(
+    InitList<U> il, TT&&...tt)
+   : data_(il, EFLI_CXPRFWD_(tt)...), 
+    active_(true) { }
+  
+  ~OptionBase() {
+    if(active_) 
+      this->destroy();
+  }
+
+public:
+  ALWAYS_INLINE void destroy() NOEXCEPT {
+    data_.data_.type_::~type_();
+  }
+
+  void clear() NOEXCEPT {
+    if(active_) this->destroy();
+    this->active_ = false; 
+  }
+
+public:
+  OptionStorage<type_, false> data_;
+  bool active_ = false;
+};
 } // namespace H
 } // namespace C
 } // namespace efl

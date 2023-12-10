@@ -53,103 +53,103 @@ namespace efl {
 namespace C {
 namespace H {
 #if CPPVER_LEAST(14)
-  template <typename T, T I>
-  using IntC = ::std::integral_constant<T, I>;
+template <typename T, T I>
+using IntC = ::std::integral_constant<T, I>;
 
-  template <typename T, T...II>
-  using IntSeq = ::std::integer_sequence<T, II...>;
+template <typename T, T...II>
+using IntSeq = ::std::integer_sequence<T, II...>;
 
-  template <SzType...II>
-  using SzSeq = IntSeq<SzType, II...>;
+template <SzType...II>
+using SzSeq = IntSeq<SzType, II...>;
 
-  template <typename T, T N>
-  using MkIntSeq = ::std::make_integer_sequence<T, N>;
+template <typename T, T N>
+using MkIntSeq = ::std::make_integer_sequence<T, N>;
 
-  template <SzType N>
-  using MkSzSeq = MkIntSeq<SzType, N>;
+template <SzType N>
+using MkSzSeq = MkIntSeq<SzType, N>;
 
 #else
-  template <typename T, T I>
-  struct IntC {
-    static constexpr T value = I;
-    using value_type = T;
-    using type = IntC;
-    constexpr operator value_type() 
-     CNOEXCEPT { return value; }
-    constexpr value_type operator()() 
-     CNOEXCEPT { return value; }
-  };
+template <typename T, T I>
+struct IntC {
+  static constexpr T value = I;
+  using value_type = T;
+  using type = IntC;
+  constexpr operator value_type() 
+   CNOEXCEPT { return value; }
+  constexpr value_type operator()() 
+   CNOEXCEPT { return value; }
+};
 
-  template <typename T, T...II>
-  struct IntSeq {
-    using value_type = T;
-    static constexpr SzType size() 
-     NOEXCEPT { return sizeof...(II); }
-  };
+template <typename T, T...II>
+struct IntSeq {
+  using value_type = T;
+  static constexpr SzType size() 
+   NOEXCEPT { return sizeof...(II); }
+};
 
-  template <SzType...II>
-  using SzSeq = IntSeq<SzType, II...>;
+template <SzType...II>
+using SzSeq = IntSeq<SzType, II...>;
 
 # if ELFI_MKINTSEQ_BUILTIN_
-  template <typename T, T N>
-  using MkIntSeq = __make_integer_seq<IntSeq, T, N>;
+template <typename T, T N>
+using MkIntSeq = __make_integer_seq<IntSeq, T, N>;
 
-  template <SzType N>
-  using MkSzSeq = __make_integer_seq<IntSeq, SzType, N>;
+template <SzType N>
+using MkSzSeq = __make_integer_seq<IntSeq, SzType, N>;
 # else
-  // For compatibility
-  namespace xx11 {
-    template <class, class>
-    struct SeqCat;
+// For compatibility
+namespace xx11 {
+  template <class, class>
+  struct SeqCat;
 
-    template <SzType...II1, SzType...II2>
-    struct SeqCat<SzSeq<II1...>, SzSeq<II2...>> {
-      using type = SzSeq<II1..., (sizeof...(II1) + II2)...>;
-    };
+  template <SzType...II1, SzType...II2>
+  struct SeqCat<SzSeq<II1...>, SzSeq<II2...>> {
+    using type = SzSeq<II1..., (sizeof...(II1) + II2)...>;
+  };
 
-    template <typename T, typename U>
-    using seq_cat = typename SeqCat<T, U>::type;
+  template <typename T, typename U>
+  using seq_cat = typename SeqCat<T, U>::type;
 
-    template <SzType N> struct MkSeq;
+  template <SzType N> struct MkSeq;
 
 #  define EFLI_SN_(n, ...) \
-    template <> struct MkSeq<n> \
-    { using type = SzSeq<__VA_ARGS__>; };
+  template <> struct MkSeq<n> \
+  { using type = SzSeq<__VA_ARGS__>; };
 #  include "StdInt.seq.mac"
 
-    template <SzType N>
-    using mk_seq = typename MkSeq<N>::type;
-
-    template <SzType N>
-    struct MkSeq {
-      using type = seq_cat<
-        mk_seq<N / 2>, mk_seq<N - (N / 2)>>;
-    };
-
-    template <typename T, SzType...II>
-    auto mk_seq_cast_(SzSeq<II...>) -> IntSeq<T, T(II)...>; // NOLINT
-  } // namespace xx11
+  template <SzType N>
+  using mk_seq = typename MkSeq<N>::type;
 
   template <SzType N>
-  using MkSzSeq = xx11::mk_seq<N>;
+  struct MkSeq {
+    using type = seq_cat<
+      mk_seq<N / 2>, mk_seq<N - (N / 2)>>;
+  };
 
-  template <typename T, T N>
-  using MkIntSeq = decltype(
-    xx11::mk_seq_cast_<T>(
-      MkSzSeq<SzType(N)>{}));
+  template <typename T, SzType...II>
+  auto mk_seq_cast_(SzSeq<II...>) -> IntSeq<T, T(II)...>; // NOLINT
+} // namespace xx11
+
+template <SzType N>
+using MkSzSeq = xx11::mk_seq<N>;
+
+template <typename T, T N>
+using MkIntSeq = decltype(
+  xx11::mk_seq_cast_<T>(
+    MkSzSeq<SzType(N)>{}));
 # endif // Has `__make_integer_seq<...>`
 #endif // std::integer_sequence (C++14)
 
-  //=== Specializations ===//
+//=== Specializations ===//
 
-  template <bool B>
-  using BoolC = IntC<bool, B>;
+template <bool B>
+using BoolC = IntC<bool, B>;
 
-  using TrueType = BoolC<true>;
-  using FalseType = BoolC<false>;
+using TrueType = BoolC<true>;
+using FalseType = BoolC<false>;
 
-  template <typename...TT>
-  using SzSeqFor = MkSzSeq<sizeof...(TT)>;
+template <typename...TT>
+using SzSeqFor = MkSzSeq<sizeof...(TT)>;
 } // namespace H
 } // namespace C
 } // namespace efl

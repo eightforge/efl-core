@@ -30,64 +30,64 @@
 
 #if CPPVER_LEAST(17)
 namespace efl::C::H {
-  template <typename T, T...CC>
-  struct BLitC {
-    using value_type = T;
-    using type = T(&)[sizeof...(CC)];
-    static constexpr T data[sizeof...(CC)] { CC... };
-  public:
-    static constexpr SzType Size() 
-     NOEXCEPT { return sizeof...(CC); }
-    static constexpr type Data() 
-     NOEXCEPT { return BLitC::data; }
-  };
+template <typename T, T...CC>
+struct BLitC {
+  using value_type = T;
+  using type = T(&)[sizeof...(CC)];
+  static constexpr T data[sizeof...(CC)] { CC... };
+public:
+  static constexpr SzType Size() 
+   NOEXCEPT { return sizeof...(CC); }
+  static constexpr type Data() 
+   NOEXCEPT { return BLitC::data; }
+};
 
-  template <char...CC>
-  struct BLitC<char, CC...> {
-    using value_type = char;
-    using type = const char(&)[sizeof...(CC)];
-    static constexpr char data[sizeof...(CC)] { CC... };
-  public:
-    static constexpr SzType Size() 
-     NOEXCEPT { return sizeof...(CC); }
-    static constexpr type Data() 
-     NOEXCEPT { return BLitC::data; }
-    // TODO: Add conversions...
-  };
+template <char...CC>
+struct BLitC<char, CC...> {
+  using value_type = char;
+  using type = const char(&)[sizeof...(CC)];
+  static constexpr char data[sizeof...(CC)] { CC... };
+public:
+  static constexpr SzType Size() 
+   NOEXCEPT { return sizeof...(CC); }
+  static constexpr type Data() 
+   NOEXCEPT { return BLitC::data; }
+  // TODO: Add conversions...
+};
 
-  template <typename T>
-  struct BLitC<T> {
-    COMPILE_FAILURE(T, 
-      "Cannot generate an empty literal.");
-  };
+template <typename T>
+struct BLitC<T> {
+  COMPILE_FAILURE(T, 
+    "Cannot generate an empty literal.");
+};
 
 # if CPPVER_LEAST(20)
-  namespace xx20 {
-    template <SzType N>
-    struct StrLit {
-      CONSTEVAL StrLit(const char(&lit)[N]) 
-       : StrLit(lit, MkSzSeq<N>{}) { }
+namespace xx20 {
+  template <SzType N>
+  struct StrLit {
+    CONSTEVAL StrLit(const char(&lit)[N]) 
+     : StrLit(lit, MkSzSeq<N>{}) { }
 
-      template <SzType...II>
-      CONSTEVAL StrLit(const char(&lit)[N], SzSeq<II...>) 
-       : data{ lit[II]... } { }
-      
-      FICONSTEXPR static SzType Size() 
-       NOEXCEPT { return N; }
+    template <SzType...II>
+    CONSTEVAL StrLit(const char(&lit)[N], SzSeq<II...>) 
+     : data{ lit[II]... } { }
+    
+    FICONSTEXPR static SzType Size() 
+     NOEXCEPT { return N; }
 
-    public:
-      char data[N];
-    };
+  public:
+    char data[N];
+  };
 
-    template <StrLit S, SzType...II>
-    FICONSTEXPR auto gen_litc(SzSeq<II...>) // NOLINT
-     -> BLitC<char, S.data[II]...>;
-  } // namespace xx20
+  template <StrLit S, SzType...II>
+  FICONSTEXPR auto gen_litc(SzSeq<II...>) // NOLINT
+   -> BLitC<char, S.data[II]...>;
+} // namespace xx20
 
-  template <xx20::StrLit S>
-  using LitC = decltype(
-    xx20::gen_litc<S>(
-      MkSzSeq<S.Size()>{}));
+template <xx20::StrLit S>
+using LitC = decltype(
+  xx20::gen_litc<S>(
+    MkSzSeq<S.Size()>{}));
 # endif // C++20
 } // namespace efl::C::H
 #endif // C++17

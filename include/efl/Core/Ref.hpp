@@ -37,51 +37,51 @@
 
 namespace efl {
 namespace C {
-  namespace H {
-  namespace H1 {
-    // Helper function for `Ref`.
-    template <typename T>
-    FICONSTEXPR T& ref_hcast(T& t) { return t; }
-
-    template <typename T>
-    void ref_hcast(T&& t) = delete;
-  } // namespace H1
-  } // namespace H
+namespace H {
+namespace H1 {
+  // Helper function for `Ref`.
+  template <typename T>
+  FICONSTEXPR T& ref_hcast(T& t) { return t; }
 
   template <typename T>
-  struct Ref {
-    using type = T;
-    Ref() = delete;
+  void ref_hcast(T&& t) = delete;
+} // namespace H1
+} // namespace H
 
-    template <typename U, typename = decltype(
-      H::H1::ref_hcast<T>(std::declval<U>())),
-      MEflEnableIf(!std::is_same<Ref, remove_cvref_t<U>>::value)>
-    constexpr Ref(U&& u) NOEXCEPT(
-     noexcept(H::H1::ref_hcast<T>(EFLI_CXPRFWD_(u)))) 
-     : data_(H::xx11::addressof(
-      H::H1::ref_hcast(EFLI_CXPRFWD_(u)))) { }
-    
-    Ref(const Ref&) NOEXCEPT = default;
-    Ref& operator=(const Ref& lhs) NOEXCEPT = default;
+template <typename T>
+struct Ref {
+  using type = T;
+  Ref() = delete;
 
-    constexpr operator T&() CNOEXCEPT { return *data_; }
-    constexpr T& operator*() CNOEXCEPT { return *data_; }
-    constexpr T& get() CNOEXCEPT { return *data_; }
-
-    template <typename...Args>
-    constexpr invoke_result_t<T&, Args...>
-     operator()(Args&&... args) CONST NOEXCEPT(
-      noexcept(H::invoke(std::declval<T&>(), EFLI_CXPRFWD_(args)...))) {
-      return H::invoke(get(), EFLI_CXPRFWD_(args)...);
-    }
+  template <typename U, typename = decltype(
+    H::H1::ref_hcast<T>(std::declval<U>())),
+    MEflEnableIf(!std::is_same<Ref, remove_cvref_t<U>>::value)>
+  constexpr Ref(U&& u) NOEXCEPT(
+   noexcept(H::H1::ref_hcast<T>(EFLI_CXPRFWD_(u)))) 
+   : data_(H::xx11::addressof(
+    H::H1::ref_hcast(EFLI_CXPRFWD_(u)))) { }
   
-  private:
-    T* data_;
-  };
+  Ref(const Ref&) NOEXCEPT = default;
+  Ref& operator=(const Ref& lhs) NOEXCEPT = default;
+
+  constexpr operator T&() CNOEXCEPT { return *data_; }
+  constexpr T& operator*() CNOEXCEPT { return *data_; }
+  constexpr T& get() CNOEXCEPT { return *data_; }
+
+  template <typename...Args>
+  constexpr invoke_result_t<T&, Args...>
+   operator()(Args&&... args) CONST NOEXCEPT(
+    noexcept(H::invoke(std::declval<T&>(), EFLI_CXPRFWD_(args)...))) {
+    return H::invoke(get(), EFLI_CXPRFWD_(args)...);
+  }
+
+private:
+  T* data_;
+};
 
 #if __cpp_deduction_guides >= 201907L
-  template <typename T>
-  Ref(T&) -> Ref<T>;
+template <typename T>
+Ref(T&) -> Ref<T>;
 #endif // Deduction guides (C++17)
 } // namespace C
 } // namespace efl

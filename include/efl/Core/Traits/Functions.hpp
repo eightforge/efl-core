@@ -41,68 +41,68 @@
 
 namespace efl {
 namespace C {
-  // TODO: Function traits
-  namespace H {
-    template <typename T>
-    auto Decl() NOEXCEPT
-     -> MEflGTy(std::add_rvalue_reference<T>) {
-        static_assert(sizeof(T) == 0, 
-          "declval not allowed in an evaluated context");
-    }
+// TODO: Function traits
+namespace H {
+  template <typename T>
+  auto Decl() NOEXCEPT
+   -> MEflGTy(std::add_rvalue_reference<T>) {
+      static_assert(sizeof(T) == 0, 
+        "declval not allowed in an evaluated context");
+  }
+
+  template <typename T>
+  NODISCARD FICONSTEXPR T&& cxpr_forward(
+   EFLI_RMREF_(T)& t) NOEXCEPT 
+  { return static_cast<T&&>(t); }
+
+  template <typename T>
+  NODISCARD FICONSTEXPR T&& cxpr_forward(
+   EFLI_RMREF_(T)&& t) NOEXCEPT {
+    static_assert(!std::is_lvalue_reference<T>::value,
+      "`cxpr_forward` cannot be used to "
+      "convert an l-value to an r-value.");
+    return static_cast<T&&>(t); 
+  }
+
+  template <typename T>
+  NODISCARD FICONSTEXPR EFLI_RMREF_(T)&& 
+   cxpr_move(T&& t) NOEXCEPT 
+  { return static_cast<EFLI_RMREF_(T)&&>(t); }
+
+  namespace xx11 {
+    template <typename T, typename = void>
+    struct HasOverloadedAddress : FalseType { };
 
     template <typename T>
-    NODISCARD FICONSTEXPR T&& cxpr_forward(
-     EFLI_RMREF_(T)& t) NOEXCEPT 
-    { return static_cast<T&&>(t); }
-
-    template <typename T>
-    NODISCARD FICONSTEXPR T&& cxpr_forward(
-     EFLI_RMREF_(T)&& t) NOEXCEPT {
-      static_assert(!std::is_lvalue_reference<T>::value,
-        "`cxpr_forward` cannot be used to "
-        "convert an l-value to an r-value.");
-      return static_cast<T&&>(t); 
-    }
-
-    template <typename T>
-    NODISCARD FICONSTEXPR EFLI_RMREF_(T)&& 
-     cxpr_move(T&& t) NOEXCEPT 
-    { return static_cast<EFLI_RMREF_(T)&&>(t); }
-
-    namespace xx11 {
-      template <typename T, typename = void>
-      struct HasOverloadedAddress : FalseType { };
-
-      template <typename T>
-      struct HasOverloadedAddress<T,
-        decltype(std::declval<T&>().operator&())>
-       : TrueType { };
+    struct HasOverloadedAddress<T,
+      decltype(std::declval<T&>().operator&())>
+     : TrueType { };
 
 #    if CPPVER_LEAST(17)
-      using ::std::addressof;
+    using ::std::addressof;
 #    else
-      template <typename T, 
-        MEflEnableIf(!HasOverloadedAddress<T>::value)>
-      NODISCARD FICONSTEXPR T* addressof(T& t) 
-       NOEXCEPT { return &t; }
+    template <typename T, 
+      MEflEnableIf(!HasOverloadedAddress<T>::value)>
+    NODISCARD FICONSTEXPR T* addressof(T& t) 
+     NOEXCEPT { return &t; }
 
-      template <typename T, 
-        MEflEnableIf(HasOverloadedAddress<T>::value)>
-      NODISCARD ALWAYS_INLINE T* addressof(T& t)
-       NOEXCEPT { return std::addressof(t); }
+    template <typename T, 
+      MEflEnableIf(HasOverloadedAddress<T>::value)>
+    NODISCARD ALWAYS_INLINE T* addressof(T& t)
+     NOEXCEPT { return std::addressof(t); }
 
-      template <typename T>
-      const T* addressof(const T&&) = delete;
+    template <typename T>
+    const T* addressof(const T&&) = delete;
 #    endif
 
-      template <typename T, typename...Args>
-      NODISCARD ALWAYS_INLINE T* construct(T* t, Args&&...args) 
-       NOEXCEPT(noexcept(T(std::forward<Args>(args)...))) {
-        return ::new(static_cast<void*>(t)) 
-          T(std::forward<Args>(args)...);
-      }
-    } // namespace xx11
-  } // namespace H
+    template <typename T, typename...Args>
+    NODISCARD ALWAYS_INLINE T* construct(T* t, Args&&...args) 
+     NOEXCEPT(noexcept(T(std::forward<Args>(args)...))) {
+      return ::new(static_cast<void*>(t)) 
+        T(std::forward<Args>(args)...);
+    }
+  } // namespace xx11
+} // namespace H
 } // namespace C
 } // namespace efl
 

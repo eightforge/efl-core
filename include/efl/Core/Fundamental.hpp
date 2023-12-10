@@ -45,72 +45,72 @@ static_assert(sizeof(float) == 4, "`float` is not 32-bit.");
 
 namespace efl {
 namespace C {
-  /// Signed type representing a single byte.
-  using ibyte = signed char;
-  /// Unsigned type representing a single byte.
-  /// Can be used for storage, see [intro.object].
-  using ubyte = unsigned char;
+/// Signed type representing a single byte.
+using ibyte = signed char;
+/// Unsigned type representing a single byte.
+/// Can be used for storage, see [intro.object].
+using ubyte = unsigned char;
 
-  // The fundamental data types.
-  using i8  = std::int8_t;
-  using i16 = std::int16_t;
-  using i32 = std::int32_t;
-  using i64 = std::int64_t;
+// The fundamental data types.
+using i8  = std::int8_t;
+using i16 = std::int16_t;
+using i32 = std::int32_t;
+using i64 = std::int64_t;
 
-  using u8  = std::uint8_t;
-  using u16 = std::uint16_t;
-  using u32 = std::uint32_t;
-  using u64 = std::uint64_t;
+using u8  = std::uint8_t;
+using u16 = std::uint16_t;
+using u32 = std::uint32_t;
+using u64 = std::uint64_t;
 
 #if EFLI_I128_ENABLED_
-  using i128 = __int128;
-  using u128 = unsigned __int128;
+using i128 = __int128;
+using u128 = unsigned __int128;
 #endif
 
-  //=== Floating Point ===//
-  
-  namespace H {
-    /// Deduced `double` as f64.
-    template <typename T = float, 
-      bool = (sizeof(T) * 2 == sizeof(double)),
-      bool = (sizeof(T) * 2 == sizeof(long double))>
-    struct F64DeductionHelper {
-      using type = double;
-    };
+//=== Floating Point ===//
 
-    /// Deduced `long double` as f64.
-    template <typename T, bool B>
-    struct F64DeductionHelper<T, false, B> {
-      using type = long double;
-    };
+namespace H {
+  /// Deduced `double` as f64.
+  template <typename T = float, 
+    bool = (sizeof(T) * 2 == sizeof(double)),
+    bool = (sizeof(T) * 2 == sizeof(long double))>
+  struct F64DeductionHelper {
+    using type = double;
+  };
 
-    /// Both `double` and `long double` are the
-    /// same size as `float`, making f64 impossible.
-    template <typename T>
-    struct F64DeductionHelper<T, false, false> {
-      enum X { f64DeductionFailure = 0 };
-      static_assert(sizeof(T) == f64DeductionFailure, 
-        "No floating point type larger than `float`.");
-    };
-  } // namespace H
+  /// Deduced `long double` as f64.
+  template <typename T, bool B>
+  struct F64DeductionHelper<T, false, B> {
+    using type = long double;
+  };
 
-  // TODO: Check for f16 and f128.
-  using f32 = float;
-  using f64 = typename H::F64DeductionHelper<>::type;
+  /// Both `double` and `long double` are the
+  /// same size as `float`, making f64 impossible.
+  template <typename T>
+  struct F64DeductionHelper<T, false, false> {
+    enum X { f64DeductionFailure = 0 };
+    static_assert(sizeof(T) == f64DeductionFailure, 
+      "No floating point type larger than `float`.");
+  };
+} // namespace H
 
-  //=== Extra Types ===//
+// TODO: Check for f16 and f128.
+using f32 = float;
+using f64 = typename H::F64DeductionHelper<>::type;
 
-  namespace H {
-    struct Dummy { };
-    /// Type used for generic values in TMP.
-    /// TODO: Profile best integral type
-    using IdType = long;
-    /// Alias for std::size_t.
-    using SzType = std::size_t;
-    /// Alias for std::initializer_list<T>.
-    template <typename T>
-    using InitList = std::initializer_list<T>;
-  } // namespace H
+//=== Extra Types ===//
+
+namespace H {
+  struct Dummy { };
+  /// Type used for generic values in TMP.
+  /// TODO: Profile best integral type
+  using IdType = long;
+  /// Alias for std::size_t.
+  using SzType = std::size_t;
+  /// Alias for std::initializer_list<T>.
+  template <typename T>
+  using InitList = std::initializer_list<T>;
+} // namespace H
 
 } // namespace C
 } // namespace efl

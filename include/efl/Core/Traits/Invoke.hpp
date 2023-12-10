@@ -31,13 +31,13 @@
 namespace efl {
 namespace C {
 namespace H {
-  template <typename Void, 
-    typename F, typename...>
-  struct IsInvokable : FalseType { };
+template <typename Void, 
+  typename F, typename...>
+struct IsInvokable : FalseType { };
 
-  template <typename F, typename...Args>
-  struct IsInvokable<decltype(void(std::declval<F>()(
-   std::declval<Args>()...))), F, Args...> : TrueType { };
+template <typename F, typename...Args>
+struct IsInvokable<decltype(void(std::declval<F>()(
+ std::declval<Args>()...))), F, Args...> : TrueType { };
 } // namespace H
 
 template <typename F, typename...Args>
@@ -50,91 +50,91 @@ GLOBAL bool is_invokable_v = is_invokable<F, Args...>::value;
 
 //=== invoke(...) ===//
 namespace H {
-  namespace H1 {
+namespace H1 {
 #  define EFLI_MPINV_(b, mp, args) \
-    ((b).*mp)(EFLI_CXPRFWD_(args)...)
+  ((b).*mp)(EFLI_CXPRFWD_(args)...)
 
-    template <class Base, typename U,
-      bool = std::is_base_of<Base, 
-        MEflGTy(std::decay<U>)>::value>
-    struct MPInvokeHelper {
-      template <typename Ret, typename...Args>
-      constexpr auto operator()(
-       Ret Base::* mp, U u, Args&&...args) CONST NOEXCEPT(
-       noexcept(EFLI_MPINV_(EFLI_CXPRFWD_(u), mp, args)))
-       -> decltype(EFLI_MPINV_(std::declval<U>(), mp, args)) {
-        return EFLI_MPINV_(EFLI_CXPRFWD_(u), mp, args);
-      }
+  template <class Base, typename U,
+    bool = std::is_base_of<Base, 
+      MEflGTy(std::decay<U>)>::value>
+  struct MPInvokeHelper {
+    template <typename Ret, typename...Args>
+    constexpr auto operator()(
+     Ret Base::* mp, U u, Args&&...args) CONST NOEXCEPT(
+     noexcept(EFLI_MPINV_(EFLI_CXPRFWD_(u), mp, args)))
+     -> decltype(EFLI_MPINV_(std::declval<U>(), mp, args)) {
+      return EFLI_MPINV_(EFLI_CXPRFWD_(u), mp, args);
+    }
 
-      template <typename Ret, typename...Args>
-      constexpr MEflGTy(std::enable_if<
-        !is_invokable<Ret, Args...>::value, Ret>)
-       operator()(Ret Base::* mp, U u, Args&&...args) CNOEXCEPT {
-        return ((*EFLI_CXPRFWD_(u)).*mp);
-      }
-    };
+    template <typename Ret, typename...Args>
+    constexpr MEflGTy(std::enable_if<
+      !is_invokable<Ret, Args...>::value, Ret>)
+     operator()(Ret Base::* mp, U u, Args&&...args) CNOEXCEPT {
+      return ((*EFLI_CXPRFWD_(u)).*mp);
+    }
+  };
 
-    template <class Base, typename U>
-    struct MPInvokeHelper<Base, U, false> {
-      template <typename Ret, typename...Args>
-      constexpr auto operator()(
-       Ret Base::* mp, U u, Args&&...args) CONST NOEXCEPT(
-       noexcept(EFLI_MPINV_((*EFLI_CXPRFWD_(u)), mp, args)))
-       -> decltype(EFLI_MPINV_((*std::declval<U>()), mp, args)) {
-        return EFLI_MPINV_((*EFLI_CXPRFWD_(u)), mp, args);
-      }
+  template <class Base, typename U>
+  struct MPInvokeHelper<Base, U, false> {
+    template <typename Ret, typename...Args>
+    constexpr auto operator()(
+     Ret Base::* mp, U u, Args&&...args) CONST NOEXCEPT(
+     noexcept(EFLI_MPINV_((*EFLI_CXPRFWD_(u)), mp, args)))
+     -> decltype(EFLI_MPINV_((*std::declval<U>()), mp, args)) {
+      return EFLI_MPINV_((*EFLI_CXPRFWD_(u)), mp, args);
+    }
 
-      template <typename Ret, typename...Args>
-      constexpr MEflGTy(std::enable_if<
-        !is_invokable<Ret, Args...>::value, Ret>)
-       operator()(Ret Base::* mp, U u, Args&&...args) CNOEXCEPT {
-        return ((*EFLI_CXPRFWD_(u)).*mp);
-      }
-    };
+    template <typename Ret, typename...Args>
+    constexpr MEflGTy(std::enable_if<
+      !is_invokable<Ret, Args...>::value, Ret>)
+     operator()(Ret Base::* mp, U u, Args&&...args) CNOEXCEPT {
+      return ((*EFLI_CXPRFWD_(u)).*mp);
+    }
+  };
 
 #  undef EFLI_MPINV_
 
-    //=== Direct Invoke Helper ===//
+  //=== Direct Invoke Helper ===//
 
-    template <typename F, 
-      bool = !std::is_member_pointer<
-        MEflGTy(std::decay<F>)>::value>
-    struct InvokeHelper {
-      template <typename...Args>
-      constexpr auto operator()(F f, Args&&...args) CONST NOEXCEPT(
-       noexcept(EFLI_CXPRFWD_(f)(EFLI_CXPRFWD_(args)...)))
-       -> decltype(std::declval<F>()(std::declval<Args>()...)) {
-        return EFLI_CXPRFWD_(f)(EFLI_CXPRFWD_(args)...);
-      }
-    };
+  template <typename F, 
+    bool = !std::is_member_pointer<
+      MEflGTy(std::decay<F>)>::value>
+  struct InvokeHelper {
+    template <typename...Args>
+    constexpr auto operator()(F f, Args&&...args) CONST NOEXCEPT(
+     noexcept(EFLI_CXPRFWD_(f)(EFLI_CXPRFWD_(args)...)))
+     -> decltype(std::declval<F>()(std::declval<Args>()...)) {
+      return EFLI_CXPRFWD_(f)(EFLI_CXPRFWD_(args)...);
+    }
+  };
 
-    /// Member pointer specialization.
-    template <typename MP>
-    struct InvokeHelper<MP, false> {
-      template <typename Ret, class Base, typename U, typename...Args>
-      constexpr auto operator()(
-       Ret Base::* mp, U&& u, Args&&...args) CONST NOEXCEPT(
-        noexcept(MPInvokeHelper<Base, U>{}(mp, 
-         EFLI_CXPRFWD_(u), EFLI_CXPRFWD_(args)...)))
-       -> decltype(MPInvokeHelper<Base, U>{}(mp, 
-         EFLI_CXPRFWD_(u), EFLI_CXPRFWD_(args)...)) {
-        return MPInvokeHelper<Base, U>{}(mp, 
-          EFLI_CXPRFWD_(u), EFLI_CXPRFWD_(args)...);
-      }
-    };
-  } // namespace H1
+  /// Member pointer specialization.
+  template <typename MP>
+  struct InvokeHelper<MP, false> {
+    template <typename Ret, class Base, typename U, typename...Args>
+    constexpr auto operator()(
+     Ret Base::* mp, U&& u, Args&&...args) CONST NOEXCEPT(
+      noexcept(MPInvokeHelper<Base, U>{}(mp, 
+       EFLI_CXPRFWD_(u), EFLI_CXPRFWD_(args)...)))
+     -> decltype(MPInvokeHelper<Base, U>{}(mp, 
+       EFLI_CXPRFWD_(u), EFLI_CXPRFWD_(args)...)) {
+      return MPInvokeHelper<Base, U>{}(mp, 
+        EFLI_CXPRFWD_(u), EFLI_CXPRFWD_(args)...);
+    }
+  };
+} // namespace H1
 
-  template <typename F, typename...Args>
-  FICONSTEXPR auto invoke(F&& f, Args&&...args) NOEXCEPT(
-   noexcept(H1::InvokeHelper<F>{}(
-     EFLI_CXPRFWD_(f), cxpr_forward<Args>(args)...)))
-   -> decltype(H1::InvokeHelper<F>{}(
-     EFLI_CXPRFWD_(f), cxpr_forward<Args>(args)...)) {
-    return H1::InvokeHelper<F>{}(
-     // Use `cxpr_forward` directly here, 
-     // otherwise intellisense starts complaining.
-     EFLI_CXPRFWD_(f), cxpr_forward<Args>(args)...); 
-  }
+template <typename F, typename...Args>
+FICONSTEXPR auto invoke(F&& f, Args&&...args) NOEXCEPT(
+ noexcept(H1::InvokeHelper<F>{}(
+   EFLI_CXPRFWD_(f), cxpr_forward<Args>(args)...)))
+ -> decltype(H1::InvokeHelper<F>{}(
+   EFLI_CXPRFWD_(f), cxpr_forward<Args>(args)...)) {
+  return H1::InvokeHelper<F>{}(
+   // Use `cxpr_forward` directly here, 
+   // otherwise intellisense starts complaining.
+   EFLI_CXPRFWD_(f), cxpr_forward<Args>(args)...); 
+}
 } // namespace H
 
 template <typename F, typename...Args>

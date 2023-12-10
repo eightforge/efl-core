@@ -29,23 +29,23 @@
 
 namespace efl {
 namespace C {
-  /// Basic `std::aligned_storage`-esque container.
-  template <H::SzType Bytes, H::SzType Align>
-  struct BasicAlignedStorage {
-    alignas(Align) ubyte data[Bytes];
-  };
+/// Basic `std::aligned_storage`-esque container.
+template <H::SzType Bytes, H::SzType Align>
+struct BasicAlignedStorage {
+  alignas(Align) ubyte data[Bytes];
+};
 
-  /// Aligned storage for a specific type.
-  template <typename T>
-  using AlignedStorage = 
-    BasicAlignedStorage<sizeof(T), alignof(T)>;
+/// Aligned storage for a specific type.
+template <typename T>
+using AlignedStorage = 
+  BasicAlignedStorage<sizeof(T), alignof(T)>;
 
-  /// Aligned "union" for a set of types.
-  template <typename T, typename...TT>
-  struct AlignedUnion {
-    using baseType_ = std::aligned_union<0, T, TT...>;
-    alignas(baseType_) ubyte data[sizeof(baseType_)]; 
-  };
+/// Aligned "union" for a set of types.
+template <typename T, typename...TT>
+struct AlignedUnion {
+  using baseType_ = std::aligned_union<0, T, TT...>;
+  alignas(baseType_) ubyte data[sizeof(baseType_)]; 
+};
 } // namespace C
 } // namespace efl
 
