@@ -37,7 +37,7 @@ namespace H {
 /// Alias for `std::adopt_lock_t`.
 using AdoptLock = std::adopt_lock_t;
 /// Alias for `std::adopt_lock`.
-GLOBAL adopt_lock = std::adopt_lock;
+GLOBAL AdoptLock adopt_lock = std::adopt_lock;
 
 #ifdef __cpp_lib_scoped_lock
 /// Alias for `std::scoped_lock`.

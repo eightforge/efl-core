@@ -12,15 +12,18 @@ private:
   template <typename T>
   ALWAYS_INLINE static C::ibyte ID(T&& t) NOEXCEPT {
     std::cout << t << ' ';
+    return C::ibyte(0);
   }
 
   template <typename...TT>
-  ALWAYS_INLINE static void Ignore(TT&&...) NOEXCEPT { }
+  ALWAYS_INLINE static CXX11Void Ignore(TT&&...) NOEXCEPT {
+    CXX11Return();
+  }
 
 public:
   template <typename...TT>
-  constexpr void operator()(TT&&...tt) CONST {
-    ToApply::Ignore( 
+  void operator()(TT&&...tt) CONST {
+    ToApply::Ignore(
       ToApply::ID(EFLI_CXPRFWD_(tt))...);
     std::cout << std::endl;
   }
@@ -42,7 +45,8 @@ int main() {
   std::cout << "Tests:" << std::endl;
 
   auto tup = std::make_tuple("Hello!", ' ', "I ", 4, 'M', " G", 0, 'D');
-  XX11::apply(ToApply{}, tup);
+  HH::invoke(ToApply{}, "Hello!", ' ', "I ", 4, 'M', " G", 0, 'D');
+  HH::apply(ToApply{}, tup);
   
 #if CPPVER_LEAST(20)
   using Lit = HH::LitC<"Hello">;

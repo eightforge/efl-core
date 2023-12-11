@@ -92,45 +92,28 @@ using Mtx = H::Mtx<
 #ifdef __cpp_lib_scoped_lock
 template <typename...TT>
 using ScopedLock = ::std::scoped_lock<TT...>;
-namespace H { using ::std::apply; }
 #else
 namespace H {
-namespace xx11 {
-  template <typename F, typename Tup, H::SzType...II>
-  struct apply_i_result {
-    using type = invoke_result_t<F,
-      decltype(std::get<II>(Decl<Tup>()))...>;
+  struct ScopedUnlocker {
+  private:
+    template <typename MT>
+    ALWAYS_INLINE ibyte ID(MT& mt) {
+      mt.unlock();
+      return ibyte(0);
+    }
+
+    template <typename...CC>
+    ALWAYS_INLINE void Ignore(CC...) { }
+
+  public:
+    template <typename...MTs>
+    ALWAYS_INLINE void operator()(MTs&...mts) CONST {
+      (void)(ScopedUnlocker::Ignore(
+        ScopedUnlocker::ID(mts)...));
+    }
   };
 
-  template <typename F, typename Tup, H::SzType...II>
-  constexpr auto apply_i(
-   F&& f, Tup&& tup, SzSeq<II...>)
-   -> typename apply_i_result<F, Tup, II...>::type {
-    using ::efl::C::H::invoke;
-    return invoke(EFLI_CXPRFWD_(f),
-      std::get<II>(cxpr_forward<Tup>(tup))...);
-  }
-
-  template <typename F, typename Tup>
-  struct apply_result {
-    using RTup = MEflGTy(std::decay<Tup>);
-    static constexpr H::SzType 
-      seqValue = std::tuple_size<RTup>::value;
-    using type = decltype(apply_i(
-      Decl<F>(), Decl<Tup>(), MkSzSeq<seqValue>{}));
-  };
-
-  template <typename F, typename Tup>
-  using apply_result_t = MEflGTy(apply_result<F, Tup>);
-
-  template <typename F, typename Tup>
-  FICONSTEXPR auto apply(F&& f, Tup&& tup) 
-   -> apply_result_t<F, Tup> {
-    using Result = apply_result<F, Tup>;
-    return apply_i(EFLI_CXPRFWD_(f), 
-      EFLI_CXPRFWD_(tup), MkSzSeq<Result::seqValue>{});
-  }
-} // namespace xx11
+  GLOBAL ScopedUnlocker scoped_unlock { };
 } // namespace H
 
 /**
@@ -147,23 +130,49 @@ struct ScopedLock {
   }
 
   /// Non-owning management.
-  explicit ScopedLock(AdoptLock, MTs&...mts)
+  explicit ScopedLock(AdoptLock, MTs&...mts) NOEXCEPT
    : mtxs_(std::tie(mts...)) { }
   
-  ~ScopedLock() {
-
-  }
+  ScopedLock(const ScopedLock&) = delete;
+  ScopedLock& operator=(const ScopedLock&) = delete;
+  ~ScopedLock() { H::apply(H::scoped_unlock, mtxs_); }
 
 private:
   std::tuple<MTs&...> mtxs_;
 };
+
+/// Single item lock. Avoids tuples.
+template <typename MT>
+struct ScopedLock<MT> {
+  using mutex_type = MT;
+  explicit ScopedLock(MT& mt) : mtx_(mt) { mt.lock(); }
+  explicit ScopedLock(AdoptLock, MT& mt) NOEXCEPT : mtx_(mt) { }
+
+  ScopedLock(const ScopedLock&) = delete;
+  ScopedLock& operator=(const ScopedLock&) = delete;
+  ~ScopedLock() { mtx_.unlock(); }
+
+private:
+  MT& mtx_;
+};
+
+/// Empty lock, noop.
+template <>
+struct ScopedLock<> {
+  explicit ScopedLock() = default;
+  explicit ScopedLock(AdoptLock) NOEXCEPT { }
+  ScopedLock(const ScopedLock&) = delete;
+  ScopedLock& operator=(const ScopedLock&) = delete;
+  ~ScopedLock() = default;
+};
 #endif // std::scoped_lock (C++17)
 
 template <typename...MTs>
-inline auto make_scoped_lock(MTs&...mts) 
- -> ScopedLock<MEflGTy(std::decay<MTs>)...> {
-  using LockType = ScopedLock<MEflGTy(std::decay<MTs>)...>;
-  return LockType { mts... };
+using SScopedLock = ScopedLock<MEflGTy(std::decay<MTs>)...>;
+
+template <typename...MTs>
+SScopedLock<MTs...> make_scoped_lock(MTs&...mts) {
+  return SScopedLock<MTs...>(mts...);
 }
 
 } // namespace C

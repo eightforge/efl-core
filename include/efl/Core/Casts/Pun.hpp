@@ -66,7 +66,7 @@ template <typename T>
 struct PunHelper<T, T> {
   constexpr PunHelper(T& t) : t(t) { }
   FICONSTEXPR const T& get() CNOEXCEPT { 
-    return this->t; 
+    return t; 
   }
 private:
   T& t;

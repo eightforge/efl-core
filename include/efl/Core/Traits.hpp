@@ -31,6 +31,7 @@
 #include "Traits/Strings.hpp"   // BLitC<...>, LitC
 #include "Traits/Functions.hpp" // forward, move, construct, addressof ...
 #include "Traits/Invoke.hpp"    // invoke, is_invokable, invoke_result
+#include "Traits/Apply.hpp"     // apply, apply_result_t
 #include "Fundamental.hpp"
 
 namespace efl {

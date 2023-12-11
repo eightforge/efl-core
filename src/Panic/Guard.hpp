@@ -28,8 +28,22 @@
 #include "Internal.hpp"
 
 #if EFLI_PANICGUARD_ == 1
-# include <mutex>
+# include <Core/Mtx.hpp>
 
+# define EFLI_PANIC_LOCK_(...) \
+  ::efl::C::ScopedLock<::efl::C::Mtx> \
+    MEflUniqueVar(plock) { ::efl::C::panicSync() }
+
+namespace efl {
+namespace C {
+namespace {
+  inline Mtx& panicSync() {
+    static Mtx mtx { };
+    return mtx;
+  }
+} // namespace `anonymous`
+} // namespace C
+} // namespace efl
 #else
 
 #endif // Guards enabled?

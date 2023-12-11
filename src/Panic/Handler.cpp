@@ -19,5 +19,13 @@
 #include <Core/Panic/Handler.hpp>
 #include "Guard.hpp"
 
+void test() {
+  {
+    EFLI_PANIC_LOCK_();
+  }
+  {
+    EFLI_PANIC_LOCK_();
+  }
+}
 
 using namespace efl;

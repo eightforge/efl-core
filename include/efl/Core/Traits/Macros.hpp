@@ -40,6 +40,9 @@
 /// Wraps `core::void_t` for trait stuffs.
 #define MEflVoidT(...) ::efl::C::void_t<__VA_ARGS__>
 
+/// Creates an object with a "unique" name.
+#define MEflUniqueVar(name) EFLI_UNIQUE_VAR_(EFL_CAT(_v, name))
+
 /**
  * Creates a trait utilizing `void_t`.
  * The passed type is always `T`.
@@ -132,5 +135,13 @@
 #else
 # define EFLI_MUTABLE_CXPR_ 0
 #endif
+
+#if defined(__COUNTER__)
+# define EFLI_UNIQUE_VAR_(name) \
+  EFL_QCAT(name, COMPILER_LINE, _, __COUNTER__)
+#else
+# define EFLI_UNIQUE_VAR_(name) \
+  EFL_TCAT(name, __LINE__, _)
+#endif // Counter Check
 
 #endif // EFL_CORE_TRAITS_MACROS_HPP
