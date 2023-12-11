@@ -27,43 +27,12 @@
 #define EFL_CORE_OPTION_CXX14BASE_HPP
 
 #include <cassert>
-#include <efl/Core/Traits.hpp>
+#include <efl/Core/Fwd_/Option.hpp>
 
-namespace efl {
-namespace C {
-template <typename T>
-struct Option;
-
-/// Decays `T` before passing to `Option<...>`.
-template <typename T>
-using SOption = Option<MEflGTy(std::decay<T>)>;
-} // namespace C
-} // namespace efl
-
-#if CPPVER_LEAST(17)
-# include <optional>
-
-namespace efl::C {
-/// Alias for std::nullopt_t.
-using NullOpt = std::nullopt_t;
-/// Alias for std::nullopt.
-GLOBAL NullOpt nullopt = std::nullopt;
-} // namespace efl::C
-
-#else
-
+#if CPPVER_MOST(14)
 namespace efl {
 namespace C {
 namespace H {
-/// Type representing a null state.
-struct NullOpt {
-  enum class ENullOpt_ { enullopt_ };
-  explicit constexpr NullOpt(ENullOpt_) NOEXCEPT { }
-};
-
-/// Instantiation of the `NullOpt` type.
-GLOBAL NullOpt nullopt { NullOpt::ENullOpt_::enullopt_ };
-
 /// Storage for trivial objects.
 template <typename T, bool = 
   std::is_trivially_destructible<T>::value>

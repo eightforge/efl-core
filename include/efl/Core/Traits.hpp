@@ -218,7 +218,7 @@ template <xx20::StrLit S>
 GLOBAL H::LitC<S> Ls { };
 # endif // Literal interning (C++20)
 
-using config::bitsizeof;
+using conf::bitsizeof;
 #endif // Enable global traits (C++14)
 } // namespace C
 } // namespace efl

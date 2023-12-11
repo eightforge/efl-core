@@ -208,6 +208,13 @@ FICONSTEXPR auto tuple_fwd(TT&&...tt)
  -> Tuple<decltype(tt)...> {
   return { FWD(tt)... };
 }
+
+/// May be used for compatibility with older versions.
+template <typename...TT>
+FICONSTEXPR auto make_tuple(TT&&...tt)
+ -> Tuple<std::decay_t<TT>...> {
+  return { FWD(tt)... };
+}
 } // namespace efl::C
 
 //=== Std Traits ===//

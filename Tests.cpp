@@ -1,4 +1,30 @@
 #include "Tests.hpp"
+#include <efl/Core/Mtx.hpp>
+#include <efl/Core/Panic.hpp>
+#include <expected>
+
+namespace XX11 = HH::xx11;
+
+#define XXASSERT(cond) do { __glibcxx_assert_impl(cond); } while (false)
+
+struct ToApply {
+private:
+  template <typename T>
+  ALWAYS_INLINE static C::ibyte ID(T&& t) NOEXCEPT {
+    std::cout << t << ' ';
+  }
+
+  template <typename...TT>
+  ALWAYS_INLINE static void Ignore(TT&&...) NOEXCEPT { }
+
+public:
+  template <typename...TT>
+  constexpr void operator()(TT&&...tt) CONST {
+    ToApply::Ignore( 
+      ToApply::ID(EFLI_CXPRFWD_(tt))...);
+    std::cout << std::endl;
+  }
+};
 
 int main() {
 #if CPPVER_LEAST(14)
@@ -14,6 +40,9 @@ int main() {
 
   std::cout << std::boolalpha;
   std::cout << "Tests:" << std::endl;
+
+  auto tup = std::make_tuple("Hello!", ' ', "I ", 4, 'M', " G", 0, 'D');
+  XX11::apply(ToApply{}, tup);
   
 #if CPPVER_LEAST(20)
   using Lit = HH::LitC<"Hello">;

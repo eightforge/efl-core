@@ -54,7 +54,7 @@
 namespace efl {
   /// Shrinks symbol size.
   namespace C {
-    namespace config = ::efl::config;
+    namespace conf = ::efl::config;
     namespace H { }
   } // namespace C
   namespace core = C;

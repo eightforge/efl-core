@@ -26,6 +26,7 @@
 #define EFL_CORE_CASTS_HPP
 
 #include "Traits.hpp"
+#include "Casts/Pun.hpp"
 
 namespace efl {
 namespace C {
@@ -43,34 +44,18 @@ FICONSTEXPR bool bool_cast(T&& t) NOEXCEPT(
   return static_cast<bool>(EFLI_CXPRMV_(t));    
 }
 
-namespace H {
-  template <typename T, typename U>
-  union PunHelper {
-    PunHelper(U u) : u(u) { }
-    PunHelper(T t) : t(t) { }
-  public:
-    U u;
-    T t;
-  };
-
-  template <typename T>
-  union PunHelper {
-    PunHelper(T t) : t(t) { }
-  public:
-    T t;
-  };
-} // namespace H
-
 /// VERY DANGEROUS!!! Use only when absolutely necessary
 /// (eg. std::bit_cast, std::memcpy, etc. when possible).
 template <typename T, typename U>
-ALWAYS_INLINE T pun_cast(U&& u) {
-  using UType = MEflGTy(std::decay<U>);
-  MEflESAssert(!std::is_reference<T>::value);
-  MEflESAssert(sizeof(T) == sizeof(UType));
-  return H::PunHelper<T, UType>(u).t;
+EFLI_PUNCAST_CXPR_ T pun_cast(U u) {
+  MEflESAssert(std::is_trivially_copyable<T>::value &&
+    std::is_trivially_copyable<U>::value);
+  MEflESAssert(sizeof(T) == sizeof(U));
+  return H::PunHelper<T, U>(u).get();
 }
 } // namespace C
 } // namespace efl
+
+#undef EFLI_PUNCAST_CXPR_
 
 #endif // EFL_CORE_CASTS_HPP

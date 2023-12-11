@@ -29,6 +29,7 @@
 #define EFL_CORE_OPTION_HPP
 
 #include "AlignedStorage.hpp"
+#include "Fwd_/Option.hpp"
 #include "Option/Cxx14Base.hpp"
 
 #ifndef EFLI_OPASSERT_
@@ -83,9 +84,6 @@ Option(T) -> Option<T>;
 #else
 namespace efl {
 namespace C {
-using H::NullOpt;
-using H::nullopt;
-
 template <typename T>
 struct Option : private H::OptionBase<T> {
 private:

@@ -53,6 +53,13 @@ namespace H {
 namespace H1 {
 #  define EFLI_MPINV_(b, mp, args) \
   ((b).*mp)(EFLI_CXPRFWD_(args)...)
+#  define EFLI_WRAP_(...) \
+   EFLI_WRAP_T_(__VA_ARGS__)(__VA_ARGS__)
+#  define EFLI_WRAP_T_(...) \
+   InvokeWrapper<decltype(__VA_ARGS__)>
+
+  template <typename T>
+  struct InvokeWrapper { T t; };
 
   template <class Base, typename U,
     bool = std::is_base_of<Base, 
@@ -122,14 +129,28 @@ namespace H1 {
         EFLI_CXPRFWD_(u), EFLI_CXPRFWD_(args)...);
     }
   };
+
+  template <typename F, typename...Args>
+  using invoke_helper_t = decltype(
+    H1::InvokeHelper<F>{}(Decl<F>(), Decl<Args>()...));
+  
+  template <typename R, typename Cmp = void>
+  using enable_ret_nonequal = typename
+    std::enable_if<!std::is_same<R,
+      Cmp>::value, R>::type;
+  
+  template <typename R, typename Cmp = void>
+  using enable_ret_equal = typename
+    std::enable_if<std::is_same<R,
+      Cmp>::value, Cmp>::type;
 } // namespace H1
 
 template <typename F, typename...Args>
 FICONSTEXPR auto invoke(F&& f, Args&&...args) NOEXCEPT(
  noexcept(H1::InvokeHelper<F>{}(
    EFLI_CXPRFWD_(f), cxpr_forward<Args>(args)...)))
- -> decltype(H1::InvokeHelper<F>{}(
-   EFLI_CXPRFWD_(f), cxpr_forward<Args>(args)...)) {
+ -> H1::enable_ret_nonequal<
+   H1::invoke_helper_t<F, Args...>> {
   return H1::InvokeHelper<F>{}(
    // Use `cxpr_forward` directly here, 
    // otherwise intellisense starts complaining.

@@ -39,6 +39,14 @@
 #define EFLI_RMREF_(...) typename \
   ::std::remove_reference<__VA_ARGS__>::type
 
+#if __has_builtin(__builtin_addressof)
+# define EFLI_ADDRESSOF_(x) __builtin_addressof(x)
+# define EFLI_ADDRESSOF_ATTRIB_ NODISCARD FICONSTEXPR
+#else
+# define EFLI_ADDRESSOF_(x) std::addressof(x)
+# define EFLI_ADDRESSOF_ATTRIB_ NODISCARD ALWAYS_INLINE
+#endif
+
 namespace efl {
 namespace C {
 // TODO: Function traits
@@ -88,8 +96,8 @@ namespace H {
 
     template <typename T, 
       MEflEnableIf(HasOverloadedAddress<T>::value)>
-    NODISCARD ALWAYS_INLINE T* addressof(T& t)
-     NOEXCEPT { return std::addressof(t); }
+    EFLI_ADDRESSOF_ATTRIB_ T* addressof(T& t)
+     NOEXCEPT { return EFLI_ADDRESSOF_(t); }
 
     template <typename T>
     const T* addressof(const T&&) = delete;
@@ -105,5 +113,8 @@ namespace H {
 } // namespace H
 } // namespace C
 } // namespace efl
+
+#undef EFLI_ADDRESSOF_
+#undef EFLI_ADDRESSOF_ATTRIB_
 
 #endif // EFL_CORE_TRAITS_FUNCTIONS_HPP

@@ -1,4 +1,4 @@
-//===- Core/Traits/Tuple.hpp ----------------------------------------===//
+//===- Core/Traits/Macros.hpp ---------------------------------------===//
 //
 // Copyright (C) 2023 Eightfold
 //
@@ -13,11 +13,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 //     limitations under the License.
-//
-//===----------------------------------------------------------------===//
-//
-//  This file implements macros used for traits. 
-//  Macros are always prefixed with `MEfl` or `EFL_`.
 //
 //===----------------------------------------------------------------===//
 
@@ -74,6 +69,7 @@
 # define EFLI_OREQUIRES_(...)
 #endif
 
+// TODO: Add real tests for this.
 #if defined(COMPILER_GCC) || defined(COMPILER_CLANG)
 # define EFLI_UNWRAP_(obj, ...) \
   ({ if(!(obj).has_value()) return { __VA_ARGS__ }; (obj).unwrap(); })
@@ -106,7 +102,7 @@
   EFLI_HAS_TRAIT_V_(name) LLVM_POP()
 #else
 # define EFLI_HAS_TRAIT_(name) \
-  enum CAT(name, _fail) { EFLI_HAS_TRAIT_F_(name) = 0 }; \
+  enum EFL_CAT(name, _fail) { EFLI_HAS_TRAIT_F_(name) = 0 }; \
   static_assert(EFLI_HAS_TRAIT_F_(name), \
     "The trait " #name " requires a minimum of C++11.");
 # define EFLI_HAS_TRAIT_F_(name) \
@@ -116,18 +112,18 @@
 #if CPPVER_LEAST(11)
 // Empty trait base
 # define EFLI_HAS_TRAIT_B_(name) template <typename, typename = void> \
-  struct CAT(name, _impl) { static constexpr bool value = false; };
+  struct EFL_CAT(name, _impl) { static constexpr bool value = false; };
 // Trait deduction specialization
 # define EFLI_HAS_TRAIT_D_(name, ...) template <typename T> \
-  struct CAT(name, _impl)<T, MEflVoidT(__VA_ARGS__)>        \
+  struct EFL_CAT(name, _impl)<T, MEflVoidT(__VA_ARGS__)>        \
   { static constexpr bool value = true; };
 // Trait value
 # if CPPVER_LEAST(20)
 #  define EFLI_HAS_TRAIT_V_(name) template <typename T> \
-  concept name = CAT(name, _impl)<T>::value;
+  concept name = EFL_CAT(name, _impl)<T>::value;
 # else
 #  define EFLI_HAS_TRAIT_V_(name) template <typename T> \
-  GLOBAL bool name = CAT(name, _impl)<T>::value;
+  GLOBAL bool name = EFL_CAT(name, _impl)<T>::value;
 # endif // Concept check (C++20)
 #endif // Underlying trait check
 
