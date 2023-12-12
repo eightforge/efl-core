@@ -44,7 +44,7 @@ template <typename T, typename U>
 struct PunHelper {
   constexpr PunHelper(U& u) : u(u) { }
   FICONSTEXPR T get() CNOEXCEPT { 
-    return __builtin_bit_cast(T, this->u); 
+    return __builtin_bit_cast(T, u); 
   }
 private:
   U& u;
@@ -74,5 +74,7 @@ private:
 } // namespace H
 } // namespace C
 } // namespace efl
+
+#undef EFLI_PUNCAST_CXPR_
 
 #endif // EFL_CORE_CASTS_PUN_HPP

@@ -28,6 +28,10 @@
 #include "Functions.hpp"
 #include "StdInt.hpp"
 
+/*
+ * These are useful when using constexpr functions,
+ * since it allows `invoke` to work correctly in C++11.
+ */
 #if CPPVER_MOST(11)
 # define CXX11Void \
   ::efl::C::xx11::WrapResult<void>
@@ -60,9 +64,12 @@ GLOBAL bool is_invokable_v = is_invokable<F, Args...>::value;
 //=== invoke(...) ===//
 namespace H {
 namespace H1 {
-#  define EFLI_MPINV_(b, mp, args) \
+// Not strictly necessary, but looks better...
+# define EFLI_MPINV_(b, mp, args) \
   ((b).*mp)(EFLI_CXPRFWD_(args)...)
 
+  // Used when the first argument can be upcast to `Base`.
+  // Essentially just "normal" invoations.
   template <class Base, typename U,
     bool = std::is_base_of<Base, 
       MEflGTy(std::decay<U>)>::value>
@@ -75,6 +82,9 @@ namespace H1 {
       return EFLI_MPINV_(EFLI_CXPRFWD_(u), mp, args);
     }
 
+    // For the special case of `Ret` not being invokable.
+    // Not sure why this isn't a compilation error, but
+    // I'd rather be consistent with the STL.
     template <typename Ret, typename...Args>
     constexpr MEflGTy(std::enable_if<
       !is_invokable<Ret, Args...>::value, Ret>)
@@ -83,6 +93,9 @@ namespace H1 {
     }
   };
 
+  // Used when the first argument cannot be upcast.
+  // The assumption is that the argument is a wrapper,
+  // and a valid type can be accessed with `operator*`.
   template <class Base, typename U>
   struct MPInvokeHelper<Base, U, false> {
     template <typename Ret, typename...Args>
@@ -93,6 +106,7 @@ namespace H1 {
       return EFLI_MPINV_((*EFLI_CXPRFWD_(u)), mp, args);
     }
 
+    // Same as the default instantiation.
     template <typename Ret, typename...Args>
     constexpr MEflGTy(std::enable_if<
       !is_invokable<Ret, Args...>::value, Ret>)
@@ -105,6 +119,7 @@ namespace H1 {
 
   //=== Direct Invoke Helper ===//
 
+  // Normal dispatch.
   template <typename F, 
     bool = !std::is_member_pointer<
       MEflGTy(std::decay<F>)>::value>
@@ -117,7 +132,8 @@ namespace H1 {
     }
   };
 
-  /// Member pointer specialization.
+  // Member pointer specialization.
+  // Dispatch code is so ugly
   template <typename MP>
   struct InvokeHelper<MP, false> {
     template <typename Ret, class Base, typename U, typename...Args>
@@ -133,6 +149,16 @@ namespace H1 {
   };
 } // namespace H1
 
+/**
+ * @brief Invokes a callable object with the given arguments.
+ * 
+ * This function does way more than you would expect.
+ * If `f` is directly invokable (eg. you can do `f(args...)`),
+ * it stops there, but if `f` is a member pointer, we have to
+ * figure out if the first argument is derived from the type
+ * it's bound to, and if the type it returns on access is
+ * callable or not.
+ */
 template <typename F, typename...Args>
 FICONSTEXPR auto invoke(F&& f, Args&&...args) NOEXCEPT(
  noexcept(H1::InvokeHelper<F>{}(
@@ -147,10 +173,10 @@ FICONSTEXPR auto invoke(F&& f, Args&&...args) NOEXCEPT(
 } // namespace H
 
 namespace xx11 {
+  // Used in C++11 for `constexpr` functions.
   template <typename T>
-  struct WrapResult {
-    using type = T;
-  };
+  struct WrapResult 
+  { using type = T; };
 } // namespace xx11
 
 template <typename F, typename...Args>

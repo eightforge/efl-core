@@ -32,6 +32,9 @@
 # include <tuple>
 #endif
 
+/// Creates a `ScopedLock` capturing the passed arguments.
+#define MEflLock(...) EFLI_SCOPED_LOCK_(__VA_ARGS__)
+
 namespace efl {
 namespace C {
 namespace H {
@@ -59,8 +62,11 @@ namespace H {
     typename MtxHasNativeHandle::HandleType;
 
   /// Wrapper around `DirectMutex`.
-  template <bool HasNativeHandle>
-  struct Mtx : DirectMutex {
+  template <> struct Mtx<true> : DirectMutex {
+    FICONSTEXPR static bool HasNativeHandle() {
+      return true;
+    }
+
     ALWAYS_INLINE bool tryLock() {
       return DirectMutex::try_lock();
     }
@@ -73,8 +79,11 @@ namespace H {
 
   /// Wrapper around `DirectMutex`.
   /// `native_handle()` does NOT exist.
-  template <>
-  struct Mtx<false> : DirectMutex {
+  template <> struct Mtx<false> : DirectMutex {
+    FICONSTEXPR static bool HasNativeHandle() {
+      return false;
+    }
+
     ALWAYS_INLINE bool tryLock() {
       return DirectMutex::try_lock();
     }
@@ -124,7 +133,8 @@ namespace H {
 template <typename...MTs>
 struct ScopedLock {
   /// Acquires ownership.
-  explicit ScopedLock(MTs&...mts)
+  ALWAYS_INLINE explicit 
+   ScopedLock(MTs&...mts)
    : mtxs_(std::tie(mts...)) {
     std::lock(mts...);
   }
@@ -145,7 +155,7 @@ private:
 template <typename MT>
 struct ScopedLock<MT> {
   using mutex_type = MT;
-  explicit ScopedLock(MT& mt) : mtx_(mt) { mt.lock(); }
+  ALWAYS_INLINE explicit ScopedLock(MT& mt) : mtx_(mt) { mt.lock(); }
   explicit ScopedLock(AdoptLock, MT& mt) NOEXCEPT : mtx_(mt) { }
 
   ScopedLock(const ScopedLock&) = delete;
@@ -167,14 +177,15 @@ struct ScopedLock<> {
 };
 #endif // std::scoped_lock (C++17)
 
-template <typename...MTs>
-using SScopedLock = ScopedLock<MEflGTy(std::decay<MTs>)...>;
+namespace H {
+  template <typename...MTs>
+  using SScopedLock = ScopedLock<MEflGTy(std::decay<MTs>)...>;
 
-template <typename...MTs>
-SScopedLock<MTs...> make_scoped_lock(MTs&...mts) {
-  return SScopedLock<MTs...>(mts...);
-}
-
+  template <typename...MTs>
+  SScopedLock<MTs...> make_scoped_lock_(MTs&...mts) {
+    return SScopedLock<MTs...>(mts...);
+  }
+} // namespace H
 } // namespace C
 } // namespace efl
 

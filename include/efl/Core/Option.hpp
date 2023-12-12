@@ -29,16 +29,9 @@
 #define EFL_CORE_OPTION_HPP
 
 #include "AlignedStorage.hpp"
+#include "Builtins_.hpp"
 #include "Fwd_/Option.hpp"
 #include "Option/Cxx14Base.hpp"
-
-#ifndef EFLI_OPASSERT_
-# if NDEBUG
-#  define EFLI_OPASSERT_(...)
-# else
-#  define EFLI_OPASSERT_(...) assert(__VA_ARGS__)
-# endif
-#endif
 
 #if EFLI_MUTABLE_CXPR_ == 1
 # define EFLI_OPMUTCXPR_ constexpr
@@ -115,7 +108,7 @@ private:
   template <typename...Args>
   void initialize(Args&&...args) 
    NOEXCEPT(noexcept(type_(FWD(args)...))) {
-    EFLI_OPASSERT_(!this->active());
+    EFLI_DBGASSERT_(!this->active());
     (void) H::xx11::construct(
       pdata(), FWD(args)...);
     H::OptionBase<T>::active_ = true;
@@ -263,45 +256,48 @@ public:
   }
 
   ALWAYS_INLINE EFLI_OPMUTCXPR_ type_& unwrap()& {
-    EFLI_OPASSERT_(this->active());
+    EFLI_CXPRASSERT_(this->active());
     return H::OptionBase<T>::data_.data_;
   }
 
   EFLI_OPMUTCXPR_ type_&& unwrap()&& {
-    EFLI_OPASSERT_(this->active());
+    EFLI_CXPRASSERT_(this->active());
     return EFLI_CXPRMV_(
       H::OptionBase<T>::data_.data_);
   }
 
   FICONSTEXPR const T& unwrap() CONST& {
-    // TODO: Add check
+    EFLI_CXPRASSERT_(this->active())
     return H::OptionBase<T>::data_.data_;
   }
 
   EFLI_OPMUTCXPR_ type_* operator->() {
-    EFLI_OPASSERT_(this->active());
+    EFLI_DBGASSERT_(this->active());
     return this->pdata();
   }
 
   FICONSTEXPR const T* operator->() CONST {
+    EFLI_DBGASSERT_(this->active());
     return this->pdata();
   }
 
   EFLI_OPMUTCXPR_ type_& operator*()& {
-    EFLI_OPASSERT_(this->active());
+    EFLI_DBGASSERT_(this->active());
     return this->unwrap();
   }
 
   EFLI_OPMUTCXPR_ type_&& operator*()&& {
-    EFLI_OPASSERT_(this->active());
+    EFLI_DBGASSERT_(this->active());
     return EFLI_CXPRMV_(this->unwrap());
   }
 
   constexpr const T& operator*() CONST& {
+    EFLI_DBGASSERT_(this->active());
     return this->unwrap();
   }
 
   constexpr const T&& operator*() CONST&& {
+    EFLI_DBGASSERT_(this->active());
     return EFLI_CXPRMV_(this->unwrap());
   }
 
@@ -375,7 +371,6 @@ public:
 } // namespace efl
 #endif
 
-#undef EFLI_OPASSERT_
 #undef EFLI_OPMUTCXPR_
 
 #include "Option/Compare.hpp"

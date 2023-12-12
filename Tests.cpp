@@ -2,6 +2,7 @@
 #include <efl/Core/Mtx.hpp>
 #include <efl/Core/Panic.hpp>
 #include <expected>
+#include <string_view>
 
 namespace XX11 = HH::xx11;
 
@@ -45,7 +46,6 @@ int main() {
   std::cout << "Tests:" << std::endl;
 
   auto tup = std::make_tuple("Hello!", ' ', "I ", 4, 'M', " G", 0, 'D');
-  HH::invoke(ToApply{}, "Hello!", ' ', "I ", 4, 'M', " G", 0, 'D');
   HH::apply(ToApply{}, tup);
   
 #if CPPVER_LEAST(20)

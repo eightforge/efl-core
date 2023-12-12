@@ -26,7 +26,7 @@
 #define EFL_CORE_PANIC_HANDLER_HPP
 
 #include <efl/Core/Fundamental.hpp>
-#include "Macros.hpp"
+#include <efl/Core/Builtins_.hpp>
 
 namespace efl {
 namespace C {

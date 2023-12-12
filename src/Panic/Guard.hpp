@@ -29,7 +29,7 @@
 
 #if EFLI_PANICGUARD_ == 1
 # include <Core/Mtx.hpp>
-
+/// Creates a lock in a multithreaded environment.
 # define EFLI_PANIC_LOCK_(...) \
   ::efl::C::ScopedLock<::efl::C::Mtx> \
     MEflUniqueVar(plock) { ::efl::C::panicSync() }
@@ -45,7 +45,8 @@ namespace {
 } // namespace C
 } // namespace efl
 #else
-
+/// Does nothing.
+# define EFLI_PANIC_LOCK_(...)
 #endif // Guards enabled?
 
 #endif // EFLI_CORE_PANIC_GUARD_HPP

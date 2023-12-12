@@ -42,12 +42,8 @@
 # endif
 #endif
 
-#define EFLI_SPECIALIZED_SEQ_N_ 0
-
 /// Check if compiler has `__make_integer_seq`.
 #define MEflHasMkISeqBuiltin() ELFI_MKINTSEQ_BUILTIN_
-/// Get the number of specialized sequence levels.
-#define MEflISeqSpecializedN() EFLI_SPECIALIZED_SEQ_N_
 
 namespace efl {
 namespace C {
@@ -153,5 +149,7 @@ using SzSeqFor = MkSzSeq<sizeof...(TT)>;
 } // namespace H
 } // namespace C
 } // namespace efl
+
+#undef ELFI_MKINTSEQ_BUILTIN_
 
 #endif // EFL_CORE_TRAITS_STDINT_HPP
