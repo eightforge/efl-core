@@ -65,7 +65,7 @@ GLOBAL bool is_invokable_v = is_invokable<F, Args...>::value;
 namespace H {
 namespace H1 {
 // Not strictly necessary, but looks better...
-# define EFLI_MPINV_(b, mp, args) \
+# define EFLI_MEMPTRINV_(b, mp, args) \
   ((b).*mp)(EFLI_CXPRFWD_(args)...)
 
   // Used when the first argument can be upcast to `Base`.
@@ -77,9 +77,9 @@ namespace H1 {
     template <typename Ret, typename...Args>
     constexpr auto operator()(
      Ret Base::* mp, U u, Args&&...args) CONST NOEXCEPT(
-     noexcept(EFLI_MPINV_(EFLI_CXPRFWD_(u), mp, args)))
-     -> decltype(EFLI_MPINV_(std::declval<U>(), mp, args)) {
-      return EFLI_MPINV_(EFLI_CXPRFWD_(u), mp, args);
+     noexcept(EFLI_MEMPTRINV_(EFLI_CXPRFWD_(u), mp, args)))
+     -> decltype(EFLI_MEMPTRINV_(std::declval<U>(), mp, args)) {
+      return EFLI_MEMPTRINV_(EFLI_CXPRFWD_(u), mp, args);
     }
 
     // For the special case of `Ret` not being invokable.
@@ -101,9 +101,9 @@ namespace H1 {
     template <typename Ret, typename...Args>
     constexpr auto operator()(
      Ret Base::* mp, U u, Args&&...args) CONST NOEXCEPT(
-     noexcept(EFLI_MPINV_((*EFLI_CXPRFWD_(u)), mp, args)))
-     -> decltype(EFLI_MPINV_((*std::declval<U>()), mp, args)) {
-      return EFLI_MPINV_((*EFLI_CXPRFWD_(u)), mp, args);
+     noexcept(EFLI_MEMPTRINV_((*EFLI_CXPRFWD_(u)), mp, args)))
+     -> decltype(EFLI_MEMPTRINV_((*std::declval<U>()), mp, args)) {
+      return EFLI_MEMPTRINV_((*EFLI_CXPRFWD_(u)), mp, args);
     }
 
     // Same as the default instantiation.
@@ -115,7 +115,7 @@ namespace H1 {
     }
   };
 
-#  undef EFLI_MPINV_
+#  undef EFLI_MEMPTRINV_
 
   //=== Direct Invoke Helper ===//
 
