@@ -65,12 +65,12 @@ private:
 template <typename T>
 struct PunHelper<T, T> {
   constexpr PunHelper(T& t) : t(t) { }
-  FICONSTEXPR const T& get() CNOEXCEPT { 
-    return t; 
-  }
+  FICONSTEXPR const T& get() CNOEXCEPT 
+  { return t; }
 private:
   T& t;
 };
+
 } // namespace H
 } // namespace C
 } // namespace efl

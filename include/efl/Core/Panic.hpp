@@ -27,7 +27,8 @@
 #ifndef EFL_CORE_PANIC_HPP
 #define EFL_CORE_PANIC_HPP
 
-#include "Panic/Macros.hpp"
+// #include "Panic/Macros.hpp"
+#include "Builtins_.hpp"
 #include "Panic/Handler.hpp"
 
 #endif // EFL_CORE_PANIC_HPP

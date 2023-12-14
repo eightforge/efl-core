@@ -52,13 +52,23 @@
 #endif
 
 namespace efl {
-  /// Shrinks symbol size.
-  namespace C {
-    namespace conf = ::efl::config;
-    namespace H { }
-  } // namespace C
-  namespace core = C;
-  namespace CH = C::H;
+/// Core, chrinks symbol size.
+namespace C {
+  namespace H {
+    namespace xx11 { }
+    namespace xx14 { }
+    namespace xx17 { }
+    namespace xx20 { }
+  } // namespace H
+  namespace conf = ::efl::config;
+  namespace X11 = H::xx11;
+  namespace X14 = H::xx14;
+  namespace X17 = H::xx17;
+  namespace X20 = H::xx20;
+} // namespace C
+// External core alias.
+namespace core = C;
+namespace CH = C::H;
 } // namespace efl
 
 #endif // EFL_CORECOMMON_CONFIGCACHE_HPP

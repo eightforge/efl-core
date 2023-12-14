@@ -34,7 +34,7 @@
  */
 #if CPPVER_MOST(11)
 # define CXX11Void \
-  ::efl::C::xx11::WrapResult<void>
+  ::efl::C::X11::WrapResult<void>
 # define CXX11Return() return { }
 #else
 # define CXX11Void void
@@ -172,12 +172,14 @@ FICONSTEXPR auto invoke(F&& f, Args&&...args) NOEXCEPT(
 }
 } // namespace H
 
+namespace H {
 namespace xx11 {
   // Used in C++11 for `constexpr` functions.
   template <typename T>
   struct WrapResult 
   { using type = T; };
 } // namespace xx11
+} // namespace H
 
 template <typename F, typename...Args>
 using invoke_result_t = decltype(

@@ -28,6 +28,12 @@
 #include "Traits.hpp"
 #include "Casts/Pun.hpp"
 
+#if EFLI_BIT_CAST_ == 1
+# define EFLI_PUNCAST_CXPR_ constexpr
+#else
+# define EFLI_PUNCAST_CXPR_
+#endif
+
 namespace efl {
 namespace C {
 /// `static_cast`s a value to `bool`.

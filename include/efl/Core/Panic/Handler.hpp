@@ -42,6 +42,8 @@ struct PanicBase {
 
 };
 
+void panic_();
+
 } // namespace C
 } // namespace efl
 

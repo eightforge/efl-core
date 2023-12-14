@@ -21,6 +21,9 @@
 #ifndef EFLI_CORE_PANIC_INTERNAL_HPP
 #define EFLI_CORE_PANIC_INTERNAL_HPP
 
+#include <exception>
+#include <Core/Builtins_.hpp>
+
 #ifndef EFLI_PANICGUARD_
 # define EFLI_PANICGUARD_ 0
 #endif // Panic Guard
@@ -28,5 +31,23 @@
 #ifndef EFLI_PANICSINGLE_
 # define EFLI_PANICSINGLE_ 0
 #endif
+
+namespace std {
+#if defined(EFLI_STL_LIBCPP_)
+
+#elif defined (EFLI_STL_GLIBCXX_)
+
+
+#endif // STL Check
+} // namespace std
+
+namespace efl {
+namespace C {
+/// Alias for `std::terminate_handler`.
+using THandler = std::terminate_handler;
+/// Alias for `std::exception_ptr`.
+using ExPtr = std::exception_ptr;
+} // namespace C
+} // namespace efl
 
 #endif // EFLI_CORE_PANIC_INTERNAL_HPP

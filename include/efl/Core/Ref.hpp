@@ -38,14 +38,14 @@
 namespace efl {
 namespace C {
 namespace H {
-namespace H1 {
+namespace ref_ {
   // Helper function for `Ref`.
   template <typename T>
   FICONSTEXPR T& ref_hcast(T& t) { return t; }
 
   template <typename T>
   void ref_hcast(T&& t) = delete;
-} // namespace H1
+} // namespace ref_
 } // namespace H
 
 template <typename T>
@@ -54,12 +54,12 @@ struct Ref {
   Ref() = delete;
 
   template <typename U, typename = decltype(
-    H::H1::ref_hcast<T>(std::declval<U>())),
+    H::ref_::ref_hcast<T>(std::declval<U>())),
     MEflEnableIf(!std::is_same<Ref, remove_cvref_t<U>>::value)>
   constexpr Ref(U&& u) NOEXCEPT(
-   noexcept(H::H1::ref_hcast<T>(EFLI_CXPRFWD_(u)))) 
+   noexcept(H::ref_::ref_hcast<T>(EFLI_CXPRFWD_(u)))) 
    : data_(H::xx11::addressof(
-    H::H1::ref_hcast(EFLI_CXPRFWD_(u)))) { }
+    H::ref_::ref_hcast(EFLI_CXPRFWD_(u)))) { }
   
   Ref(const Ref&) NOEXCEPT = default;
   Ref& operator=(const Ref& lhs) NOEXCEPT = default;

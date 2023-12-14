@@ -33,10 +33,20 @@
 #include "Fwd_/Option.hpp"
 #include "Option/Cxx14Base.hpp"
 
+LLVM_IGNORED("-Wc++14-extensions")
+GNU_IGNORED("-Wc++14-extensions")
+
 #if EFLI_MUTABLE_CXPR_ == 1
 # define EFLI_OPMUTCXPR_ constexpr
 #else
 # define EFLI_OPMUTCXPR_
+#endif
+
+#if CPPVER_LEAST(14) || (defined(COMPILER_GCC) || defined(COMPILER_CLANG))
+# define EFLI_OPCXPRASSERT_(...) \
+  EFLI_DBGASSERT_(__VA_ARGS__)
+#else
+# define EFLI_OPCXPRASSERT_(...) (void)(0)
 #endif
 
 #if CPPVER_LEAST(17)
@@ -267,7 +277,7 @@ public:
   }
 
   FICONSTEXPR const T& unwrap() CONST& {
-    EFLI_CXPRASSERT_(this->active())
+    EFLI_OPCXPRASSERT_(this->active());
     return H::OptionBase<T>::data_.data_;
   }
 
@@ -277,7 +287,7 @@ public:
   }
 
   FICONSTEXPR const T* operator->() CONST {
-    EFLI_DBGASSERT_(this->active());
+    EFLI_OPCXPRASSERT_(this->active());
     return this->pdata();
   }
 
@@ -292,12 +302,12 @@ public:
   }
 
   constexpr const T& operator*() CONST& {
-    EFLI_DBGASSERT_(this->active());
+    EFLI_OPCXPRASSERT_(this->active());
     return this->unwrap();
   }
 
   constexpr const T&& operator*() CONST&& {
-    EFLI_DBGASSERT_(this->active());
+    EFLI_OPCXPRASSERT_(this->active());
     return EFLI_CXPRMV_(this->unwrap());
   }
 
@@ -371,9 +381,13 @@ public:
 } // namespace efl
 #endif
 
+#undef EFLI_OPCXPRASSERT_
 #undef EFLI_OPMUTCXPR_
 
 #include "Option/Compare.hpp"
 #include "Option/Helpers.hpp"
+
+GNU_POP()
+LLVM_POP()
 
 #endif // EFL_CORE_OPTION_HPP

@@ -42,6 +42,8 @@ int main() {
   MEflESAssert(!C::is_invokable<int, float, void*>::value);
   MEflESAssert(C::is_invokable<Z, float, void*>::value);
 
+  C::panic_();
+
   std::cout << std::boolalpha;
   std::cout << "Tests:" << std::endl;
 

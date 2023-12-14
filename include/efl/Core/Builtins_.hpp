@@ -27,16 +27,16 @@
 
 #include <CoreCommon/ConfigCache.hpp>
 #if __has_include(<bits/c++config.h>)
-# define EFLI_PANIC_GLIBCXX_ 1
+# define EFLI_STL_GLIBCXX_ 1
 #elif __has_include(<__config>)
-# define EFLI_PANIC_LIBCPP_ 1
+# define EFLI_STL_LIBCPP_ 1
 #endif
 
 #if (__cpp_if_consteval >= 202106L)
 # include <type_traits>
 # define EFLI_HAS_CXPREVAL_ 1
 # define EFLI_CXPREVAL_() ::std::is_constant_evaluated()
-#elif defined(EFLI_PANIC_GLIBCXX_)
+#elif defined(EFLI_STL_GLIBCXX_)
 # include <bits/c++config.h>
 # if _GLIBCXX_HAVE_IS_CONSTANT_EVALUATED
 #  define EFLI_HAS_CXPREVAL_ 1
@@ -63,15 +63,15 @@
 # define EFLI_CORE_EXPECT_(expr, val) 
   __builtin_expect((expr), val)
 #elif CPPVER_LEAST(20)
-# define EFLI_CORE_EXPECT_(expr, val) ::efl::C::xx20:: \
+# define EFLI_CORE_EXPECT_(expr, val) ::efl::C::X20:: \
   expect_outcome_<decltype((expr)), (val)>((expr))
-namespace efl::C::xx20 {
+namespace efl::C::H::xx20 {
   template <typename T, T V>
   FICONSTEXPR T expect_outcome_(T in) {
     if(in == V) [[likely]] { return V; }
     else [[unlikely]] { return in; }
   }
-} // namespace efl::C::xx20   
+} // namespace efl::C::H::xx20   
 #else
 # define EFLI_CORE_EXPECT_FALLBACK_ 1
 # define EFLI_CORE_EXPECT_(expr, val) \
@@ -88,7 +88,7 @@ namespace efl::C::xx20 {
   EFLI_TEXPECT_(bool, 0, (__VA_ARGS__))
 
 // Clang has optimization issues with `@llvm.assume`, so
-// we just don't use it it. If it is fixed we will remove the check.
+// we just don't use it. If it is fixed we will remove the check.
 #if !defined(COMPILER_CLANG) && __has_builtin(__builtin_assume)
 # define EFLI_CORE_ASSUME_(expr) \
   (__builtin_assume(static_cast<bool>(expr)))
@@ -99,6 +99,8 @@ namespace efl::C::xx20 {
 # define EFLI_CORE_ASSUME_(expr) \
   do { if(!(expr)) __assume(false); } while(0)
 #elif !defined(EFLI_CORE_EXPECT_FALLBACK_)
+// Does this even do anything?
+// It is marked noreturn, but I'm not really sure.
 # define EFLI_CORE_ASSUME_(expr) \
   do { if(EFLI_EXPECT_FALSE_(!(expr))) \
     ::efl::config::unreachable(); } while(0)
@@ -109,11 +111,16 @@ namespace efl::C::xx20 {
 //=== Implementation ===//
 
 /// Constexpr-able assert.
-#define EFLI_CXPRASSERT_(...) \
+#if CPPVER_LEAST(14)
+# define EFLI_CXPRASSERT_(...) \
   do { EFLI_CXPRASSERT_IMPL_(bool(__VA_ARGS__)) } while(0)
+#else
+# define EFLI_CXPRASSERT_(...) \
+  EFLI_CXPRASSERT_IMPL_(bool(__VA_ARGS__))
+#endif
 
 // Explicitly constexpr assert & constexpr-able assert impl.
-#if EFLI_HAS_CXPREVAL_ == 1
+#if (EFLI_HAS_CXPREVAL_ == 1) && CPPVER_LEAST(14)
 # define EFLI_XCXPRASSERT_(...) \
   EFLI_CXPRASSERT_(__VA_ARGS__)
 # define EFLI_CXPRASSERT_IMPL_(expr) \
@@ -122,24 +129,33 @@ namespace efl::C::xx20 {
   else if(EFLI_EXPECT_FALSE_( \
     !EFLI_CXPREVAL_())) assert(expr);
 #elif CPPVER_LEAST(14)
-# define EFLI_XCXPRASSERT_(...) do { } while(0)
+# define EFLI_XCXPRASSERT_(...) (void)(0)
 # define EFLI_CXPRASSERT_IMPL_(...) \
   if(EFLI_EXPECT_FALSE_(expr)) assert(false);
 #else
-# define EFLI_XCXPRASSERT_(...) do { } while(0)
-# define EFLI_CXPRASSERT_IMPL_(...) \
+# define EFLI_XCXPRASSERT_(...) (void)(0)
+# define EFLI_CXPRASSERT_IMPL_(expr) \
   (EFLI_EXPECT_TRUE_(expr) ? (void)(0) \
     : [](){assert(false);}());
 #endif
 
 // TODO: Custom assert?
 #if COMPILER_DEBUG == 1
-# include <cassert>
-# define EFLI_DBGASSERT_(...) assert((__VA_ARGS__))
+# define EFLI_DBGASSERT_(...) \
+  EFLI_CXPRASSERT_(__VA_ARGS__)
 #else
 # define EFLI_DBGASSERT_(...) \
   EFLI_XCXPRASSERT_(__VA_ARGS__)
 #endif // Debug Check
 
+// TODO: EFLI_QABORT_
+#if defined(COMPILER_GCC) || \
+ defined(COMPILER_ICC) || defined(COMPILER_CLANG)
+# define EFLI_QABORT_() __builtin_trap();
+#elif defined(COMPILER_MSVC)
+# define EFLI_QABORT_() __debugbreak()
+#else
+# define EFLI_QABORT_() ::efl::config::unreachable()
+#endif
 
 #endif // EFLI_CORE_BUILTINS__HPP

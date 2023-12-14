@@ -29,12 +29,13 @@
 #include <type_traits>
 #include <memory>
 #include "Macros.hpp"
+#include "StdInt.hpp"
 
 // constexpr std::forward pre C++14 
-#define EFLI_CXPRFWD_(...) ::efl::C::H:: \
+#define EFLI_CXPRFWD_(...) ::efl::CH:: \
   cxpr_forward<decltype(__VA_ARGS__)>(__VA_ARGS__)
 // constexpr std::move pre C++14 
-#define EFLI_CXPRMV_(...) ::efl::C::H::cxpr_move(__VA_ARGS__)
+#define EFLI_CXPRMV_(...) ::efl::CH::cxpr_move(__VA_ARGS__)
 // typename std::remove_reference<...>::type
 #define EFLI_RMREF_(...) typename \
   ::std::remove_reference<__VA_ARGS__>::type
