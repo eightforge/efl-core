@@ -41,11 +41,11 @@ union OptionStorage {
 
   template <typename...TT>
   constexpr OptionStorage(in_place_t, TT&&...tt)
-   : data_(EFLI_CXPRFWD_(tt)...) { }
+   : data_(cxpr_forward<TT>(tt)...) { }
   
   template <typename U, typename...TT>
   constexpr OptionStorage(InitList<U> il, TT&&...tt)
-   : data_(il, EFLI_CXPRFWD_(tt)...) { }
+   : data_(il, cxpr_forward<TT>(tt)...) { }
 
 public:
   Dummy empty_;
@@ -60,11 +60,11 @@ union OptionStorage<T, false> {
 
   template <typename...TT>
   constexpr OptionStorage(in_place_t, TT&&...tt)
-   : data_(EFLI_CXPRFWD_(tt)...) { }
+   : data_(cxpr_forward<TT>(tt)...) { }
   
   template <typename U, typename...TT>
   constexpr OptionStorage(InitList<U> il, TT&&...tt)
-   : data_(il, EFLI_CXPRFWD_(tt)...) { }
+   : data_(il, cxpr_forward<TT>(tt)...) { }
 
 public:
   Dummy empty_;
@@ -84,18 +84,18 @@ public:
    : data_(in_place, t), active_(true) { }
   
   explicit constexpr OptionBase(T&& t) 
-   : data_(in_place, EFLI_CXPRMV_(t)), active_(true) { }
+   : data_(in_place, cxpr_move(t)), active_(true) { }
 
   template <typename...TT>
   constexpr OptionBase(
     in_place_t ip, TT&&...tt)
-   : data_(ip, EFLI_CXPRFWD_(tt)...), 
+   : data_(ip, cxpr_forward<TT>(tt)...), 
     active_(true) { }
 
   template <typename U, typename...TT>
   constexpr OptionBase(
     InitList<U> il, TT&&...tt)
-   : data_(il, EFLI_CXPRFWD_(tt)...), 
+   : data_(il, cxpr_forward<TT>(tt)...), 
     active_(true) { }
   
   ~OptionBase() = default;
@@ -121,18 +121,18 @@ public:
    : data_(in_place, t), active_(true) { }
   
   explicit constexpr OptionBase(T&& t) 
-   : data_(in_place, EFLI_CXPRMV_(t)), active_(true) { }
+   : data_(in_place, cxpr_move(t)), active_(true) { }
 
   template <typename...TT>
   constexpr OptionBase(
     in_place_t ip, TT&&...tt)
-   : data_(ip, EFLI_CXPRFWD_(tt)...), 
+   : data_(ip, cxpr_forward<TT>(tt)...), 
     active_(true) { }
 
   template <typename U, typename...TT>
   constexpr OptionBase(
     InitList<U> il, TT&&...tt)
-   : data_(il, EFLI_CXPRFWD_(tt)...), 
+   : data_(il, cxpr_forward<TT>(tt)...), 
     active_(true) { }
   
   ~OptionBase() {

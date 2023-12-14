@@ -56,10 +56,10 @@ struct Ref {
   template <typename U, typename = decltype(
     H::ref_::ref_hcast<T>(std::declval<U>())),
     MEflEnableIf(!std::is_same<Ref, remove_cvref_t<U>>::value)>
-  constexpr Ref(U&& u) NOEXCEPT(
-   noexcept(H::ref_::ref_hcast<T>(EFLI_CXPRFWD_(u)))) 
-   : data_(H::xx11::addressof(
-    H::ref_::ref_hcast(EFLI_CXPRFWD_(u)))) { }
+  constexpr Ref(U&& u) noexcept(
+   noexcept(H::ref_::ref_hcast<T>(H::cxpr_forward<U>(u)))) 
+   : data_(X11::addressof(
+    H::ref_::ref_hcast(H::cxpr_forward<U>(u)))) { }
   
   Ref(const Ref&) NOEXCEPT = default;
   Ref& operator=(const Ref& lhs) NOEXCEPT = default;
@@ -70,9 +70,12 @@ struct Ref {
 
   template <typename...Args>
   constexpr invoke_result_t<T&, Args...>
-   operator()(Args&&... args) CONST NOEXCEPT(
-    noexcept(H::invoke(std::declval<T&>(), EFLI_CXPRFWD_(args)...))) {
-    return H::invoke(get(), EFLI_CXPRFWD_(args)...);
+   operator()(Args&&... args) CONST noexcept(
+    noexcept(H::invoke(H::Decl<T&>(), 
+     H::cxpr_forward<Args>(args)...))) 
+  {
+    return H::invoke(get(), 
+      H::cxpr_forward<Args>(args)...);
   }
 
 private:

@@ -39,15 +39,14 @@ namespace xx11 {
 
   template <typename F, 
     typename Tup, H::SzType...II>
-  using apply_i_result_t = 
-    MEflGTy(apply_i_result<F, Tup, II...>);
+  using apply_i_result_t = typename
+    apply_i_result<F, Tup, II...>::type;
 
   template <typename F, typename Tup, H::SzType...II>
   constexpr auto apply_i(
    F&& f, Tup&& tup, SzSeq<II...>)
    -> apply_i_result_t<F, Tup, II...> {
-    using ::efl::C::H::invoke;
-    return invoke(EFLI_CXPRFWD_(f),
+    return invoke(cxpr_forward<F>(f),
       std::get<II>(cxpr_forward<Tup>(tup))...);
   }
 
@@ -67,8 +66,8 @@ namespace xx11 {
   FICONSTEXPR auto apply(F&& f, Tup&& tup) 
    -> apply_result_t<F, Tup> {
     using Result = apply_result<F, Tup>;
-    return apply_i(EFLI_CXPRFWD_(f), 
-      EFLI_CXPRFWD_(tup), MkSzSeq<Result::seqValue>{});
+    return apply_i(cxpr_forward<F>(f), 
+      cxpr_forward<Tup>(tup), MkSzSeq<Result::seqValue>{});
   }
 } // namespace xx11
 

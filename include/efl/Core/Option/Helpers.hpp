@@ -57,7 +57,7 @@ constexpr
 #endif
 void swap(
  efl::C::Option<T>& lhs, efl::C::Option<T>& rhs)
- NOEXCEPT(noexcept(lhs.swap(rhs))) 
+ noexcept(noexcept(lhs.swap(rhs))) 
 { lhs.swap(rhs); }
 } // namespace std
 

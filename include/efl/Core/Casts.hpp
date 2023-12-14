@@ -38,16 +38,16 @@ namespace efl {
 namespace C {
 /// `static_cast`s a value to `bool`.
 template <typename T>
-FICONSTEXPR bool bool_cast(T& t) NOEXCEPT(
+FICONSTEXPR bool bool_cast(T& t) noexcept(
  noexcept(static_cast<bool>(t))) {
   return static_cast<bool>(t);
 }
 
 /// `static_cast`s a moved value to `bool`.
 template <typename T>
-FICONSTEXPR bool bool_cast(T&& t) NOEXCEPT(
- noexcept(static_cast<bool>(EFLI_CXPRMV_(t)))) {
-  return static_cast<bool>(EFLI_CXPRMV_(t));    
+FICONSTEXPR bool bool_cast(T&& t) noexcept(
+ noexcept(static_cast<bool>(H::cxpr_move(t)))) {
+  return static_cast<bool>(H::cxpr_move(t));    
 }
 
 /// VERY DANGEROUS!!! Use only when absolutely necessary

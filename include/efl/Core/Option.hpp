@@ -117,7 +117,7 @@ private:
 
   template <typename...Args>
   void initialize(Args&&...args) 
-   NOEXCEPT(noexcept(type_(FWD(args)...))) {
+   noexcept(noexcept(type_(FWD(args)...))) {
     EFLI_DBGASSERT_(!this->active());
     (void) H::xx11::construct(
       pdata(), FWD(args)...);
@@ -134,7 +134,7 @@ public:
     !std::is_same<MEflGTy(std::decay<U>), Option<T>>::value &&
     !std::is_same<MEflGTy(std::decay<U>), in_place_t>::value)>
   constexpr Option(U&& u) 
-   : H::OptionBase<T>(EFLI_CXPRFWD_(u)) { }
+   : H::OptionBase<T>(H::cxpr_forward<U>(u)) { }
 
   Option(const Option& op) : H::OptionBase<T>() {
     if(op.hasValue()) {
@@ -143,11 +143,11 @@ public:
     }
   }
 
-  Option(Option&& op) NOEXCEPT(
+  Option(Option&& op) noexcept(
    std::is_nothrow_move_constructible<T>::value)
    : H::OptionBase<T>() {
     if(op.hasValue()) {
-      (void) H::xx11::construct(pdata(), std::move(*op));
+      (void) X11::construct(pdata(), std::move(*op));
       H::OptionBase<T>::active_ = true;
     }
   }
@@ -157,18 +157,18 @@ public:
   Option(const Option<T>& op)
    : H::OptionBase<T>() {
     if(op.hasValue()) {
-      (void) H::xx11::construct(pdata(), *op);
+      (void) X11::construct(pdata(), *op);
       H::OptionBase<T>::active_ = true;
     }
   }
 
   template <typename U, MEflEnableIf(
     std::is_constructible<T, U&&>::value)>
-  Option(Option<T>&& op) NOEXCEPT(
+  Option(Option<T>&& op) noexcept(
    std::is_nothrow_constructible<T, U&&>::value)
    : H::OptionBase<T>() {
     if(op.hasValue()) {
-      (void) H::xx11::construct(
+      (void) X11::construct(
         pdata(), std::move(*op));
       H::OptionBase<T>::active_ = true;
     }
@@ -176,12 +176,12 @@ public:
 
   template <typename...TT>
   explicit constexpr Option(in_place_t ip, TT&&...tt)
-   : H::OptionBase<T>(ip, EFLI_CXPRFWD_(tt)...) { }
+   : H::OptionBase<T>(ip, H::cxpr_forward<TT>(tt)...) { }
   
   template <typename U, typename...TT>
   explicit constexpr Option(
     in_place_t ip, H::InitList<U> ls, TT&&...tt)
-   : H::OptionBase<T>(ls, EFLI_CXPRFWD_(tt)...) { } 
+   : H::OptionBase<T>(ls, H::cxpr_forward<TT>(tt)...) { } 
 
   ~Option() = default;
 
@@ -201,7 +201,7 @@ public:
     return *this;
   }
 
-  Option& operator=(Option&& op) NOEXCEPT(
+  Option& operator=(Option&& op) noexcept(
    std::is_nothrow_move_constructible<T>::value &&
    std::is_nothrow_move_assignable<T>::value) {
     if(op.active()) {
@@ -272,7 +272,7 @@ public:
 
   EFLI_OPMUTCXPR_ type_&& unwrap()&& {
     EFLI_CXPRASSERT_(this->active());
-    return EFLI_CXPRMV_(
+    return H::cxpr_move(
       H::OptionBase<T>::data_.data_);
   }
 
@@ -298,7 +298,7 @@ public:
 
   EFLI_OPMUTCXPR_ type_&& operator*()&& {
     EFLI_DBGASSERT_(this->active());
-    return EFLI_CXPRMV_(this->unwrap());
+    return H::cxpr_move(this->unwrap());
   }
 
   constexpr const T& operator*() CONST& {
@@ -308,7 +308,7 @@ public:
 
   constexpr const T&& operator*() CONST&& {
     EFLI_OPCXPRASSERT_(this->active());
-    return EFLI_CXPRMV_(this->unwrap());
+    return H::cxpr_move(this->unwrap());
   }
 
   template <typename U>
@@ -316,7 +316,8 @@ public:
     if(this->active()) {
       return this->unwrap();
     } else {
-      return static_cast<T>(EFLI_CXPRFWD_(u));
+      return static_cast<T>(
+        H::cxpr_forward<U>(u));
     }
   }
 
@@ -325,7 +326,8 @@ public:
     if(this->active()) {
       return EFLI_CXPRMV_(this->unwrap());
     } else {
-      return static_cast<T>(EFLI_CXPRFWD_(u));
+      return static_cast<T>(
+        H::cxpr_forward<U>(u));
     }
   }
 
@@ -335,7 +337,7 @@ public:
   EFLI_OPMUTCXPR_ auto andThen(F&& f)& 
    -> remove_cvref_t<invoke_result_t<F, T&>> {
     if(this->active()) {
-      return EFLI_CXPRFWD_(f)(**this);
+      return H::cxpr_forward<F>(f)(**this);
     } else {
       return remove_cvref_t<
         invoke_result_t<F, T&>>{ };
@@ -346,8 +348,8 @@ public:
   EFLI_OPMUTCXPR_ auto andThen(F&& f)&&
    -> remove_cvref_t<invoke_result_t<F, T&&>> {
     if(this->active()) {
-      return EFLI_CXPRFWD_(f)(
-        EFLI_CXPRMV_(**this));
+      return H::cxpr_forward<F>(f)(
+        H::cxpr_move(**this));
     } else {
       return remove_cvref_t<
         invoke_result_t<F, T&&>>{ };
@@ -358,7 +360,7 @@ public:
   EFLI_OPMUTCXPR_ auto andThen(F&& f) CONST& 
    -> remove_cvref_t<invoke_result_t<F, const T&>> {
     if(this->active()) {
-      return EFLI_CXPRFWD_(f)(**this);
+      return H::cxpr_forward<F>(f)(**this);
     } else {
       return remove_cvref_t<
         invoke_result_t<F, const T&>>{ };
@@ -369,8 +371,8 @@ public:
   EFLI_OPMUTCXPR_ auto andThen(F&& f) CONST&&
    -> remove_cvref_t<invoke_result_t<F, const T&&>> {
     if(this->active()) {
-      return EFLI_CXPRFWD_(f)(
-        EFLI_CXPRMV_(**this));
+      return H::cxpr_forward<F>(f)(
+        H::cxpr_move(**this));
     } else {
       return remove_cvref_t<
         invoke_result_t<F, const T&&>>{ };

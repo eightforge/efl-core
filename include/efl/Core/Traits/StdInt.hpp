@@ -123,7 +123,8 @@ namespace xx11 {
   };
 
   template <typename T, SzType...II>
-  auto mk_seq_cast_(SzSeq<II...>) -> IntSeq<T, T(II)...>; // NOLINT
+  auto mk_seq_cast_(SzSeq<II...>)  // NOLINT
+   -> IntSeq<T, T(II)...>;
 } // namespace xx11
 
 template <SzType N>

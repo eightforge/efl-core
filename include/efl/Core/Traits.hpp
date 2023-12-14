@@ -92,7 +92,7 @@ namespace H {
 
     struct TIsNothrowSwappableWith {
       template <typename T, typename U>
-      static BoolC<NOEXCEPT(swap(
+      static BoolC<noexcept(swap(
         Decl<T&>(), Decl<U&>()))> Test(int); // NOLINT
 
       template <typename, typename>

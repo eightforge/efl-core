@@ -25,7 +25,7 @@ public:
   template <typename...TT>
   void operator()(TT&&...tt) CONST {
     ToApply::Ignore(
-      ToApply::ID(EFLI_CXPRFWD_(tt))...);
+      ToApply::ID(HH::cxpr_forward<TT>(tt))...);
     std::cout << std::endl;
   }
 };

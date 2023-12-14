@@ -31,12 +31,6 @@
 #include "Macros.hpp"
 #include "StdInt.hpp"
 
-// constexpr std::forward pre C++14 
-#define EFLI_CXPRFWD_(...) ::efl::CH:: \
-  cxpr_forward<decltype(__VA_ARGS__)>(__VA_ARGS__)
-// constexpr std::move pre C++14 
-#define EFLI_CXPRMV_(...) ::efl::CH::cxpr_move(__VA_ARGS__)
-// typename std::remove_reference<...>::type
 #define EFLI_RMREF_(...) typename \
   ::std::remove_reference<__VA_ARGS__>::type
 
@@ -87,9 +81,9 @@ namespace H {
       decltype(std::declval<T&>().operator&())>
      : TrueType { };
 
-#    if CPPVER_LEAST(17)
+#if CPPVER_LEAST(17)
     using ::std::addressof;
-#    else
+#else
     template <typename T, 
       MEflEnableIf(!HasOverloadedAddress<T>::value)>
     NODISCARD FICONSTEXPR T* addressof(T& t) 
@@ -102,13 +96,13 @@ namespace H {
 
     template <typename T>
     const T* addressof(const T&&) = delete;
-#    endif
+#endif // constexpr std::addressof check (C++17)
 
     template <typename T, typename...Args>
     NODISCARD ALWAYS_INLINE T* construct(T* t, Args&&...args) 
-     NOEXCEPT(noexcept(T(std::forward<Args>(args)...))) {
+     noexcept(noexcept(T(cxpr_forward<Args>(args)...))) {
       return ::new(static_cast<void*>(t)) 
-        T(std::forward<Args>(args)...);
+        T(cxpr_forward<Args>(args)...);
     }
   } // namespace xx11
 } // namespace H
@@ -117,5 +111,6 @@ namespace H {
 
 #undef EFLI_ADDRESSOF_
 #undef EFLI_ADDRESSOF_ATTRIB_
+#undef EFLI_RMREF_
 
 #endif // EFL_CORE_TRAITS_FUNCTIONS_HPP
