@@ -61,10 +61,12 @@ struct Option : std::optional<T> {
   }
 
   FICONSTEXPR auto unwrap() NOEXCEPT {
+    EFLI_DBGASSERT_(this->hasValue());
     return std::optional<T>::value();
   }
 
   FICONSTEXPR auto unwrap() CNOEXCEPT {
+    EFLI_DBGASSERT_(this->hasValue());
     return std::optional<T>::value();
   }
 
