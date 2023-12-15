@@ -30,9 +30,9 @@
 /// Unwraps values using statement expressions (GNU/LLVM only).
 #define MEflUnwrap(obj, ...) EFLI_UNWRAP_(obj, ##__VA_ARGS__)
 
-/// Wraps `std::enable_if` to improve readability.
-#define MEflEnableIf(...) MEflGTy(::std::enable_if< \
-  static_cast<bool>(__VA_ARGS__), bool>) = true
+/// Wraps `std::enable_if` to improve readability. TODO: Remove?
+#define MEflEnableIf(...) typename ::std::enable_if< \
+  static_cast<bool>(__VA_ARGS__), bool>::type = true
 
 /// Wraps `core::void_t` for trait stuffs.
 #define MEflVoidT(...) ::efl::C::void_t<__VA_ARGS__>
