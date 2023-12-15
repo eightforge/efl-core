@@ -28,16 +28,9 @@
 #include <cstddef>
 #include <cstdint>
 #include <initializer_list>
-#include <CoreCommon/ConfigCache.hpp>
+#include "Builtins_.hpp"
 
-// TODO: Actually check for support
-#ifndef EFLI_I128_ENABLED_
-# if defined(COMPILER_GCC) || defined(COMPILER_CLANG)
-#  define EFLI_I128_ENABLED_ 1
-# else
-#  define EFLI_I128_ENABLED_ 0
-# endif
-#endif
+// TODO: Actually check for __int128/__float128 support if possible.
 
 static_assert(CHAR_BIT == 8, 
   "This library only works on systems with 8-bit bytes!");
@@ -62,8 +55,8 @@ using u16 = std::uint16_t;
 using u32 = std::uint32_t;
 using u64 = std::uint64_t;
 
-#if EFLI_I128_ENABLED_
-using i128 = __int128;
+#if EFLI_HAS_I128_
+using i128 = signed __int128;
 using u128 = unsigned __int128;
 #endif
 
@@ -94,9 +87,13 @@ namespace H {
   };
 } // namespace H
 
-// TODO: Check for f16 and f128.
+// TODO: Check for f16?
 using f32 = float;
 using f64 = typename H::F64DeductionHelper<>::type;
+
+#if EFLI_HAS_F128_
+using f128 = __float128;
+#endif
 
 //=== Extra Types ===//
 

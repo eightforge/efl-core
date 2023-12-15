@@ -4,9 +4,21 @@
 #include <expected>
 #include <string_view>
 
-namespace XX11 = HH::xx11;
+#if 1
+template <typename...Args>
+ using And = C::conjunction<Args...>;
+template <typename...Args>
+ using Or = C::disjunction<Args...>;
+template <typename Arg>
+ using Not = C::negation<Arg>;
+#else
+using efl::C::H::And;
+using efl::C::H::Or;
+using efl::C::H::Not;
+#endif
 
-#define XXASSERT(cond) do { __glibcxx_assert_impl(cond); } while (false)
+using Tb = HH::TrueType;
+using Fb = HH::FalseType;
 
 struct ToApply {
 private:
@@ -41,6 +53,21 @@ int main() {
   MEflESAssert(!C::is_invokable<int>::value);
   MEflESAssert(!C::is_invokable<int, float, void*>::value);
   MEflESAssert(C::is_invokable<Z, float, void*>::value);
+
+  MEflESAssert(And<>::value);
+  MEflESAssert(And<Tb, Tb, Tb>::value);
+  MEflESAssert(!And<Tb, Fb, Tb>::value);
+  MEflESAssert(!And<Fb, Fb, Fb>::value);
+
+  MEflESAssert(!Or<>::value);
+  MEflESAssert(Or<Tb, Tb, Tb>::value);
+  MEflESAssert(Or<Tb, Fb, Tb>::value);
+  MEflESAssert(!Or<Fb, Fb, Fb>::value);
+
+  MEflESAssert(Not<Fb>::value);
+  MEflESAssert(!Not<Tb>::value);
+
+  MEflESAssert(C::is_nothrow_convertible<int, float>::value);
 
   C::panic_();
 

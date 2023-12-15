@@ -1,0 +1,142 @@
+//===- Core/Traits/StdInt.seq.mac -----------------------------------===//
+//
+// Copyright (C) 2023 Eightfold
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+//     limitations under the License.
+//
+//===----------------------------------------------------------------===//
+
+#ifndef USET_
+# define USET_(...)
+#endif
+
+#ifndef USEV_
+# define USEV_(...)
+#endif
+
+#ifndef EFLI_EXCLUDE_TEXCEPTIONS_
+# define USET_EX_(n) USET_(n)
+#else // defined(EFLI_EXCLUDE_TEXCEPTIONS_)
+# define USET_EX_(...)
+#endif // Type Exclusion Check
+
+#ifndef EFLI_EXCLUDE_VEXCEPTIONS_
+# define USEV_EX_(n) USEV_(n)
+#else // defined(EFLI_EXCLUDE_VEXCEPTIONS_)
+# define USEV_EX_(...)
+#endif // Value Exclusion Check
+
+USEV_(is_void)
+USEV_(is_integral)
+USEV_(is_floating_point)
+USEV_(is_array)
+USEV_(is_enum)
+USEV_(is_union)
+USEV_(is_class)
+USEV_(is_function)
+USEV_(is_pointer)
+USEV_(is_rvalue_reference)
+USEV_(is_lvalue_reference)
+USEV_(is_member_object_pointer)
+USEV_(is_member_function_pointer)
+
+USEV_(is_fundamental)
+USEV_(is_arithmetic)
+USEV_(is_scalar)
+USEV_(is_object)
+USEV_(is_compound)
+USEV_(is_reference)
+USEV_(is_member_pointer)
+
+USEV_(is_const)
+USEV_(is_volatile)
+USEV_(is_trivial)
+USEV_(is_trivially_copyable)
+USEV_(is_standard_layout)
+USEV_(is_pod)
+USEV_(is_empty)
+USEV_(is_polymorphic)
+USEV_(is_abstract)
+USEV_(is_signed)
+USEV_(is_unsigned)
+
+// Constructible
+USEV_EX_(is_constructible)
+USEV_EX_(is_trivially_constructible)
+USEV_EX_(is_nothrow_constructible)
+// Default Constructible
+USEV_(is_default_constructible)
+USEV_(is_trivially_default_constructible)
+USEV_(is_nothrow_default_constructible)
+// Copy Constructible
+USEV_(is_copy_constructible)
+USEV_(is_trivially_copy_constructible)
+USEV_(is_nothrow_copy_constructible)
+// Copy Constructible
+USEV_(is_move_constructible)
+USEV_(is_trivially_move_constructible)
+USEV_(is_nothrow_move_constructible)
+// Assignable
+USEV_EX_(is_assignable)
+USEV_EX_(is_trivially_assignable)
+USEV_EX_(is_nothrow_assignable)
+// Copy Assignable
+USEV_(is_copy_assignable)
+USEV_(is_trivially_copy_assignable)
+USEV_(is_nothrow_copy_assignable)
+// Move Assignable
+USEV_(is_move_assignable)
+USEV_(is_trivially_move_assignable)
+USEV_(is_nothrow_move_assignable)
+// Destructible
+USEV_(is_destructible)
+USEV_(is_trivially_destructible)
+USEV_(is_nothrow_destructible)
+USEV_(has_virtual_destructor)
+
+USEV_(alignment_of)
+USEV_(rank)
+USEV_EX_(extent)
+
+USEV_(is_same)
+USEV_(is_base_of)
+USEV_(is_convertible)
+
+USET_(remove_cv)
+USET_(remove_const)
+USET_(remove_volatile)
+USET_(add_cv)
+USET_(add_const)
+USET_(add_volatile)
+
+USET_(remove_reference)
+USET_(add_lvalue_reference)
+USET_(add_rvalue_reference)
+
+USET_(remove_pointer)
+USET_(add_pointer)
+
+USET_(make_signed)
+USET_(make_unsigned)
+
+USET_(remove_extent)
+USET_(remove_all_extents)
+
+USET_(decay)
+USET_EX_(enable_if)
+USET_EX_(conditional)
+USET_EX_(common_type)
+USET_(underlying_type)
+
+#undef USET_EX_
+#undef USEV_EX_

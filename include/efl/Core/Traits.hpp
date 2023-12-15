@@ -28,6 +28,7 @@
 
 #include "Traits/Macros.hpp"    // MEflUnwrap, MEflEnableIf, MEflHasTrait, ...
 #include "Traits/StdInt.hpp"    // [Int|Bool]C, Mk?[Int|Sz]Seq, ...
+#include "Traits/Std.hpp"       // <type_traits>
 #include "Traits/Strings.hpp"   // BLitC<...>, LitC
 #include "Traits/Functions.hpp" // forward, move, construct, addressof ...
 #include "Traits/Invoke.hpp"    // invoke, is_invokable, invoke_result
@@ -36,88 +37,14 @@
 
 namespace efl {
 namespace C {
-#if CPPVER_LEAST(20)
-using ::std::remove_cvref;
-using ::std::type_identity;
-#else
-template <typename T>
-struct remove_cvref {
-  using type = typename std::remove_reference<
-    typename std::remove_cv<T>::type>::type;
-};
-
-template <typename T>
-struct type_identity {
-  using type = T;
-};
-#endif
-
-template <typename T>
-using remove_cvref_t = 
-  typename remove_cvref<T>::type;
-
-template <typename T>
-using type_identity_t = T;
-
 #if CPPVER_LEAST(17)
-using ::std::void_t;
 using ::std::in_place_t;
 using ::std::in_place_type_t;
 using ::std::in_place_index_t;
 using ::std::in_place;
 using ::std::in_place_type;
 using ::std::in_place_index;
-using ::std::is_swappable_with;
-using ::std::is_swappable;
-using ::std::is_nothrow_swappable_with;
-using ::std::is_nothrow_swappable;
 #else
-namespace H {
-  template <typename...>
-  struct VoidTBase {
-    using type = void;
-  };
-
-  namespace swap_ {
-    using std::swap;
-
-    struct TIsSwappableWith {
-      template <typename T, typename U,
-        typename = decltype(swap(Decl<T&>(), Decl<U&>()))>
-      static TrueType Test(int); // NOLINT
-
-      template <typename, typename>
-      static FalseType Test(...); // NOLINT
-    };
-
-    struct TIsNothrowSwappableWith {
-      template <typename T, typename U>
-      static BoolC<noexcept(swap(
-        Decl<T&>(), Decl<U&>()))> Test(int); // NOLINT
-
-      template <typename, typename>
-      static FalseType Test(...); // NOLINT
-    };
-  } // namespace swap_
-
-  template <typename T, typename U>
-  struct IsSwappableWith {
-    using type = decltype(
-      swap_::TIsSwappableWith::
-      template Test<T, U>(0));
-  };
-
-  template <typename T, typename U>
-  struct IsNothrowSwappableWith {
-    using type = decltype(
-      swap_::TIsNothrowSwappableWith::
-      template Test<T, U>(0));
-  };
-} // namespace H
-
-template <typename...TT>
-using void_t = typename 
-  H::VoidTBase<TT...>::type;
 
 struct in_place_t { 
   explicit in_place_t() = default; 
@@ -132,22 +59,6 @@ template <H::SzType I>
 struct in_place_index_t { 
   explicit in_place_index_t() = default; 
 };
-
-template <typename T, typename U>
-struct is_swappable_with 
- : H::IsSwappableWith<T, U>::type { };
-
-template <typename T>
-struct is_swappable
- : H::IsSwappableWith<T, T>::type { };
-
-template <typename T, typename U>
-struct is_nothrow_swappable_with 
- : H::IsNothrowSwappableWith<T, U>::type { };
-
-template <typename T, typename U>
-struct is_nothrow_swappable
- : H::IsNothrowSwappableWith<T, T>::type { };
 
 //=== Globals ===//
 
@@ -165,7 +76,7 @@ GLOBAL in_place_index_t<I> in_place_index { };
 //=== Extra Stuff ===//
 
 namespace H {
-namespace H1 {
+namespace cref_ {
   template <typename T>
   struct MkCRef {
     using type = const T&;
@@ -185,11 +96,11 @@ namespace H1 {
   struct MkCRef<const T&> {
     using type = const T&;
   };
-} // namespace H1
+} // namespace cref_
 
   template <typename T>
   using CRef = typename 
-    H1::MkCRef<T>::type;
+    cref_::MkCRef<T>::type;
 } // namespace H
 
 #if CPPVER_LEAST(14)

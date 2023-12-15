@@ -26,10 +26,8 @@
 #ifndef EFL_CORE_TRAITS_FUNCTIONS_HPP
 #define EFL_CORE_TRAITS_FUNCTIONS_HPP
 
-#include <type_traits>
 #include <memory>
-#include "Macros.hpp"
-#include "StdInt.hpp"
+#include "Std.hpp"
 
 #define EFLI_RMREF_(...) typename \
   ::std::remove_reference<__VA_ARGS__>::type

@@ -27,9 +27,11 @@
 
 #include <CoreCommon/ConfigCache.hpp>
 #if __has_include(<bits/c++config.h>)
-# define EFLI_STL_GLIBCXX_ 1
+# include <bits/c++config.h>
+# define EFLI_STL_GLIBCXX_
 #elif __has_include(<__config>)
-# define EFLI_STL_LIBCPP_ 1
+# include <__config>
+# define EFLI_STL_LIBCPP_
 #endif
 
 #if (__cpp_if_consteval >= 202106L)
@@ -37,7 +39,6 @@
 # define EFLI_HAS_CXPREVAL_ 1
 # define EFLI_CXPREVAL_() ::std::is_constant_evaluated()
 #elif defined(EFLI_STL_GLIBCXX_)
-# include <bits/c++config.h>
 # if _GLIBCXX_HAVE_IS_CONSTANT_EVALUATED
 #  define EFLI_HAS_CXPREVAL_ 1
 #  define EFLI_CXPREVAL_() ::std::__is_constant_evaluated()
@@ -107,6 +108,38 @@ namespace efl::C::H::xx20 {
 #else
 # define EFLI_CORE_ASSUME_(expr) (void)(0)
 #endif // Assume check
+
+// __int128 check
+#ifndef EFLI_HAS_I128_
+# if defined(EFLI_STL_GLIBCXX_) && \
+ !defined(__STRICT_ANSI__) && \
+ defined(__GLIBCXX_TYPE_INT_N_0)
+// GCC supports __int128
+#  define EFLI_HAS_I128_ 1
+# elif defined(EFLI_STL_LIBCPP_) && \
+ !defined(_LIBCPP_HAS_NO_INT128)
+// Clang supports __int128
+#  define EFLI_HAS_I128_ 1
+# else
+#  define EFLI_HAS_I128_ 0
+# endif
+#endif
+
+// __float128 check
+#ifndef EFLI_HAS_F128_
+# if defined(EFLI_STL_GLIBCXX_) && \
+ !defined(__STRICT_ANSI__) && \
+ defined(_GLIBCXX_USE_FLOAT128)
+// GCC supports __float128
+#  define EFLI_HAS_F128_ 1
+# elif defined(EFLI_STL_LIBCPP_) && \
+ (defined(_M_X64) || defined(__x86_64__))
+// Clang supports __float128
+#  define EFLI_HAS_F128_ 1
+# else
+#  define EFLI_HAS_F128_ 0
+# endif
+#endif
 
 //=== Implementation ===//
 

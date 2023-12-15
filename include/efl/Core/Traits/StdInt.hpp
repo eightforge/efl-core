@@ -31,19 +31,12 @@
 #include <efl/Core/Fundamental.hpp>
 
 #ifndef ELFI_MKINTSEQ_BUILTIN_
-# if defined(__has_builtin)
-#  if __has_builtin(__make_integer_seq)
-#   define ELFI_MKINTSEQ_BUILTIN_ 1   
-#  endif
-# endif // defined(__has_builtin)
-
-# ifndef ELFI_MKINTSEQ_BUILTIN_
+# if __has_builtin(__make_integer_seq)
+#  define ELFI_MKINTSEQ_BUILTIN_ 1   
+# else
 #  define ELFI_MKINTSEQ_BUILTIN_ 0
 # endif
 #endif
-
-/// Check if compiler has `__make_integer_seq`.
-#define MEflHasMkISeqBuiltin() ELFI_MKINTSEQ_BUILTIN_
 
 namespace efl {
 namespace C {
@@ -86,6 +79,7 @@ struct IntSeq {
 template <SzType...II>
 using SzSeq = IntSeq<SzType, II...>;
 
+// Check for `__make_integer_seq`.
 # if ELFI_MKINTSEQ_BUILTIN_
 template <typename T, T N>
 using MkIntSeq = __make_integer_seq<IntSeq, T, N>;

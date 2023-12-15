@@ -34,15 +34,6 @@
 #define FICONSTEXPR ALWAYS_INLINE constexpr
 /// Allows for "empty" `static_assert`s pre C++17.
 #define MEflESAssert(...) EFLI_EMPTY_SASSERT_(__VA_ARGS__)
-/// Generates a static assertion if the version is incorrect.
-#define MEflCppverLeast(N) static_assert(CPPVER_LEAST(N), \
-  "C++ version must be at least " #N ".")
-/// Generates a static assertion if the version is incorrect.
-#define MEflCppverMost(N) static_assert(CPPVER_MOST(N),   \
-  "C++ version must be at most " #N ".")
-/// Generates a static assertion if the version is incorrect.
-#define MEflCppverMatch(N) static_assert(CPPVER_MATCH(N), \
-  "C++ version must be " #N ".")
 
 #if CPPVER_LEAST(17)
 # define EFLI_EMPTY_SASSERT_(...) static_assert(__VA_ARGS__)
