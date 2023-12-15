@@ -179,7 +179,7 @@ struct ScopedLock<> {
 
 namespace H {
   template <typename...MTs>
-  using SScopedLock = ScopedLock<MEflGTy(std::decay<MTs>)...>;
+  using SScopedLock = ScopedLock<decay_t<MTs>...>;
 
   template <typename...MTs>
   SScopedLock<MTs...> make_scoped_lock_(MTs&...mts) {

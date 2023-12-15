@@ -72,7 +72,7 @@ namespace invoke_ {
   // Essentially just "normal" invoations.
   template <class Base, typename U,
     bool = std::is_base_of<Base, 
-      MEflGTy(std::decay<U>)>::value>
+      decay_t<U>>::value>
   struct MPInvokeHelper {
     template <typename Ret, typename...Args>
     constexpr auto operator()(
@@ -86,8 +86,8 @@ namespace invoke_ {
     // Not sure why this isn't a compilation error, but
     // I'd rather be consistent with the STL.
     template <typename Ret, typename...Args>
-    constexpr MEflGTy(std::enable_if<
-      !is_invokable<Ret, Args...>::value, Ret>)
+    constexpr enable_if_t<
+      !is_invokable<Ret, Args...>::value, Ret>
      operator()(Ret Base::* mp, U u, Args&&...args) CNOEXCEPT {
       return ((*cxpr_forward<U>(u)).*mp);
     }
@@ -108,8 +108,8 @@ namespace invoke_ {
 
     // Same as the default instantiation.
     template <typename Ret, typename...Args>
-    constexpr MEflGTy(std::enable_if<
-      !is_invokable<Ret, Args...>::value, Ret>)
+    constexpr enable_if_t<
+      !is_invokable<Ret, Args...>::value, Ret>
      operator()(Ret Base::* mp, U u, Args&&...args) CNOEXCEPT {
       return ((*cxpr_forward<U>(u)).*mp);
     }
@@ -122,7 +122,7 @@ namespace invoke_ {
   // Normal dispatch.
   template <typename F, 
     bool = !std::is_member_pointer<
-      MEflGTy(std::decay<F>)>::value>
+      decay_t<F>>::value>
   struct InvokeHelper {
     template <typename...Args>
     constexpr auto operator()(F f, Args&&...args) CONST noexcept(

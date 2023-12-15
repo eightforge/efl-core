@@ -93,7 +93,7 @@ template <typename T>
 struct Option : private H::OptionBase<T> {
 private:
   using type_ = typename H::OptionBase<T>::type_;
-  using typeDec_ = MEflGTy(std::decay<T>);
+  using typeDec_ = decay_t<T>;
   static_assert(!std::is_same<typeDec_, NullOpt>::value, 
     "Cannot create an optional NullOpt.");
   static_assert(!std::is_same<typeDec_, in_place_t>::value, 
@@ -133,8 +133,8 @@ public:
 
   template <typename U = T, MEflEnableIf(
     std::is_constructible<T, U&&>::value &&
-    !std::is_same<MEflGTy(std::decay<U>), Option<T>>::value &&
-    !std::is_same<MEflGTy(std::decay<U>), in_place_t>::value)>
+    !std::is_same<decay_t<T>, Option<T>>::value &&
+    !std::is_same<decay_t<T>, in_place_t>::value)>
   constexpr Option(U&& u) 
    : H::OptionBase<T>(H::cxpr_forward<U>(u)) { }
 

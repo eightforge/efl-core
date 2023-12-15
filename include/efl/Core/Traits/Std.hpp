@@ -46,6 +46,9 @@ namespace H {
   using enable_if_ = typename 
     std::enable_if<B, T>::type;
   
+  template <bool B>
+  using substitute_if = enable_if_<B, bool>;
+  
   template <bool B, typename T, typename F>
   using conditional_ = typename 
     std::conditional<B, T, F>::type;

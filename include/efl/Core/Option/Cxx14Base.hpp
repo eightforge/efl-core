@@ -76,7 +76,7 @@ template <typename T, bool =
   std::is_trivially_destructible<T>::value>
 struct OptionBase {
 protected:
-  using type_ = MEflGTy(std::remove_const<T>);
+  using type_ = remove_const_t<T>;
 public:
   OptionBase() = default;
 
@@ -113,7 +113,7 @@ public:
 template <typename T>
 struct OptionBase<T, false> {
 protected:
-  using type_ = MEflGTy(std::remove_const<T>);
+  using type_ = remove_const_t<T>;
 public:
   OptionBase() = default;
 

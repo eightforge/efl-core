@@ -27,9 +27,6 @@
  */
 #define MEflOptRequires(...) EFLI_REQUIRES_(__VA_ARGS__)
 
-/// Unwraps types, following the `typename ...::t` process.
-#define MEflGTy(t, ...) typename t, ##__VA_ARGS__ ::type
-
 /// Unwraps values using statement expressions (GNU/LLVM only).
 #define MEflUnwrap(obj, ...) EFLI_UNWRAP_(obj, ##__VA_ARGS__)
 

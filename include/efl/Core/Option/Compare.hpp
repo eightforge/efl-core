@@ -41,8 +41,8 @@ namespace ops_ {
 namespace H {
   /// Enabled if operator is bool convertible.
   template <typename T>
-  using option_vop = MEflGTy(std::enable_if<
-    std::is_convertible<T, bool>::value, bool>);
+  using option_vop = enable_if_t<
+    std::is_convertible<T, bool>::value, bool>;
   
   /// `true` if type is `Option<...>`.
   template <typename T>

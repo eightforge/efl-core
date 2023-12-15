@@ -52,7 +52,7 @@ namespace xx11 {
 
   template <typename F, typename Tup>
   struct apply_result {
-    using RTup = MEflGTy(std::decay<Tup>);
+    using RTup = decay_t<Tup>;
     static constexpr H::SzType 
       seqValue = std::tuple_size<RTup>::value;
     using type = decltype(apply_i(
@@ -60,7 +60,8 @@ namespace xx11 {
   };
 
   template <typename F, typename Tup>
-  using apply_result_t = MEflGTy(apply_result<F, Tup>);
+  using apply_result_t = typename
+    apply_result<F, Tup>::type;
 
   template <typename F, typename Tup>
   FICONSTEXPR auto apply(F&& f, Tup&& tup) 

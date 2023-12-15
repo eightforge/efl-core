@@ -46,7 +46,7 @@ namespace C {
 namespace H {
   template <typename T>
   auto Decl() NOEXCEPT
-   -> MEflGTy(std::add_rvalue_reference<T>) {
+   -> add_rvalue_reference_t<T> {
       static_assert(sizeof(T) == 0, 
         "declval not allowed in an evaluated context");
   }
