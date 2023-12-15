@@ -26,10 +26,176 @@
 #ifndef EFL_CORE_STRREF_HPP
 #define EFL_CORE_STRREF_HPP
 
+#include <algorithm>
+#include <cstring>
+#include <string>
+#include "Traits.hpp"
+#if CPPVER_LEAST(17)
+# include <string_view>
+#endif
+
+LLVM_IGNORED("-Wc++14-extensions")
+GNU_IGNORED("-Wc++14-extensions")
+
+#if CPPVER_LEAST(14) || (defined(COMPILER_GCC) || defined(COMPILER_CLANG))
+# define EFLI_SRCXPRASSERT_(...) \
+  EFLI_DBGASSERT_(__VA_ARGS__)
+#else
+# define EFLI_SRCXPRASSERT_(...) (void)(0)
+#endif
+
+#if CPPVER_MOST(14) && \
+ __has_builtin(__builtin_strlen)
+# define EFLI_CXPR_STRLEN_ constexpr
+# define EFLI_STRLEN_(s) __builtin_strlen(s)
+#elif CPPVER_LEAST(17)
+# define EFLI_CXPR_STRLEN_ constexpr
+# define EFLI_STRLEN_(s) \
+  std::char_traits<char>::length(s)
+#else
+# define EFLI_CXPR_STRLEN_
+# define EFLI_STRLEN_(s) \
+  std::char_traits<char>::length(s)
+#endif
+
 namespace efl {
 namespace C {
+/// Alias for `std::string`.
+using Str = std::string;
+
+/**
+ * @brief Non-owning view over a constant string.
+ * 
+ * Implementation/extension of `std::string_view`.
+ * Internals are public, meaning this can be used
+ * as a template parameter.
+ */
+struct GSL_POINTER(char) StrRef {
+  using Type = char;
+  using value_type = char;
+  using iterator = const char*;
+  using const_iterator = const char*;
+  using size_type = H::SzType;
+  static constexpr size_type npos = ~size_type(0);
+
+private:
+  using Traits = std::char_traits<char>;
+
+  ALWAYS_INLINE static int Memcmp(
+   const char* l, const char* r, size_type len) NOEXCEPT {
+    if(len == 0) return 0;
+    return std::memcmp(l, r, len);
+  }
+
+public:
+  /// Default constructed.
+  constexpr StrRef() NOEXCEPT = default;
+  /// Copy constructed.
+  constexpr StrRef(const StrRef&) NOEXCEPT = default;
+
+  /// Constructs from a `(const char*, size_type)`.
+  constexpr StrRef(const char* str, size_type len) 
+   : data_(str), size_(len) { }
+
+  /// Constructs from a `const char*`.
+  EFLI_CXPR_STRLEN_ StrRef(const char* str) 
+   : data_(str), size_(str ?
+   EFLI_STRLEN_(str) : 0) { }
+  
+  /// Constructs from a `const char(&)[N]`.
+  template <H::SzType N>
+  constexpr StrRef(str_literal_t<N> str) NOEXCEPT
+   : data_(str), size_(N) { }
+  
+  /// Constructs from a `Str`.
+  StrRef(const Str& str) 
+   : data_(str.data()), size_(str.size()) { }
+
+#if CPPVER_LEAST(17)
+  /// Constructs from a `std::string_view`
+  constexpr StrRef(std::string_view str) NOEXCEPT 
+   : data_(str.data()), size_(str.size()) { }
+#endif
+  /// Deleted constructor, only use valid data.
+  constexpr StrRef(std::nullptr_t) = delete;
+
+  //=== Iterators ===//
+
+  constexpr iterator begin() const { 
+    return data_; 
+  
+  }
+  constexpr iterator end() const { 
+    return data_ + size_; 
+  }
+
+  constexpr iterator cbegin() const { 
+    return data_; 
+  }
+
+  constexpr iterator cend() const { 
+    return data_ + size_; 
+  }
+
+  //=== Element Access ===//
+
+  /// Get character at `n`, returns `const char&`.
+  constexpr const char& operator[](size_type n) const& {
+    EFLI_SRCXPRASSERT_(n < size_);
+    return data_[n];
+  }
+
+  /// Get character at `n`, returns `char`.
+  constexpr char operator[](size_type n) const&& {
+    EFLI_SRCXPRASSERT_(n < size_);
+    return data_[n];
+  }
+
+  // TODO: at(n) -> panic()?
+
+  /// Get first character, returns `const char&`.
+  constexpr const char& front() const& {
+    EFLI_SRCXPRASSERT_(!isEmpty());
+    return data_[0];
+  }
+
+  /// Get first character, returns `char`.
+  constexpr char front() const&& {
+    EFLI_SRCXPRASSERT_(!isEmpty());
+    return data_[0];
+  }
+
+  /// Get last character, returns `const char&`.
+  constexpr const char& back() const& {
+    EFLI_SRCXPRASSERT_(!isEmpty());
+    return data_[size_ - 1];
+  }
+
+  /// Get last character, returns `char`.
+  constexpr char back() const&& {
+    EFLI_SRCXPRASSERT_(!isEmpty());
+    return data_[size_ - 1];
+  }
+
+  //=== Capacity ===//
+
+  /// Get the size of the string.
+  constexpr size_type size() const { return size_; }
+  /// Check if the string is empty (`size() == 0`).
+  constexpr bool isEmpty() const { return size_ == 0; }
+
+public:
+  const char* data_ = nullptr;
+  size_type   size_ = 0;
+};
 
 } // namespace C
 } // namespace efl
+
+#undef EFLI_CXPR_STRLEN_
+#undef EFLI_STRLEN_
+
+GNU_POP()
+LLVM_POP()
 
 #endif // EFL_CORE_STRREF_HPP

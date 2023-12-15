@@ -1,24 +1,9 @@
 #include "Tests.hpp"
 #include <efl/Core/Mtx.hpp>
 #include <efl/Core/Panic.hpp>
+#include <efl/Core/StrRef.hpp>
 #include <expected>
 #include <string_view>
-
-#if 1
-template <typename...Args>
- using And = C::conjunction<Args...>;
-template <typename...Args>
- using Or = C::disjunction<Args...>;
-template <typename Arg>
- using Not = C::negation<Arg>;
-#else
-using efl::C::H::And;
-using efl::C::H::Or;
-using efl::C::H::Not;
-#endif
-
-using Tb = HH::TrueType;
-using Fb = HH::FalseType;
 
 struct ToApply {
 private:
@@ -49,25 +34,13 @@ int main() {
   MEflESAssert(HasType<Y>);
   MEflESAssert(!HasCallable<Y>);
 #endif
-  
-  MEflESAssert(!C::is_invokable<int>::value);
-  MEflESAssert(!C::is_invokable<int, float, void*>::value);
-  MEflESAssert(C::is_invokable<Z, float, void*>::value);
-
-  MEflESAssert(And<>::value);
-  MEflESAssert(And<Tb, Tb, Tb>::value);
-  MEflESAssert(!And<Tb, Fb, Tb>::value);
-  MEflESAssert(!And<Fb, Fb, Fb>::value);
-
-  MEflESAssert(!Or<>::value);
-  MEflESAssert(Or<Tb, Tb, Tb>::value);
-  MEflESAssert(Or<Tb, Fb, Tb>::value);
-  MEflESAssert(!Or<Fb, Fb, Fb>::value);
-
-  MEflESAssert(Not<Fb>::value);
-  MEflESAssert(!Not<Tb>::value);
-
   MEflESAssert(C::is_nothrow_convertible<int, float>::value);
+
+  static constexpr char lit[] = "Hello!";
+  constexpr C::StrRef str(lit);
+  constexpr char lc = C::StrRef(lit)[0];
+
+  MEflESAssert(lc == 'H');
 
   C::panic_();
 

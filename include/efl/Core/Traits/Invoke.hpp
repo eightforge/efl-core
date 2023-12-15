@@ -76,7 +76,7 @@ namespace invoke_ {
   struct MPInvokeHelper {
     template <typename Ret, typename...Args>
     constexpr auto operator()(
-     Ret Base::* mp, U u, Args&&...args) CONST noexcept(
+     Ret Base::* mp, U u, Args&&...args) const noexcept(
      noexcept(EFLI_MEMPTRINV_(cxpr_forward<U>(u), mp, args)))
      -> decltype(EFLI_MEMPTRINV_(std::declval<U>(), mp, args)) {
       return EFLI_MEMPTRINV_(cxpr_forward<U>(u), mp, args);
@@ -88,7 +88,7 @@ namespace invoke_ {
     template <typename Ret, typename...Args>
     constexpr enable_if_t<
       !is_invokable<Ret, Args...>::value, Ret>
-     operator()(Ret Base::* mp, U u, Args&&...args) CNOEXCEPT {
+     operator()(Ret Base::* mp, U u, Args&&...args) const NOEXCEPT {
       return ((*cxpr_forward<U>(u)).*mp);
     }
   };
@@ -100,7 +100,7 @@ namespace invoke_ {
   struct MPInvokeHelper<Base, U, false> {
     template <typename Ret, typename...Args>
     constexpr auto operator()(
-     Ret Base::* mp, U u, Args&&...args) CONST noexcept(
+     Ret Base::* mp, U u, Args&&...args) const noexcept(
      noexcept(EFLI_MEMPTRINV_((*cxpr_forward<U>(u)), mp, args)))
      -> decltype(EFLI_MEMPTRINV_((*std::declval<U>()), mp, args)) {
       return EFLI_MEMPTRINV_((*cxpr_forward<U>(u)), mp, args);
@@ -110,7 +110,7 @@ namespace invoke_ {
     template <typename Ret, typename...Args>
     constexpr enable_if_t<
       !is_invokable<Ret, Args...>::value, Ret>
-     operator()(Ret Base::* mp, U u, Args&&...args) CNOEXCEPT {
+     operator()(Ret Base::* mp, U u, Args&&...args) const NOEXCEPT {
       return ((*cxpr_forward<U>(u)).*mp);
     }
   };
@@ -125,7 +125,7 @@ namespace invoke_ {
       decay_t<F>>::value>
   struct InvokeHelper {
     template <typename...Args>
-    constexpr auto operator()(F f, Args&&...args) CONST noexcept(
+    constexpr auto operator()(F f, Args&&...args) const noexcept(
      noexcept(cxpr_forward<F>(f)(cxpr_forward<Args>(args)...)))
      -> decltype(Decl<F>()(Decl<Args>()...)) {
       return cxpr_forward<F>(f)(
@@ -139,7 +139,7 @@ namespace invoke_ {
   struct InvokeHelper<MP, false> {
     template <typename Ret, class Base, typename U, typename...Args>
     constexpr auto operator()(
-     Ret Base::* mp, U&& u, Args&&...args) CONST noexcept(
+     Ret Base::* mp, U&& u, Args&&...args) const noexcept(
       noexcept(MPInvokeHelper<Base, U>{}(mp, 
        cxpr_forward<U>(u), cxpr_forward<Args>(args)...)))
      -> decltype(MPInvokeHelper<Base, U>{}(mp, 
@@ -161,7 +161,7 @@ namespace invoke_ {
  * callable or not.
  */
 template <typename F, typename...Args>
-FICONSTEXPR auto invoke(F&& f, Args&&...args) noexcept(
+FIconstEXPR auto invoke(F&& f, Args&&...args) noexcept(
  noexcept(invoke_::InvokeHelper<F>{}(
    cxpr_forward<F>(f), cxpr_forward<Args>(args)...)))
  -> decltype(invoke_::InvokeHelper<F>{}(

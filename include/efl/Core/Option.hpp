@@ -73,7 +73,7 @@ struct Option : std::optional<T> {
   }
 
   template <typename U>
-  FICONSTEXPR T unwrapOr(U&& u) CONST& {
+  FICONSTEXPR T unwrapOr(U&& u) const& {
     return std::optional<T>::value_or(FWD(u));
   }
 };
@@ -106,7 +106,7 @@ private:
       H::OptionBase<T>::data_.data_);
   }
 
-  FICONSTEXPR const T* pdata() CONST {
+  FICONSTEXPR const T* pdata() const {
     return H::xx11::addressof(
       H::OptionBase<T>::data_.data_);
   }
@@ -278,12 +278,12 @@ public:
       H::OptionBase<T>::data_.data_);
   }
 
-  constexpr const T& unwrap() CONST& {
+  constexpr const T& unwrap() const& {
     EFLI_OPCXPRASSERT_(this->active());
     return H::OptionBase<T>::data_.data_;
   }
 
-  constexpr const T& unwrap() CONST&& {
+  constexpr const T& unwrap() const&& {
     EFLI_OPCXPRASSERT_(this->active());
     return H::cxpr_move(
       H::OptionBase<T>::data_.data_);
@@ -294,7 +294,7 @@ public:
     return this->pdata();
   }
 
-  FICONSTEXPR const T* operator->() CONST {
+  FICONSTEXPR const T* operator->() const {
     EFLI_OPCXPRASSERT_(this->active());
     return this->pdata();
   }
@@ -309,18 +309,18 @@ public:
     return H::cxpr_move(this->unwrap());
   }
 
-  constexpr const T& operator*() CONST& {
+  constexpr const T& operator*() const& {
     EFLI_OPCXPRASSERT_(this->active());
     return this->unwrap();
   }
 
-  constexpr const T&& operator*() CONST&& {
+  constexpr const T&& operator*() const&& {
     EFLI_OPCXPRASSERT_(this->active());
     return H::cxpr_move(this->unwrap());
   }
 
   template <typename U>
-  constexpr T unwrapOr(U&& u) CONST& {
+  constexpr T unwrapOr(U&& u) const& {
     if(this->active()) {
       return this->unwrap();
     } else {
@@ -365,7 +365,7 @@ public:
   }
 
   template <typename F>
-  constexpr auto andThen(F&& f) CONST& 
+  constexpr auto andThen(F&& f) const& 
    -> remove_cvref_t<invoke_result_t<F, const T&>> {
     if(this->active()) {
       return H::cxpr_forward<F>(f)(**this);
@@ -376,7 +376,7 @@ public:
   }
 
   template <typename F>
-  constexpr auto andThen(F&& f) CONST&&
+  constexpr auto andThen(F&& f) const&&
    -> remove_cvref_t<invoke_result_t<F, const T&&>> {
     if(this->active()) {
       return H::cxpr_forward<F>(f)(
@@ -397,7 +397,7 @@ public:
   }
 
   template <typename F>
-  constexpr Option orElse(F&& f) CONST& {
+  constexpr Option orElse(F&& f) const& {
     MEflESAssert(is_same<Option, 
       invoke_result_t<F>>::value);
     return (this->active()) ? 

@@ -37,14 +37,14 @@ namespace H {
   /// Default constructs an object.
   template <typename T>
   struct DefaultInitialize {
-    constexpr T operator()() CNOEXCEPT 
+    constexpr T operator()() const NOEXCEPT 
     { return T(); }
   };
 
   /// Does nothing.
   template <>
   struct DefaultInitialize<void> {
-    constexpr CXX11Void operator()() CNOEXCEPT 
+    constexpr CXX11Void operator()() const NOEXCEPT 
     { CXX11Return(); }
   };
 } // namespace H
@@ -65,15 +65,15 @@ public:
    : data_(Preload::Create()) { }
   
   Ref get()& { return this->data_; }
-  CRef get() CONST& { return this->data_; }
+  CRef get() const& { return this->data_; }
 
   Ref operator()()& { return this->data_; }
-  CRef operator()() CONST& { return this->data_; }
+  CRef operator()() const& { return this->data_; }
 
   Type* operator->()& 
   { return X11::addressof(data_); }
 
-  const Type* operator->() CONST& 
+  const Type* operator->() const& 
   { return X11::addressof(data_); }
 
 private:

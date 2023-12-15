@@ -64,13 +64,13 @@ struct Ref {
   Ref(const Ref&) NOEXCEPT = default;
   Ref& operator=(const Ref& lhs) NOEXCEPT = default;
 
-  constexpr operator T&() CNOEXCEPT { return *data_; }
-  constexpr T& operator*() CNOEXCEPT { return *data_; }
-  constexpr T& get() CNOEXCEPT { return *data_; }
+  constexpr operator T&() const NOEXCEPT { return *data_; }
+  constexpr T& operator*() const NOEXCEPT { return *data_; }
+  constexpr T& get() const NOEXCEPT { return *data_; }
 
   template <typename...Args>
   constexpr invoke_result_t<T&, Args...>
-   operator()(Args&&... args) CONST noexcept(
+   operator()(Args&&... args) const noexcept(
     noexcept(H::invoke(H::Decl<T&>(), 
      H::cxpr_forward<Args>(args)...))) 
   {

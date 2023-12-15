@@ -116,7 +116,7 @@ namespace H {
 
   public:
     template <typename...MTs>
-    ALWAYS_INLINE void operator()(MTs&...mts) CONST {
+    ALWAYS_INLINE void operator()(MTs&...mts) const {
       (void)(ScopedUnlocker::Ignore(
         ScopedUnlocker::ID(mts)...));
     }

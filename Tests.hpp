@@ -10,6 +10,16 @@
 namespace C = efl::C;
 namespace HH = efl::C::H;
 
+template <typename...Args>
+using And = C::conjunction<Args...>;
+template <typename...Args>
+using Or = C::disjunction<Args...>;
+template <typename Arg>
+using Not = C::negation<Arg>;
+
+using Tb = HH::TrueType;
+using Fb = HH::FalseType;
+
 struct X {
   void operator()() { }
 };
@@ -46,6 +56,25 @@ bool compare_all(const T& t, const U& u) {
 }
 
 //=== Tests ===//
+
+// Logical traits
+MEflESAssert(And<>::value);
+MEflESAssert(And<Tb, Tb, Tb>::value);
+MEflESAssert(!And<Tb, Fb, Tb>::value);
+MEflESAssert(!And<Fb, Fb, Fb>::value);
+
+MEflESAssert(!Or<>::value);
+MEflESAssert(Or<Tb, Tb, Tb>::value);
+MEflESAssert(Or<Tb, Fb, Tb>::value);
+MEflESAssert(!Or<Fb, Fb, Fb>::value);
+
+MEflESAssert(Not<Fb>::value);
+MEflESAssert(!Not<Tb>::value);
+
+// Invokable
+MEflESAssert(!C::is_invokable<int>::value);
+MEflESAssert(!C::is_invokable<int, float, void*>::value);
+MEflESAssert(C::is_invokable<Z, float, void*>::value);
 
 void invoke_tests() {
   auto p = &Z::operator();

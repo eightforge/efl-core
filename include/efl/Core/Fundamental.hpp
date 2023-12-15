@@ -28,6 +28,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <initializer_list>
+#include <type_traits>
 #include "_Builtins.hpp"
 
 // TODO: Actually check for __int128/__float128 support if possible.
@@ -49,11 +50,14 @@ using i8  = std::int8_t;
 using i16 = std::int16_t;
 using i32 = std::int32_t;
 using i64 = std::int64_t;
+using isize = typename 
+  std::make_signed<std::size_t>::type;
 
 using u8  = std::uint8_t;
 using u16 = std::uint16_t;
 using u32 = std::uint32_t;
 using u64 = std::uint64_t;
+using usize = std::size_t;
 
 #if EFLI_HAS_I128_
 using i128 = signed __int128;
@@ -63,33 +67,38 @@ using u128 = unsigned __int128;
 //=== Floating Point ===//
 
 namespace H {
-  /// Deduced `double` as f64.
-  template <typename T = float, 
-    bool = (sizeof(T) * 2 == sizeof(double)),
-    bool = (sizeof(T) * 2 == sizeof(long double))>
-  struct F64DeductionHelper {
-    using type = double;
-  };
+  namespace fundamental_ {
+    /// Deduced `double` as f64.
+    template <typename T = float, 
+      bool = (sizeof(T) * 2 == sizeof(double)),
+      bool = (sizeof(T) * 2 == sizeof(long double))>
+    struct F64DeductionHelper {
+      using type = double;
+    };
 
-  /// Deduced `long double` as f64.
-  template <typename T, bool B>
-  struct F64DeductionHelper<T, false, B> {
-    using type = long double;
-  };
+    /// Deduced `long double` as f64.
+    template <typename T, bool B>
+    struct F64DeductionHelper<T, false, B> {
+      using type = long double;
+    };
 
-  /// Both `double` and `long double` are the
-  /// same size as `float`, making f64 impossible.
-  template <typename T>
-  struct F64DeductionHelper<T, false, false> {
-    enum X { f64DeductionFailure = 0 };
-    static_assert(sizeof(T) == f64DeductionFailure, 
-      "No floating point type larger than `float`.");
-  };
+    /// Both `double` and `long double` are the
+    /// same size as `float`, making f64 impossible.
+    template <typename T>
+    struct F64DeductionHelper<T, false, false> {
+      enum X { f64DeductionFailure = 0 };
+      static_assert(sizeof(T) == f64DeductionFailure, 
+        "No floating point type larger than `float`.");
+    };
+  } // namespace fundamental_
+
+  using f64_deduced = typename 
+    fundamental_::F64DeductionHelper<>::type;
 } // namespace H
 
 // TODO: Check for f16?
 using f32 = float;
-using f64 = typename H::F64DeductionHelper<>::type;
+using f64 = typename H::f64_deduced;
 
 #if EFLI_HAS_F128_
 using f128 = __float128;
@@ -98,6 +107,7 @@ using f128 = __float128;
 //=== Extra Types ===//
 
 namespace H {
+  /// "Empty" type.
   struct Dummy { };
   /// Type used for generic values in TMP.
   /// TODO: Profile best integral type
@@ -108,6 +118,12 @@ namespace H {
   template <typename T>
   using InitList = std::initializer_list<T>;
 } // namespace H
+
+template <typename T, H::SzType N>
+using array_t = T[N];
+
+template <H::SzType N>
+using str_literal_t = array_t<const char, N>&;
 
 } // namespace C
 } // namespace efl

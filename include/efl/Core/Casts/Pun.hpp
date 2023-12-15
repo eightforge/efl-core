@@ -47,7 +47,7 @@ namespace H {
 template <typename T, typename U>
 struct PunHelper {
   constexpr PunHelper(U& u) : u(u) { }
-  FICONSTEXPR T get() CNOEXCEPT { 
+  FICONSTEXPR T get() const NOEXCEPT { 
     return std::bit_cast<T>(u); 
   }
 private:
@@ -57,7 +57,7 @@ private:
 template <typename T, typename U>
 struct PunHelper {
   constexpr PunHelper(U& u) : u(u) { }
-  FICONSTEXPR T get() CNOEXCEPT { 
+  FICONSTEXPR T get() const NOEXCEPT { 
     return __builtin_bit_cast(T, u); 
   }
 private:
@@ -79,7 +79,7 @@ private:
 template <typename T>
 struct PunHelper<T, T> {
   constexpr PunHelper(T& t) : t(t) { }
-  FICONSTEXPR const T& get() CNOEXCEPT 
+  FICONSTEXPR const T& get() const NOEXCEPT 
   { return t; }
 private:
   T& t;
