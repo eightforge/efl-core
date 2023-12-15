@@ -37,7 +37,7 @@
 //=== Base Objects ===//
 namespace efl {
 namespace C {
-//=== Detail ===//
+//=== Helpers ===//
 namespace H {
   template <typename T>
   using type_ = typename T::type;
@@ -439,5 +439,26 @@ USE_(reference_converts_from_temporary_v)
 #undef USET_
 #undef USEV_
 #undef USE_
+
+#include <efl/Core/Fwd_/Option.hpp>
+#include <efl/Core/Fwd_/Ref.hpp>
+
+//=== Extras ===//
+namespace efl {
+namespace C {
+template <typename T, typename U>
+struct is_different : H::TrueType { };
+
+template <typename T>
+struct is_different<T, T> : H::FalseType { };
+
+#if CPPVER_LEAST(14)
+template <typename T, typename U>
+GLOBAL bool is_different_v =
+  is_different<T, U>::value;
+
+#endif // C++14 Check
+} // namespace C
+} // namespace efl
 
 #endif // EFL_CORE_TRAITS_STD_HPP

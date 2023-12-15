@@ -28,7 +28,11 @@
 
 #include <efl/Core/Traits.hpp>
 
-#if __has_builtin(__builtin_bit_cast)
+#if CPPVER_LEAST(20)
+# include <bit>
+# define EFLI_BIT_CAST_ 1
+# define EFLI_PUNCAST_CXPR_ FICONSTEXPR
+#elif __has_builtin(__builtin_bit_cast)
 # define EFLI_BIT_CAST_ 1
 # define EFLI_PUNCAST_CXPR_ FICONSTEXPR
 #else
@@ -39,7 +43,17 @@
 namespace efl {
 namespace C {
 namespace H {
-#if EFLI_BIT_CAST_
+#if CPPVER_LEAST(20)
+template <typename T, typename U>
+struct PunHelper {
+  constexpr PunHelper(U& u) : u(u) { }
+  FICONSTEXPR T get() CNOEXCEPT { 
+    return std::bit_cast<T>(u); 
+  }
+private:
+  U& u;
+};
+#elif EFLI_BIT_CAST_
 template <typename T, typename U>
 struct PunHelper {
   constexpr PunHelper(U& u) : u(u) { }

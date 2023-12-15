@@ -24,7 +24,8 @@
 #ifndef EFL_CORE_FWD__OPTION_HPP
 #define EFL_CORE_FWD__OPTION_HPP
 
-#include <efl/Core/Traits/Std.hpp>
+#include <type_traits>
+#include <CoreCommon/ConfigCache.hpp>
 
 //=== Option Base ===//
 namespace efl {
@@ -33,7 +34,8 @@ template <typename T>
 struct Option;
 /// Decays `T` before passing to `Option<...>`.
 template <typename T>
-using SOption = Option<decay_t<T>>;
+using SOption = Option<
+  typename std::decay<T>::type>;
 } // namespace C
 } // namespace efl
 

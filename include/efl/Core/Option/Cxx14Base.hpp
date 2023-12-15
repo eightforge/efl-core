@@ -35,7 +35,7 @@ namespace C {
 namespace H {
 /// Storage for trivial objects.
 template <typename T, bool = 
-  std::is_trivially_destructible<T>::value>
+  is_trivially_destructible<T>::value>
 union OptionStorage {
   constexpr OptionStorage() NOEXCEPT : empty_() { }
 
@@ -73,7 +73,7 @@ public:
 
 /// Base for trivial options.
 template <typename T, bool = 
-  std::is_trivially_destructible<T>::value>
+  is_trivially_destructible<T>::value>
 struct OptionBase {
 protected:
   using type_ = remove_const_t<T>;

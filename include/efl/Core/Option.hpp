@@ -36,12 +36,6 @@
 LLVM_IGNORED("-Wc++14-extensions")
 GNU_IGNORED("-Wc++14-extensions")
 
-#if EFLI_MUTABLE_CXPR_ == 1
-# define EFLI_OPMUTCXPR_ constexpr
-#else
-# define EFLI_OPMUTCXPR_
-#endif
-
 #if CPPVER_LEAST(14) || (defined(COMPILER_GCC) || defined(COMPILER_CLANG))
 # define EFLI_OPCXPRASSERT_(...) \
   EFLI_DBGASSERT_(__VA_ARGS__)
@@ -55,6 +49,8 @@ template <typename T>
 struct Option : std::optional<T> {
   using baseType_ = std::optional<T>;
   using std::optional<T>::operator=;
+
+  //=== Observers ===//
 
   FICONSTEXPR bool hasValue() CNOEXCEPT {
     return std::optional<T>::has_value();
@@ -94,9 +90,9 @@ struct Option : private H::OptionBase<T> {
 private:
   using type_ = typename H::OptionBase<T>::type_;
   using typeDec_ = decay_t<T>;
-  static_assert(!std::is_same<typeDec_, NullOpt>::value, 
+  static_assert(is_different<typeDec_, NullOpt>::value, 
     "Cannot create an optional NullOpt.");
-  static_assert(!std::is_same<typeDec_, in_place_t>::value, 
+  static_assert(is_different<typeDec_, in_place_t>::value, 
     "Cannot create an optional in_place_t.");
 
   FICONSTEXPR bool active() CNOEXCEPT {
@@ -121,7 +117,7 @@ private:
   void initialize(Args&&...args) 
    noexcept(noexcept(type_(FWD(args)...))) {
     EFLI_DBGASSERT_(!this->active());
-    (void) H::xx11::construct(
+    (void) X11::construct(
       pdata(), FWD(args)...);
     H::OptionBase<T>::active_ = true;
   }
@@ -132,21 +128,23 @@ public:
   constexpr Option(NullOpt) NOEXCEPT : H::OptionBase<T>() { }
 
   template <typename U = T, MEflEnableIf(
-    std::is_constructible<T, U&&>::value &&
-    !std::is_same<decay_t<T>, Option<T>>::value &&
-    !std::is_same<decay_t<T>, in_place_t>::value)>
+   conjunction<
+    is_constructible<T, U&&>,
+    is_different<decay_t<T>, Option<T>>,
+    is_different<decay_t<T>, in_place_t>
+   >::value)>
   constexpr Option(U&& u) 
    : H::OptionBase<T>(H::cxpr_forward<U>(u)) { }
 
   Option(const Option& op) : H::OptionBase<T>() {
     if(op.hasValue()) {
-      (void) H::xx11::construct(pdata(), *op);
+      (void) X11::construct(pdata(), *op);
       H::OptionBase<T>::active_ = true;
     }
   }
 
   Option(Option&& op) noexcept(
-   std::is_nothrow_move_constructible<T>::value)
+   is_nothrow_move_constructible<T>::value)
    : H::OptionBase<T>() {
     if(op.hasValue()) {
       (void) X11::construct(pdata(), std::move(*op));
@@ -155,7 +153,7 @@ public:
   }
 
   template <typename U, MEflEnableIf(
-    std::is_constructible<T, const U&>::value)>
+    is_constructible<T, const U&>::value)>
   Option(const Option<T>& op)
    : H::OptionBase<T>() {
     if(op.hasValue()) {
@@ -165,9 +163,9 @@ public:
   }
 
   template <typename U, MEflEnableIf(
-    std::is_constructible<T, U&&>::value)>
+    is_constructible<T, U&&>::value)>
   Option(Option<T>&& op) noexcept(
-   std::is_nothrow_constructible<T, U&&>::value)
+   is_nothrow_constructible<T, U&&>::value)
    : H::OptionBase<T>() {
     if(op.hasValue()) {
       (void) X11::construct(
@@ -204,8 +202,8 @@ public:
   }
 
   Option& operator=(Option&& op) noexcept(
-   std::is_nothrow_move_constructible<T>::value &&
-   std::is_nothrow_move_assignable<T>::value) {
+   is_nothrow_move_constructible<T>::value &&
+   is_nothrow_move_assignable<T>::value) {
     if(op.active()) {
       if(this->active()) {
         this->unwrap() = std::move(*op);
@@ -217,7 +215,7 @@ public:
   }
 
   template <typename U, MEflEnableIf(
-    std::is_constructible<type_, U>::value)>
+    is_constructible<type_, U>::value)>
   Option& operator=(U&& u) {
     if(this->active()) {
       this->unwrap() = FWD(u);
@@ -267,23 +265,29 @@ public:
     return this->has_value();
   }
 
-  ALWAYS_INLINE EFLI_OPMUTCXPR_ type_& unwrap()& {
+  EFLI_CXX14_CXPR_ type_& unwrap()& {
     EFLI_CXPRASSERT_(this->active());
     return H::OptionBase<T>::data_.data_;
   }
 
-  EFLI_OPMUTCXPR_ type_&& unwrap()&& {
+  EFLI_CXX14_CXPR_ type_&& unwrap()&& {
     EFLI_CXPRASSERT_(this->active());
     return H::cxpr_move(
       H::OptionBase<T>::data_.data_);
   }
 
-  FICONSTEXPR const T& unwrap() CONST& {
+  constexpr const T& unwrap() CONST& {
     EFLI_OPCXPRASSERT_(this->active());
     return H::OptionBase<T>::data_.data_;
   }
 
-  EFLI_OPMUTCXPR_ type_* operator->() {
+  constexpr const T& unwrap() CONST&& {
+    EFLI_OPCXPRASSERT_(this->active());
+    return H::cxpr_move(
+      H::OptionBase<T>::data_.data_);
+  }
+
+  EFLI_CXX14_CXPR_ type_* operator->() {
     EFLI_DBGASSERT_(this->active());
     return this->pdata();
   }
@@ -293,12 +297,12 @@ public:
     return this->pdata();
   }
 
-  EFLI_OPMUTCXPR_ type_& operator*()& {
+  EFLI_CXX14_CXPR_ type_& operator*()& {
     EFLI_DBGASSERT_(this->active());
     return this->unwrap();
   }
 
-  EFLI_OPMUTCXPR_ type_&& operator*()&& {
+  EFLI_CXX14_CXPR_ type_&& operator*()&& {
     EFLI_DBGASSERT_(this->active());
     return H::cxpr_move(this->unwrap());
   }
@@ -314,7 +318,7 @@ public:
   }
 
   template <typename U>
-  EFLI_OPMUTCXPR_ T unwrapOr(U&& u) CONST& {
+  constexpr T unwrapOr(U&& u) CONST& {
     if(this->active()) {
       return this->unwrap();
     } else {
@@ -324,7 +328,7 @@ public:
   }
 
   template <typename U>
-  EFLI_OPMUTCXPR_ T unwrapOr(U&& u)&& {
+  EFLI_CXX14_CXPR_ T unwrapOr(U&& u)&& {
     if(this->active()) {
       return EFLI_CXPRMV_(this->unwrap());
     } else {
@@ -336,7 +340,7 @@ public:
   //=== Monads (Not fully supported) ===//
 
   template <typename F>
-  EFLI_OPMUTCXPR_ auto andThen(F&& f)& 
+  EFLI_CXX14_CXPR_ auto andThen(F&& f)& 
    -> remove_cvref_t<invoke_result_t<F, T&>> {
     if(this->active()) {
       return H::cxpr_forward<F>(f)(**this);
@@ -347,7 +351,7 @@ public:
   }
 
   template <typename F>
-  EFLI_OPMUTCXPR_ auto andThen(F&& f)&&
+  EFLI_CXX14_CXPR_ auto andThen(F&& f)&&
    -> remove_cvref_t<invoke_result_t<F, T&&>> {
     if(this->active()) {
       return H::cxpr_forward<F>(f)(
@@ -359,7 +363,7 @@ public:
   }
 
   template <typename F>
-  EFLI_OPMUTCXPR_ auto andThen(F&& f) CONST& 
+  constexpr auto andThen(F&& f) CONST& 
    -> remove_cvref_t<invoke_result_t<F, const T&>> {
     if(this->active()) {
       return H::cxpr_forward<F>(f)(**this);
@@ -370,7 +374,7 @@ public:
   }
 
   template <typename F>
-  EFLI_OPMUTCXPR_ auto andThen(F&& f) CONST&&
+  constexpr auto andThen(F&& f) CONST&&
    -> remove_cvref_t<invoke_result_t<F, const T&&>> {
     if(this->active()) {
       return H::cxpr_forward<F>(f)(
@@ -380,13 +384,30 @@ public:
         invoke_result_t<F, const T&&>>{ };
     }
   }
+
+  template <typename F>
+  EFLI_CXX14_CXPR_ Option orElse(F&& f)&& {
+    MEflESAssert(is_same<Option, 
+      invoke_result_t<F>>::value);
+    return (this->active()) ? 
+      H::cxpr_move(*this) : 
+      H::cxpr_forward<F>(f)();
+  }
+
+  template <typename F>
+  constexpr Option orElse(F&& f) CONST& {
+    MEflESAssert(is_same<Option, 
+      invoke_result_t<F>>::value);
+    return (this->active()) ? 
+      *this : H::cxpr_forward<F>(f)();
+  }
 };
 } // namespace C
 } // namespace efl
 #endif
 
 #undef EFLI_OPCXPRASSERT_
-#undef EFLI_OPMUTCXPR_
+#undef EFLI_CXX14_CXPR_
 
 #include "Option/Compare.hpp"
 #include "Option/Helpers.hpp"
