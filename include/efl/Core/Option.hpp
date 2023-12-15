@@ -28,9 +28,9 @@
 #ifndef EFL_CORE_OPTION_HPP
 #define EFL_CORE_OPTION_HPP
 
+#include "_Builtins.hpp"
+#include "_Fwd/Option.hpp"
 #include "AlignedStorage.hpp"
-#include "Builtins_.hpp"
-#include "Fwd_/Option.hpp"
 #include "Option/Cxx14Base.hpp"
 
 LLVM_IGNORED("-Wc++14-extensions")
@@ -45,6 +45,7 @@ GNU_IGNORED("-Wc++14-extensions")
 
 #if CPPVER_LEAST(17)
 namespace efl::C {
+/// Wrapper around `std::optional<...>`.
 template <typename T>
 struct Option : std::optional<T> {
   using baseType_ = std::optional<T>;
@@ -85,6 +86,7 @@ Option(T) -> Option<T>;
 #else
 namespace efl {
 namespace C {
+/// C++11/14 optional implementation.
 template <typename T>
 struct Option : private H::OptionBase<T> {
 private:

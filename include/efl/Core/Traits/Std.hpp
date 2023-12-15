@@ -440,8 +440,8 @@ USE_(reference_converts_from_temporary_v)
 #undef USEV_
 #undef USE_
 
-#include <efl/Core/Fwd_/Option.hpp>
-#include <efl/Core/Fwd_/Ref.hpp>
+#include <efl/Core/_Fwd/Option.hpp>
+#include <efl/Core/_Fwd/Ref.hpp>
 
 //=== Extras ===//
 namespace efl {

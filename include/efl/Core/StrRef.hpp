@@ -17,7 +17,7 @@
 //===----------------------------------------------------------------===//
 //
 //  C++11 compatible reimplementation of std::string_view,
-//  with some extra utility functions.
+//  with some extra utility functions. Based on llvm's implementation.
 //
 //===----------------------------------------------------------------===//
 
@@ -26,5 +26,10 @@
 #ifndef EFL_CORE_STRREF_HPP
 #define EFL_CORE_STRREF_HPP
 
+namespace efl {
+namespace C {
+
+} // namespace C
+} // namespace efl
 
 #endif // EFL_CORE_STRREF_HPP

@@ -49,8 +49,8 @@ template <typename Void,
 struct IsInvokable : FalseType { };
 
 template <typename F, typename...Args>
-struct IsInvokable<decltype(void(std::declval<F>()(
- std::declval<Args>()...))), F, Args...> : TrueType { };
+struct IsInvokable<decltype(void(Decl<F>()(
+ Decl<Args>()...))), F, Args...> : TrueType { };
 } // namespace H
 
 template <typename F, typename...Args>

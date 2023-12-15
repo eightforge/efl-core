@@ -26,7 +26,7 @@
 #ifndef EFL_CORE_SCOPEDMTX_HPP
 #define EFL_CORE_SCOPEDMTX_HPP
 
-#include <efl/Core/Fwd_/Mtx.hpp>
+#include <efl/Core/_Fwd/Mtx.hpp>
 #include "Traits.hpp"
 #if CPPVER_MOST(14)
 # include <tuple>
@@ -94,7 +94,7 @@ namespace H {
     }
   };
 } // namespace H
-
+/// Wrapper around `std::mutex`.
 using Mtx = H::Mtx<
   H::MtxHasNativeHandle::value>;
 
