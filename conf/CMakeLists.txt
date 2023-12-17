@@ -1,0 +1,1 @@
+# C:\msys64\mingw64\bin\clang++.exe -DEFL_CONFIG_VERSION="1.1.2" -DEFL_CORE_VERSION="0.1.1" @CMakeFiles/efl-core-tests.dir/includes_CXX.rsp -E  -g -std=gnu++11 -o CMakeFiles\efl-core-tests.dir\Tests.cpp.obj -c C:\Users\alex\Documents\GitHub\efl-core\Tests.cpp

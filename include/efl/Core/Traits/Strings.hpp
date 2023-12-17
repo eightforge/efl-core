@@ -32,27 +32,43 @@
 namespace efl::C::H {
 template <typename T, T...CC>
 struct BLitC {
-  using value_type = T;
-  using type = T(&)[sizeof...(CC)];
-  static constexpr T data[sizeof...(CC)] { CC... };
+  static constexpr SzType size_ = sizeof...(CC);
+  using Type_ = array_or_dummy_t<const T, size_>;
+  using value_type = char;
+  using data_type = Type_&;
+  using type = BLitC;
+  static constexpr Type_ data { CC... };
 public:
+  static constexpr SzType size() 
+   NOEXCEPT { return sizeof...(CC); }
   static constexpr SzType Size() 
    NOEXCEPT { return sizeof...(CC); }
-  static constexpr type Data() 
+  static constexpr data_type Data() 
    NOEXCEPT { return BLitC::data; }
+  //=== STL-like functions ===//
+  constexpr T operator[](SzType n)
+   const NOEXCEPT { return BLitC::data[n]; }
 };
 
 template <char...CC>
 struct BLitC<char, CC...> {
+  static constexpr SzType size_ = sizeof...(CC);
+  using Type_ = array_or_dummy_t<const T, size_>;
   using value_type = char;
-  using type = const char(&)[sizeof...(CC)];
-  static constexpr char data[sizeof...(CC)] { CC... };
+  using data_type = Type_&;
+  using type = BLitC;
+  static constexpr Type_ data { CC... };
 public:
+  static constexpr SzType size() 
+   NOEXCEPT { return sizeof...(CC); }
   static constexpr SzType Size() 
    NOEXCEPT { return sizeof...(CC); }
-  static constexpr type Data() 
+  static constexpr data_type Data() 
    NOEXCEPT { return BLitC::data; }
   // TODO: Add conversions...
+  //=== STL-like functions ===//
+  constexpr T operator[](SzType n)
+   const NOEXCEPT { return BLitC::data[n]; }
 };
 
 template <typename T>
@@ -65,6 +81,8 @@ struct BLitC<T> {
 namespace xx20 {
   template <SzType N>
   struct StrLit {
+    static constexpr SzType size_ = N;
+  public:
     CONSTEVAL StrLit(const char(&lit)[N]) 
      : StrLit(lit, MkSzSeq<N>{}) { }
 
@@ -73,6 +91,8 @@ namespace xx20 {
      : data{ lit[II]... } { }
     
     FICONSTEXPR static SzType Size() 
+     NOEXCEPT { return N; }
+    FICONSTEXPR static SzType size() 
      NOEXCEPT { return N; }
 
   public:
@@ -87,7 +107,7 @@ namespace xx20 {
 template <xx20::StrLit S>
 using LitC = decltype(
   xx20::gen_litc<S>(
-    MkSzSeq<S.Size()>{}));
+    MkSzSeq<S.size_>{}));
 # endif // C++20
 } // namespace efl::C::H
 #endif // C++17

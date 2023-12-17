@@ -29,6 +29,7 @@
 #include "Traits/Macros.hpp"    // MEflUnwrap, MEflEnableIf, MEflHasTrait, ...
 #include "Traits/StdInt.hpp"    // [Int|Bool]C, Mk?[Int|Sz]Seq, ...
 #include "Traits/Std.hpp"       // <type_traits>
+#include "Traits/Wrappers.hpp"  // [Type|Value]C, [Type|Value]Seq, ...
 #include "Traits/Strings.hpp"   // BLitC<...>, LitC
 #include "Traits/Functions.hpp" // forward, move, construct, addressof ...
 #include "Traits/Invoke.hpp"    // invoke, is_invokable, invoke_result
@@ -115,11 +116,33 @@ namespace H {
   using MkIdSeq = MkIntSeq<IdType, N>;
 } // namespace H
 
+/// Global `IdType` constant.
 template <H::IdType I>
 GLOBAL H::Id<I> Ix { };
 
+/// Global type constant.
+template <typename T>
+GLOBAL H::TypeC<T> Tx { };
+
+#if CPPVER_LEAST(17)
+/// Global value constant.
+template <auto V>
+GLOBAL H::ValueC<decltype(V), V> Vx { };
+#endif
+
+/// Global constant for `MkIdSeq`.
 template <H::IdType N>
 GLOBAL H::MkIdSeq<N> Is { };
+
+/// Global type sequence constant.
+template <typename...TT>
+GLOBAL H::TypeSeq<TT...> Ts { };
+
+#if CPPVER_LEAST(17)
+/// Global value sequence constant.
+template <auto...VV>
+GLOBAL H::AutoSeq<VV...> Vs { };
+#endif
 
 # if CPPVER_LEAST(20)
 namespace xx20 { 

@@ -31,6 +31,11 @@
 #include <type_traits>
 #include "_Builtins.hpp"
 
+#undef FWD_CAST
+/// Simple, `static_cast` based forwarding.
+/// Prefer `std::forward` or `X11::cxpr_forward`.
+#define FWD_CAST(e) static_cast<decltype(e)&&>(e)
+
 // TODO: Actually check for __int128/__float128 support if possible.
 
 static_assert(CHAR_BIT == 8, 
@@ -86,7 +91,7 @@ namespace H {
     /// same size as `float`, making f64 impossible.
     template <typename T>
     struct F64DeductionHelper<T, false, false> {
-      enum X { f64DeductionFailure = 0 };
+      enum { f64DeductionFailure = 0 };
       static_assert(sizeof(T) == f64DeductionFailure, 
         "No floating point type larger than `float`.");
     };
@@ -108,7 +113,13 @@ using f128 = __float128;
 
 namespace H {
   /// "Empty" type.
-  struct Dummy { };
+  struct Dummy {
+    /// Identity function, returns the input.
+    template <typename T>
+    constexpr T&& operator[](T&& t) const NOEXCEPT { 
+      return static_cast<decltype(t)&&>(t); 
+    }
+  };
   /// Type used for generic values in TMP.
   /// TODO: Profile best integral type
   using IdType = long;
@@ -123,7 +134,16 @@ template <typename T, H::SzType N>
 using array_t = T[N];
 
 template <H::SzType N>
-using str_literal_t = array_t<const char, N>&;
+using carray_t = array_t<const char, N>;
+
+/// Returns an array of type `T` if N > 0,
+/// or `Dummy` if N == 0.
+template <H::SzType N>
+using array_or_dummy_t = T[N];
+
+/// Dummy specialization.
+template <>
+using array_or_dummy_t<0U> = H::Dummy;
 
 } // namespace C
 } // namespace efl

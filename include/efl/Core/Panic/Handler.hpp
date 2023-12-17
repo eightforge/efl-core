@@ -28,6 +28,15 @@
 #include <efl/Core/Fundamental.hpp>
 #include <efl/Core/_Builtins.hpp>
 
+#if CPPVER_LEAST(23) && \
+ __has_include(<stacktrace>)
+# define EFLI_PANIC_STACKTRACE_ 1
+#elif __has_include(<cpptrace/cpptrace.hpp>)
+# define EFLI_PANIC_CPPTRACE_ 1
+#else
+# define EFLI_PANIC_NOTRACE_ 1
+#endif // Has cpptrace?
+
 namespace efl {
 namespace C {
 namespace H {

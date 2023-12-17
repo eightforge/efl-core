@@ -1,4 +1,4 @@
-//===- Core/Builtins_.hpp -------------------------------------------===//
+//===- Core/_Builtins.hpp -------------------------------------------===//
 //
 // Copyright (C) 2023 Eightfold
 //
@@ -22,40 +22,17 @@
 
 #pragma once
 
-#ifndef EFLI_CORE_BUILTINS__HPP
-#define EFLI_CORE_BUILTINS__HPP
+#ifndef EFLH_CORE_BUILTINS_HPP
+#define EFLH_CORE_BUILTINS_HPP
 
 #include <CoreCommon/ConfigCache.hpp>
+
 #if __has_include(<bits/c++config.h>)
 # include <bits/c++config.h>
 # define EFLI_STL_GLIBCXX_
 #elif __has_include(<__config>)
 # include <__config>
 # define EFLI_STL_LIBCPP_
-#endif
-
-// C++11 constexpr
-#define EFLI_CXX11_CXPR_ constexpr
-
-// C++14 constexpr
-#if CPPVER_LEAST(14)
-# define EFLI_CXX14_CXPR_ constexpr
-#else
-# define EFLI_CXX14_CXPR_
-#endif
-
-// C++17 constexpr
-#if CPPVER_LEAST(17)
-# define EFLI_CXX17_CXPR_ constexpr
-#else
-# define EFLI_CXX17_CXPR_
-#endif
-
-// C++20 constexpr
-#if CPPVER_LEAST(20)
-# define EFLI_CXX20_CXPR_ constexpr
-#else
-# define EFLI_CXX20_CXPR_
 #endif
 
 #if (__cpp_if_consteval >= 202106L)
@@ -215,4 +192,4 @@ namespace efl::C::H::xx20 {
 # define EFLI_QABORT_() ::efl::config::unreachable()
 #endif
 
-#endif // EFLI_CORE_BUILTINS__HPP
+#endif // EFLH_CORE_BUILTINS_HPP

@@ -1,10 +1,4 @@
-#include <efl/Core/Fundamental.hpp>
-#include <efl/Core/Traits.hpp>
-#include <efl/Core/Ref.hpp>
-#include <efl/Core/Option.hpp>
-#if CPPVER_LEAST(17)
-# include <efl/Core/Tuple.hpp>
-#endif
+#include <efl/Core.hpp>
 #include <iostream>
 
 namespace C = efl::C;

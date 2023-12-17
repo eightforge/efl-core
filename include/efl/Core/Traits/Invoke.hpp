@@ -161,7 +161,7 @@ namespace invoke_ {
  * callable or not.
  */
 template <typename F, typename...Args>
-FIconstEXPR auto invoke(F&& f, Args&&...args) noexcept(
+FICONSTEXPR auto invoke(F&& f, Args&&...args) noexcept(
  noexcept(invoke_::InvokeHelper<F>{}(
    cxpr_forward<F>(f), cxpr_forward<Args>(args)...)))
  -> decltype(invoke_::InvokeHelper<F>{}(

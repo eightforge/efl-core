@@ -32,10 +32,13 @@ namespace efl {
 namespace C {
 template <typename T>
 struct Option;
-/// Decays `T` before passing to `Option<...>`.
-template <typename T>
-using SOption = Option<
-  typename std::decay<T>::type>;
+
+namespace H {
+  /// Decays `T` before passing to `Option<...>`.
+  template <typename T>
+  using decay_option_t = Option<
+    typename std::decay<T>::type>;
+} // namespace H
 } // namespace C
 } // namespace efl
 

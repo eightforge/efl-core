@@ -9,9 +9,16 @@ project(
 
 option(EFL_CORE_PANICGUARD "Use a mutex for the panic handler." ON)
 option(EFL_CORE_PANICSINGLE "Only allow the panic handler to be set once." OFF)
+option(EFL_CORE_TESTING "Enable testing for efl::core." OFF)
 
 message("[efl::core] panic-guard: ${EFL_CORE_PANICGUARD}")
 message("[efl::core] panic-single: ${EFL_CORE_PANICSINGLE}")
+
+if(EFL_CORE_TESTING)
+  message("[efl::core] core-tests: ${EFL_CORE_TESTING}")
+else()
+  message(DEBUG "[efl::core] core-tests: ${EFL_CORE_TESTING}")
+endif()
 
 set(CMAKE_CXX_STANDARD 11)
 add_subdirectory(src) # EFL_CORE_SRCS

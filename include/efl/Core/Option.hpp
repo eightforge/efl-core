@@ -28,10 +28,11 @@
 #ifndef EFL_CORE_OPTION_HPP
 #define EFL_CORE_OPTION_HPP
 
-#include "_Builtins.hpp"
 #include "_Fwd/Option.hpp"
 #include "AlignedStorage.hpp"
 #include "Option/Cxx14Base.hpp"
+#include "_Builtins.hpp"
+#include "_Version.hpp"
 
 LLVM_IGNORED("-Wc++14-extensions")
 GNU_IGNORED("-Wc++14-extensions")

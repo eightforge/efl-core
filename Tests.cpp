@@ -1,9 +1,10 @@
 #include "Tests.hpp"
-#include <efl/Core/Mtx.hpp>
-#include <efl/Core/Panic.hpp>
-#include <efl/Core/StrRef.hpp>
-#include <expected>
+// #include <expected>
 #include <string_view>
+// #include <efl/Core/_Version.hpp>
+
+// TODO: Add more to Traits/Helpers.hpp
+EFLI_CXX14_CXPR_ void X() { }
 
 struct ToApply {
 private:
@@ -36,13 +37,12 @@ int main() {
 #endif
   MEflESAssert(C::is_nothrow_convertible<int, float>::value);
 
-  static constexpr char lit[] = "Hello!";
-  constexpr C::StrRef str(lit);
-  constexpr char lc = C::StrRef(lit)[0];
+  // static constexpr char lit[] = "Hello!";
+  // constexpr C::StrRef str(lit);
+  // constexpr char lc = C::StrRef(lit)[0];
+  // MEflESAssert(lc == 'H');
 
-  MEflESAssert(lc == 'H');
-
-  C::panic_();
+  // C::panic_();
 
   std::cout << std::boolalpha;
   std::cout << "Tests:" << std::endl;

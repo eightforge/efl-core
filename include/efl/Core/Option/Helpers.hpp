@@ -32,8 +32,8 @@
 namespace efl {
 namespace C {
 template <typename T>
-constexpr SOption<T> make_option(T&& t) {
-  return SOption<T> { FWD(t) };
+constexpr Option<decay_t<T>> make_option(T&& t) {
+  return Option<decay_t<T>> { FWD(t) };
 }
 
 template <typename T, typename...TT>

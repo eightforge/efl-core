@@ -29,10 +29,13 @@
 #include <algorithm>
 #include <cstring>
 #include <string>
-#include "Traits.hpp"
 #if CPPVER_LEAST(17)
 # include <string_view>
 #endif
+
+#include "Traits.hpp"
+#include "_Builtins.hpp"
+#include "_Version.hpp"
 
 LLVM_IGNORED("-Wc++14-extensions")
 GNU_IGNORED("-Wc++14-extensions")
@@ -104,7 +107,7 @@ public:
   
   /// Constructs from a `const char(&)[N]`.
   template <H::SzType N>
-  constexpr StrRef(str_literal_t<N> str) NOEXCEPT
+  constexpr StrRef(carray_t<N>& str) NOEXCEPT
    : data_(str), size_(N) { }
   
   /// Constructs from a `Str`.
@@ -121,32 +124,30 @@ public:
 
   //=== Iterators ===//
 
-  constexpr iterator begin() const { 
-    return data_; 
-  
-  }
-  constexpr iterator end() const { 
-    return data_ + size_; 
-  }
+  constexpr iterator begin() const
+  { return data_; }
 
-  constexpr iterator cbegin() const { 
-    return data_; 
-  }
+  constexpr iterator end() const
+  { return data_ + size_; } 
 
-  constexpr iterator cend() const { 
-    return data_ + size_; 
-  }
+  constexpr iterator cbegin() const
+  { return data_; }
+
+  constexpr iterator cend() const
+  { return data_ + size_; } 
 
   //=== Element Access ===//
 
   /// Get character at `n`, returns `const char&`.
-  constexpr const char& operator[](size_type n) const& {
+  NODISCARD constexpr const char& 
+   operator[](size_type n) const& {
     EFLI_SRCXPRASSERT_(n < size_);
     return data_[n];
   }
 
   /// Get character at `n`, returns `char`.
-  constexpr char operator[](size_type n) const&& {
+  NODISCARD constexpr char 
+   operator[](size_type n) const&& {
     EFLI_SRCXPRASSERT_(n < size_);
     return data_[n];
   }
@@ -154,35 +155,95 @@ public:
   // TODO: at(n) -> panic()?
 
   /// Get first character, returns `const char&`.
-  constexpr const char& front() const& {
+  NODISCARD constexpr const char& front() const& {
     EFLI_SRCXPRASSERT_(!isEmpty());
     return data_[0];
   }
 
   /// Get first character, returns `char`.
-  constexpr char front() const&& {
+  NODISCARD constexpr char front() const&& {
     EFLI_SRCXPRASSERT_(!isEmpty());
     return data_[0];
   }
 
   /// Get last character, returns `const char&`.
-  constexpr const char& back() const& {
+  NODISCARD constexpr const char& back() const& {
     EFLI_SRCXPRASSERT_(!isEmpty());
     return data_[size_ - 1];
   }
 
   /// Get last character, returns `char`.
-  constexpr char back() const&& {
+  NODISCARD constexpr char back() const&& {
     EFLI_SRCXPRASSERT_(!isEmpty());
     return data_[size_ - 1];
   }
 
   //=== Capacity ===//
 
+  /// Get a pointer to the beginning of the string.
+  EFLI_CXX17_CXPR_ const char* data() const 
+  { return data_; }
+
   /// Get the size of the string.
-  constexpr size_type size() const { return size_; }
+  constexpr size_type size() const 
+  { return size_; }
+
   /// Check if the string is empty (`size() == 0`).
-  constexpr bool isEmpty() const { return size_ == 0; }
+  constexpr bool isEmpty() const 
+  { return size_ == 0; }
+
+  //=== Modifiers ===//
+
+  /// Remove `n` characters from the start of the string.
+  EFLI_CXX14_CXPR_ void removePrefix(size_type n) {
+    EFLI_DBGASSERT_(n <= size_);
+    this->data_ += n;
+    this->size_ -= n;
+  }
+
+  /// Remove `n` characters from the end of the string.
+  EFLI_CXX14_CXPR_ void removeSuffix(size_type n) {
+    EFLI_DBGASSERT_(n <= size_);
+    this->size_ -= n;
+  }
+
+  /// Remove `sizeof(s) - 1` characters from the start of the string.
+  /// Useful for things like `sv.removePrefixWith("abc")`.
+  template <H::SzType N>
+  EFLI_CXX14_CXPR_ void removePrefixWith(carray_t<N>&) {
+    EFLI_DBGASSERT_((N - 1) <= size_);
+    this->data_ += (N - 1);
+    this->size_ -= (N - 1);
+  }
+
+  /// Remove `sizeof(s) - 1` characters from the end of the string.
+  /// Useful for things like `sv.removeSuffixWith("xyz")`.
+  template <H::SzType N>
+  EFLI_CXX14_CXPR_ void removeSuffixWith(carray_t<N>&) {
+    EFLI_DBGASSERT_((N - 1) <= size_);
+    this->size_ -= (N - 1);
+  }
+
+  /// Swaps `s` with `*this`.
+  EFLI_CXX14_CXPR_ void swap(StrRef& s) noexcept {
+    StrRef tmp = *this;
+    *this = s;
+    s = tmp;
+  }
+
+  //=== Operations ===//
+
+  EFLI_CXX20_CXPR_ size_type copy(Type* dst, 
+   size_type count, size_type pos = 0) const {
+    EFLI_CXPRASSERT_(pos <= size_);
+    size_type rcount = count > (size_ - pos) ? 
+      (size_ - pos) : count;
+    Type* odst = Traits::copy(
+      dst, (data_ + count), rcount);
+    return static_cast<size_type>(odst - dst);
+  }
+
+  // TODO: snipPrefix, snipSuffix, consume, 
 
 public:
   const char* data_ = nullptr;
