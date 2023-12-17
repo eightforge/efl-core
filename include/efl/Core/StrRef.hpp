@@ -196,7 +196,7 @@ public:
 
   /// Remove `n` characters from the start of the string.
   EFLI_CXX14_CXPR_ void removePrefix(size_type n) {
-    EFLI_DBGASSERT_(n <= size_);
+    EFLI_DBGASSERT_(data_ && n <= size_);
     this->data_ += n;
     this->size_ -= n;
   }
@@ -211,7 +211,7 @@ public:
   /// Useful for things like `sv.removePrefixWith("abc")`.
   template <H::SzType N>
   EFLI_CXX14_CXPR_ void removePrefixWith(carray_t<N>&) {
-    EFLI_DBGASSERT_((N - 1) <= size_);
+    EFLI_DBGASSERT_(data_ && (N - 1) <= size_);
     this->data_ += (N - 1);
     this->size_ -= (N - 1);
   }
@@ -243,7 +243,17 @@ public:
     return static_cast<size_type>(odst - dst);
   }
 
-  // TODO: snipPrefix, snipSuffix, consume, 
+  // TODO: consume,
+
+  constexpr StrRef snipPrefix(size_type n) const {
+    EFLI_SRCXPRASSERT_(data_ && n <= size_);
+    return { data_ + n, size_ - n };
+  }
+
+  constexpr StrRef snipSuffix(size_type n) const {
+    EFLI_SRCXPRASSERT_(n <= size_);
+    return { data_, size_ - n };
+  }
 
 public:
   const char* data_ = nullptr;

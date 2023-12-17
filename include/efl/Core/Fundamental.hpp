@@ -136,15 +136,25 @@ using array_t = T[N];
 template <H::SzType N>
 using carray_t = array_t<const char, N>;
 
+namespace H {
+namespace fundamental_ {
+  template <typename T, SzType N>
+  struct ArrayOrDummy {
+    using Type = T[N];
+  };
+
+  template <typename T>
+  struct ArrayOrDummy<T, 0U> {
+    using Type = Dummy;
+  };
+} // namespace fundamental_
+} // namespace H
+
 /// Returns an array of type `T` if N > 0,
 /// or `Dummy` if N == 0.
-template <H::SzType N>
-using array_or_dummy_t = T[N];
-
-/// Dummy specialization.
-template <>
-using array_or_dummy_t<0U> = H::Dummy;
-
+template <typename T, H::SzType N>
+using array_or_dummy_t = typename
+  H::fundamental_::ArrayOrDummy<T, N>::Type;
 } // namespace C
 } // namespace efl
 

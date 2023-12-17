@@ -37,10 +37,14 @@ int main() {
 #endif
   MEflESAssert(C::is_nothrow_convertible<int, float>::value);
 
-  // static constexpr char lit[] = "Hello!";
-  // constexpr C::StrRef str(lit);
-  // constexpr char lc = C::StrRef(lit)[0];
-  // MEflESAssert(lc == 'H');
+  static constexpr char lit[] = "Hello!";
+  constexpr C::StrRef str(lit);
+  constexpr char lc = C::StrRef(lit)[0];
+  MEflESAssert(lc == 'H');
+
+  constexpr C::StrRef sl = 
+    str.snipPrefix(2).snipSuffix(2);
+  MEflESAssert(sl[0] == 'l' && sl[1] == 'l');
 
   // C::panic_();
 

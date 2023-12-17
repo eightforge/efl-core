@@ -135,28 +135,4 @@
   EFL_TCAT(name, __LINE__, _)
 #endif // Counter Check
 
-// // C++11 constexpr
-// #define EFLI_CXX11_CXPR_ constexpr
-// 
-// // C++14 constexpr
-// #if CPPVER_LEAST(14)
-// # define EFLI_CXX14_CXPR_ constexpr
-// #else
-// # define EFLI_CXX14_CXPR_
-// #endif
-// 
-// // C++17 constexpr
-// #if CPPVER_LEAST(17)
-// # define EFLI_CXX17_CXPR_ constexpr
-// #else
-// # define EFLI_CXX17_CXPR_
-// #endif
-// 
-// // C++20 constexpr
-// #if CPPVER_LEAST(20)
-// # define EFLI_CXX20_CXPR_ constexpr
-// #else
-// # define EFLI_CXX20_CXPR_
-// #endif
-
 #endif // EFL_CORE_TRAITS_MACROS_HPP

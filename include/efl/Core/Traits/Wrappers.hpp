@@ -98,9 +98,9 @@ struct TypeSeq {
   using type = TypeSeq;
 public:
   static constexpr SzType size() 
-   NOEXCEPT { return sizeof...(II); }
+   NOEXCEPT { return sizeof...(TT); }
   static constexpr SzType Size() 
-   NOEXCEPT { return sizeof...(II); }
+   NOEXCEPT { return sizeof...(TT); }
 };
 
 /// Wrapper for sequences of similar types.
