@@ -63,7 +63,7 @@ namespace H {
 
   /// Wrapper around `DirectMutex`.
   template <> struct Mtx<true> : DirectMutex {
-    FICONSTEXPR static bool HasNativeHandle() {
+    static constexpr bool HasNativeHandle() {
       return true;
     }
 
@@ -80,7 +80,7 @@ namespace H {
   /// Wrapper around `DirectMutex`.
   /// `native_handle()` does NOT exist.
   template <> struct Mtx<false> : DirectMutex {
-    FICONSTEXPR static bool HasNativeHandle() {
+    static constexpr bool HasNativeHandle() {
       return false;
     }
 

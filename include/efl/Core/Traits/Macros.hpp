@@ -21,6 +21,9 @@
 #ifndef EFL_CORE_TRAITS_MACROS_HPP
 #define EFL_CORE_TRAITS_MACROS_HPP
 
+#define EFL_COLD_PATH ::efl::C::H::AssignmentInvoker \
+  EFLI_UNIQUE_VAR_(err_) = [&]() EFLI_COLD_PATH_
+
 /**
  * Used for optional constraints. Do NOT expect this 
  * to work if the constraint is involved with overload resolution.
@@ -62,6 +65,7 @@
 //=== Implementation ===//
 
 #include <CoreCommon/ConfigCache.hpp>
+#include <efl/Core/_Builtins.hpp>
 
 #if CPPVER_LEAST(20)
 # define EFLI_OREQUIRES_(...) requires(__VA_ARGS__)
@@ -84,7 +88,7 @@
 // Full trait
 # define EFLI_HAS_TRAIT_(name, ...)       \
   EFLI_HAS_TRAIT_B_(name)                 \
-  EFLI_HAS_TRAIT_D_(name, ##__VA_ARGS__)  \
+  EFLI_HAS_TRAIT_D_(name, __VA_ARGS__)    \
   EFLI_HAS_TRAIT_V_(name)
 #elif defined(COMPILER_GCC)
 // # pragma message "Using C++14 trait extensions."
@@ -134,5 +138,17 @@
 # define EFLI_UNIQUE_VAR_(name) \
   EFL_TCAT(name, __LINE__, _)
 #endif // Counter Check
+
+namespace efl {
+namespace C {
+namespace H {
+struct AssignmentInvoker {
+  template <typename F>
+  ALWAYS_INLINE AssignmentInvoker(F&& f) 
+  { FWD_CAST(f)(); }
+};
+} // namespace H
+} // namespace C
+} // namespace efl
 
 #endif // EFL_CORE_TRAITS_MACROS_HPP

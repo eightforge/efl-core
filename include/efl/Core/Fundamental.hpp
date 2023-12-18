@@ -25,16 +25,12 @@
 #ifndef EFL_CORE_FUNDAMENTAL_HPP
 #define EFL_CORE_FUNDAMENTAL_HPP
 
+#include <cfloat>
 #include <cstddef>
 #include <cstdint>
 #include <initializer_list>
 #include <type_traits>
 #include "_Builtins.hpp"
-
-#undef FWD_CAST
-/// Simple, `static_cast` based forwarding.
-/// Prefer `std::forward` or `X11::cxpr_forward`.
-#define FWD_CAST(e) static_cast<decltype(e)&&>(e)
 
 // TODO: Actually check for __int128/__float128 support if possible.
 
@@ -108,6 +104,54 @@ using f64 = typename H::f64_deduced;
 #if EFLI_HAS_F128_
 using f128 = __float128;
 #endif
+
+//=== Limits ===//
+
+namespace H {
+  /// Maximum size of an integer `T`.
+  template <typename T>
+  struct Max {
+    static constexpr T value = std::is_signed<T>::value ? 
+      (T{0} << (sizeof(T) * CHAR_BIT - 1)) + 1 : ~T{0};
+  };
+
+  template <> 
+  struct Max<bool> {
+    static constexpr bool value = true;
+  };
+
+  template <> 
+  struct Max<float> {
+    static constexpr float value = FLT_MAX;
+  };
+
+  template <> 
+  struct Max<double> {
+    static constexpr double value = DBL_MAX;
+  };
+
+  /// Maximum size of an integer `T`.
+  template <typename T>
+  struct Min {
+    static constexpr T value = std::is_signed<T>::value ? 
+      -(Max<T>::value - 1) : 0;
+  };
+
+  template <> 
+  struct Min<bool> {
+    static constexpr bool value = false;
+  };
+
+  template <> 
+  struct Min<float> {
+    static constexpr float value = FLT_MIN;
+  };
+
+  template <> 
+  struct Min<double> {
+    static constexpr double value = DBL_MIN;
+  };
+} // namespace H
 
 //=== Extra Types ===//
 

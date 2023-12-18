@@ -26,6 +26,24 @@
 #define EFLH_CORE_BUILTINS_HPP
 
 #include <CoreCommon/ConfigCache.hpp>
+#include <CoreCommon/Multithreaded.hpp>
+
+/// Simple, `static_cast` based forwarding.
+/// Prefer `std::forward` or `X11::cxpr_forward`.
+#define FWD_CAST(e) static_cast<decltype(e)&&>(e)
+
+/// Gives the compiler a hint, may help with optimization.
+#define EFL_ASSUME(...) EFLI_CORE_ASSUME_((__VA_ARGS__))
+
+/// For use inside statements, assume true.
+#define EFL_LIKELY(...) EFLI_EXPECT_TRUE_((__VA_ARGS__))
+/// For use inside statements, assume false.
+#define EFL_LIKELY(...) EFLI_EXPECT_FALSE_((__VA_ARGS__))
+
+/// Marks code as unlikely to be executed.
+#define EFL_COLD_PATH EFLI_COLD_PATH_
+
+//=== Implementation ===//
 
 #if __has_include(<bits/c++config.h>)
 # include <bits/c++config.h>
@@ -70,14 +88,14 @@
 #elif __has_builtin(__builtin_expect) || defined(__GNUC__)
 # define EFLI_CORE_EXPECT_(expr, val) 
   __builtin_expect((expr), val)
-#elif CPPVER_LEAST(20)
+#elif CPPVER_LEAST(20) || (CPPVER_LEAST(11) && defined(__clang__))
 # define EFLI_CORE_EXPECT_(expr, val) ::efl::C::X20:: \
   expect_outcome_<decltype((expr)), (val)>((expr))
 namespace efl::C::H::xx20 {
   template <typename T, T V>
   AGGRESSIVE_INLINE constexpr T expect_outcome_(T in) {
-    if(in == V) [[likely]] { return V; }
-    else [[unlikely]] { return in; }
+    if(in == V) LIKELY { return V; }
+    else UNLIKELY { return in; }
   }
 } // namespace efl::C::H::xx20   
 #else
@@ -91,13 +109,15 @@ namespace efl::C::H::xx20 {
   EFLI_CORE_EXPECT_(static_cast<ty>(expr), \
     static_cast<ty>(val))
 #define EFLI_EXPECT_TRUE_(...) \
-  EFLI_TEXPECT_(bool, 1, (__VA_ARGS__))
+  EFLI_TEXPECT_(bool, true, (__VA_ARGS__))
 #define EFLI_EXPECT_FALSE_(...) \
-  EFLI_TEXPECT_(bool, 0, (__VA_ARGS__))
+  EFLI_TEXPECT_(bool, false, (__VA_ARGS__))
 
+#if CPPVER_LEAST(23)
+# define EFLI_CORE_ASSUME_(expr) [[assume(expr)]]
 // Clang has optimization issues with `@llvm.assume`, so
 // we just don't use it. If it is fixed we will remove the check.
-#if !defined(COMPILER_CLANG) && __has_builtin(__builtin_assume)
+#elif !defined(COMPILER_CLANG) && __has_builtin(__builtin_assume)
 # define EFLI_CORE_ASSUME_(expr) \
   (__builtin_assume(static_cast<bool>(expr)))
 #elif __has_builtin(__builtin_unreachable) || defined(__GNUC__)
@@ -159,6 +179,15 @@ namespace efl::C::H::xx20 {
   EFLI_CXPRASSERT_IMPL_(bool(__VA_ARGS__))
 #endif
 
+#if EFL_HAS_CPP_ATTRIBUTE(gnu::cold) && \
+  EFL_HAS_CPP_ATTRIBUTE(gnu::noinline)
+# define EFLI_COLD_PATH_ [[gnu::cold, gnu::noinline]]
+#elif defined(__GNUC__)
+# define EFLI_COLD_PATH_ __attribute__((cold, noinline))
+#else
+# define EFLI_COLD_PATH_ NOINLINE
+#endif
+
 // Explicitly constexpr assert & constexpr-able assert impl.
 #if (EFLI_HAS_CXPREVAL_ == 1) && CPPVER_LEAST(14)
 # define EFLI_XCXPRASSERT_(...) \
@@ -188,13 +217,17 @@ namespace efl::C::H::xx20 {
   EFLI_XCXPRASSERT_(__VA_ARGS__)
 #endif // Debug Check
 
-// TODO: EFLI_QABORT_
-#if __has_builtin(__builtin_trap) || defined(__GNUC__)
-# define EFLI_QABORT_() __builtin_trap();
-#elif defined(COMPILER_MSVC)
-# define EFLI_QABORT_() __debugbreak()
+#if COMPILER_DEBUG
+extern "C" {
+# if defined(PLATFORM_WINDOWS)
+  NORETURN void __cdecl abort(void); // NOLINT 
+# else // Unix?
+  NORETURN void abort(void); // NOLINT 
+# endif
+}
+# define EFLI_QABORT_() ::abort()
 #else
-# define EFLI_QABORT_() EFL_UNREACHABLE()
+# define EFLI_QABORT_() EFLI_TRAP_()
 #endif
 
 #if __has_builtin(__builtin_trap) || defined(__GNUC__)

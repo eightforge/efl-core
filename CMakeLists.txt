@@ -7,10 +7,15 @@ project(
   LANGUAGES CXX
 )
 
+option(EFL_MULTITHREADED "Enable testing for efl::core." ON)
+option(EFL_CORE_TESTING "Enable testing for efl::core." OFF)
 option(EFL_CORE_PANICGUARD "Use a mutex for the panic handler." ON)
 option(EFL_CORE_PANICSINGLE "Only allow the panic handler to be set once." OFF)
-option(EFL_CORE_TESTING "Enable testing for efl::core." OFF)
 
+set(__EFL_MULTITHREADED ${EFL_MULTITHREADED} CACHE
+  BOOL "Caches multithreaded selection to avoid odr violations.")
+
+message("[efl::core] is-multithreaded: ${__EFL_MULTITHREADED}")
 message("[efl::core] panic-guard: ${EFL_CORE_PANICGUARD}")
 message("[efl::core] panic-single: ${EFL_CORE_PANICSINGLE}")
 
@@ -29,13 +34,9 @@ add_library(__efl_core STATIC ${EFL_CORE_SRCS})
 target_link_libraries(__efl_core PUBLIC efl::config)
 target_include_directories(__efl_core PUBLIC include)
 
-if(EFL_CORE_PANICGUARD)
-  target_compile_definitions(__efl_core PRIVATE EFLI_PANICGUARD_=1)
-endif()
-
-if(EFL_CORE_PANICSINGLE)
-  target_compile_definitions(__efl_core PRIVATE EFLI_PANICSINGLE_=1)
-endif()
+target_compile_definitions(__efl_core PUBLIC "EFL_MULTITHREADED=$<BOOL:${__EFL_MULTITHREADED}>")
+target_compile_definitions(__efl_core PRIVATE "EFLI_PANICGUARD_=$<BOOL:${EFL_CORE_PANICGUARD}>")
+target_compile_definitions(__efl_core PRIVATE "EFLI_PANICSINGLE_=$<BOOL:${EFL_CORE_PANICSINGLE}>")
 
 target_include_directories(__efl_core PRIVATE include/efl)
 target_compile_definitions(__efl_core PUBLIC EFL_CORE_VERSION="${PROJECT_VERSION}")

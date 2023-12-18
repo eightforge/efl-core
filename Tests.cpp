@@ -43,14 +43,14 @@ int main() {
   MEflESAssert(!HasCallable<Y>);
 #endif
   MEflESAssert(C::is_nothrow_convertible<int, float>::value);
+  std::cout << std::boolalpha;
 
   char third_arg = 'a';
+  std::cout << "Is multithreaded: " << efl::is_multithreaded() << std::endl;
   // auto annotated = std::make_unique<AnnotationTest>(77, 9.0f, &third_arg);
   // C::panic_();
 
-  std::cout << std::boolalpha;
   std::cout << "Tests:" << std::endl;
-
   auto tup = std::make_tuple("Hello!", ' ', "I ", 4, 'M', " G", 0, 'D');
   HH::apply(ToApply{}, tup);
 

@@ -35,7 +35,8 @@ using namespace efl;
 
 namespace HH {
 struct THandlerInit {
-  C::THandler operator()() CNOEXCEPT {
+  EFLI_COLD_PATH_
+  C::THandler operator()() const NOEXCEPT {
     // The default terminate callback
     // should exist by this point.
     return std::get_terminate();
@@ -56,6 +57,7 @@ namespace {
 } // namespace `anonymous`
 
 /// Invokes the standard terminate handler.
+EFLI_COLD_PATH_
 NORETURN static void std_thandler_() {
   THandler thandler = HH::default_thandle_();
   if(EFLI_EXPECT_TRUE_(thandler)) {
@@ -75,6 +77,7 @@ NORETURN static void std_thandler_() {
 }
 
 /// Custom terminate handler.
+EFLI_COLD_PATH_
 NORETURN static void panic_thandler_() {
   EFLI_PANIC_LOCK_();
   ExPtr e = std::current_exception();
@@ -98,6 +101,7 @@ NORETURN static void panic_thandler_() {
 } // namespace C
 } // namespace efl
 
+EFLI_COLD_PATH_
 void C::panic_() {
   throw C::PanicInstance { };
 }
@@ -105,7 +109,8 @@ void C::panic_() {
 //=== Panic Handler Setter ===//
 namespace HH {
 struct PanicHandlerSetter {
-  void operator()() CNOEXCEPT {
+  EFLI_COLD_PATH_
+  void operator()() const NOEXCEPT {
     std::set_terminate(&C::panic_thandler_);
   }
 };
