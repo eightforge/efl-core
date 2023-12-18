@@ -64,10 +64,10 @@
 
 // Optimization hints to a bunch of different compilers.
 // They essentially go in decreasing order of strength.
-#if __has_builtin(__builtin_expect_with_probability)
+#if __has_builtin(__builtin_expect_with_probability) || (__GNUC__ >= 9)
 # define EFLI_CORE_EXPECT_(expr, val) \
   __builtin_expect_with_probability((expr), val, 1.0)
-#elif __has_builtin(__builtin_expect)
+#elif __has_builtin(__builtin_expect) || defined(__GNUC__)
 # define EFLI_CORE_EXPECT_(expr, val) 
   __builtin_expect((expr), val)
 #elif CPPVER_LEAST(20)
@@ -75,7 +75,7 @@
   expect_outcome_<decltype((expr)), (val)>((expr))
 namespace efl::C::H::xx20 {
   template <typename T, T V>
-  FICONSTEXPR T expect_outcome_(T in) {
+  AGGRESSIVE_INLINE constexpr T expect_outcome_(T in) {
     if(in == V) [[likely]] { return V; }
     else [[unlikely]] { return in; }
   }
@@ -100,7 +100,7 @@ namespace efl::C::H::xx20 {
 #if !defined(COMPILER_CLANG) && __has_builtin(__builtin_assume)
 # define EFLI_CORE_ASSUME_(expr) \
   (__builtin_assume(static_cast<bool>(expr)))
-#elif __has_builtin(__builtin_unreachable)
+#elif __has_builtin(__builtin_unreachable) || defined(__GNUC__)
 # define EFLI_CORE_ASSUME_(expr) \
   do { if(!(expr)) __builtin_unreachable(); } while(0)
 #elif defined(COMPILER_MSVC)
@@ -189,13 +189,29 @@ namespace efl::C::H::xx20 {
 #endif // Debug Check
 
 // TODO: EFLI_QABORT_
-#if defined(COMPILER_GCC) || \
- defined(COMPILER_ICC) || defined(COMPILER_CLANG)
+#if __has_builtin(__builtin_trap) || defined(__GNUC__)
 # define EFLI_QABORT_() __builtin_trap();
 #elif defined(COMPILER_MSVC)
 # define EFLI_QABORT_() __debugbreak()
 #else
-# define EFLI_QABORT_() ::efl::config::unreachable()
+# define EFLI_QABORT_() EFL_UNREACHABLE()
+#endif
+
+#if __has_builtin(__builtin_trap) || defined(__GNUC__)
+# define EFLI_TRAP_() __builtin_trap();
+#elif defined(COMPILER_MSVC)
+# define EFLI_TRAP_() __debugbreak()
+#else
+# define EFLI_TRAP_() \
+  *reinterpret_cast<volatile int*>(0x11) = 0
+#endif
+
+#if __has_builtin(__builtin_debugtrap)
+# define EFLI_DBGTRAP_() __builtin_debugtrap()
+#elif defined(COMPILER_MSVC)
+# define EFLI_DBGTRAP_() __debugbreak()
+#else
+# define EFLI_DBGTRAP_()
 #endif
 
 #endif // EFLH_CORE_BUILTINS_HPP

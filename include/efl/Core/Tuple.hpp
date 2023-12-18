@@ -38,25 +38,25 @@ template <IdType I, typename T>
 struct TupleLeaf { T data_; };
 
 template <IdType I, typename T>
-FICONSTEXPR T& extract_leaf(
+AGGRESSIVE_INLINE constexpr T& extract_leaf(
  TupleLeaf<I, T>& l) NOEXCEPT {
   return l.data_;
 }
 
 template <IdType I, typename T>
-FICONSTEXPR T&& extract_leaf(
+AGGRESSIVE_INLINE constexpr T&& extract_leaf(
  TupleLeaf<I, T>&& l) NOEXCEPT {
   return static_cast<T&&>(l.data_);
 }
 
 template <IdType I, typename T>
-FICONSTEXPR const T& extract_leaf(
+AGGRESSIVE_INLINE constexpr const T& extract_leaf(
  const TupleLeaf<I, T>& l) NOEXCEPT {
   return l.data_;
 }
 
 template <IdType I, typename T>
-FICONSTEXPR const T&& extract_leaf(
+AGGRESSIVE_INLINE constexpr const T&& extract_leaf(
  const TupleLeaf<I, T>&& l) NOEXCEPT {
   return static_cast<const T&&>(l.data_);
 }
@@ -81,25 +81,25 @@ struct TupleArr {
 };
 
 template <IdType I, IdType N, typename T>
-FICONSTEXPR T& extract_leaf(
+AGGRESSIVE_INLINE constexpr T& extract_leaf(
  TupleArr<N, T>& l) NOEXCEPT {
   return l.data_[N];
 }
 
 template <IdType I, IdType N, typename T>
-FICONSTEXPR T&& extract_leaf(
+AGGRESSIVE_INLINE constexpr T&& extract_leaf(
  TupleArr<N, T>&& l) NOEXCEPT {
   return static_cast<T&&>(l.data_[N]);
 }
 
 template <IdType I, IdType N, typename T>
-FICONSTEXPR const T& extract_leaf(
+AGGRESSIVE_INLINE constexpr const T& extract_leaf(
  const TupleArr<N, T>& l) NOEXCEPT {
   return l.data_[N];
 }
 
 template <IdType I, IdType N, typename T>
-FICONSTEXPR const T&& extract_leaf(
+AGGRESSIVE_INLINE constexpr const T&& extract_leaf(
  const TupleArr<N, T>&& l) NOEXCEPT {
   return static_cast<const T&&>(l.data_[N]);
 }
@@ -198,7 +198,7 @@ Tuple(TT&&...) -> Tuple<std::decay_t<TT>...>;
  * into a tuple (Tuple<TT&...>).
  */
 template <typename...TT>
-FICONSTEXPR auto tie(TT&...tt) -> Tuple<TT&...> {
+constexpr auto tie(TT&...tt) -> Tuple<TT&...> {
   return { tt... };
 }
 

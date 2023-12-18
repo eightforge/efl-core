@@ -73,7 +73,7 @@ using Str = std::string;
  * Internals are public, meaning this can be used
  * as a template parameter.
  */
-struct GSL_POINTER(char) StrRef {
+struct GSL_POINTER StrRef {
   using Type = char;
   using value_type = char;
   using iterator = const char*;
