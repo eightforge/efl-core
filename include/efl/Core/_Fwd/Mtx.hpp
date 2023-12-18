@@ -25,9 +25,10 @@
 #define EFL_CORE_FWD__MTX_HPP
 
 #include <CoreCommon/ConfigCache.hpp>
+#include <efl/Core/_Builtins.hpp>
 #include <mutex>
 
-#ifdef __cpp_lib_scoped_lock
+#if defined(__cpp_lib_scoped_lock) && EFLI_HAS_ALIAS_UCTAD_
 # define EFLI_SCOPED_LOCK_(...) ::efl::C::ScopedLock \
    EFLI_UNIQUE_VAR_(_v_guard)(__VA_ARGS__)
 #else

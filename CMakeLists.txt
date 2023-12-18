@@ -20,7 +20,7 @@ else()
   message(DEBUG "[efl::core] core-tests: ${EFL_CORE_TESTING}")
 endif()
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 20)
 add_subdirectory(src) # EFL_CORE_SRCS
 include(EflGetModules)
 Efl_Getmodules(efl::config)

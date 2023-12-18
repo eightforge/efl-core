@@ -101,6 +101,11 @@ using Mtx = H::Mtx<
 #ifdef __cpp_lib_scoped_lock
 template <typename...TT>
 using ScopedLock = ::std::scoped_lock<TT...>;
+
+# if EFLI_HAS_ALIAS_UCTAD_
+template <typename...TT>
+ScopedLock(TT&...) -> ScopedLock<TT...>;
+# endif // Alias Deduction Guides (C++20)
 #else
 namespace H {
   struct ScopedUnlocker {
@@ -155,6 +160,7 @@ private:
 template <typename MT>
 struct ScopedLock<MT> {
   using mutex_type = MT;
+public:
   ALWAYS_INLINE explicit ScopedLock(MT& mt) : mtx_(mt) { mt.lock(); }
   explicit ScopedLock(AdoptLock, MT& mt) NOEXCEPT : mtx_(mt) { }
 

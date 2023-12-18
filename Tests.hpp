@@ -91,6 +91,17 @@ void ref_tests() {
   std::cout << "ri: " << ri << '\n';
 }
 
+void strref_tests() {
+  static constexpr char lit[] = "Hello!";
+  constexpr C::StrRef str(lit);
+  constexpr char lc = C::StrRef(lit)[0];
+  MEflESAssert(lc == 'H');
+
+  constexpr C::StrRef sl = 
+    str.snipPrefix(2).snipSuffix(2);
+  MEflESAssert(sl[0] == 'l' && sl[1] == 'l');
+}
+
 int option_tests() {
   constexpr C::Option<C::i32> i32_op {1};
   C::i32 i = MEflUnwrap(i32_op) + 4;

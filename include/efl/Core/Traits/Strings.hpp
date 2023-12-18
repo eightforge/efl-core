@@ -53,7 +53,7 @@ public:
 template <char...CC>
 struct BLitC<char, CC...> {
   static constexpr SzType size_ = sizeof...(CC);
-  using Type_ = array_or_dummy_t<const T, size_>;
+  using Type_ = array_or_dummy_t<const char, size_>;
   using value_type = char;
   using data_type = Type_&;
   using type = BLitC;
@@ -67,7 +67,7 @@ public:
    NOEXCEPT { return BLitC::data; }
   // TODO: Add conversions...
   //=== STL-like functions ===//
-  constexpr T operator[](SzType n)
+  constexpr char operator[](SzType n)
    const NOEXCEPT { return BLitC::data[n]; }
 };
 

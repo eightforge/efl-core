@@ -108,9 +108,9 @@ USEV_(alignment_of)
 USEV_(rank)
 USEV_EX_(extent)
 
-USEV_(is_same)
-USEV_(is_base_of)
-USEV_(is_convertible)
+USEV_EX_(is_same)
+USEV_EX_(is_base_of)
+USEV_EX_(is_convertible)
 
 USET_(remove_cv)
 USET_(remove_const)

@@ -55,6 +55,44 @@ namespace H {
   
   template <template <typename...> class F, typename...Args>
   struct Lazy_ : F<Args...> { };
+
+  namespace logical_ {
+    template <typename...>
+    using ExpandToTrue = TrueType;
+
+    template <typename...TT>
+    ExpandToTrue<enable_if_<TT::value>...> 
+     and_helper_(int); // NOLINT
+    
+    template <typename...>
+    FalseType and_helper_(...); // NOLINT
+
+    template <bool>
+    struct TOr;
+
+    template <>
+    struct TOr<true> {
+      template <class, typename Arg, typename...Args>
+      using Type_ = typename TOr<!bool(Arg::value) &&
+        sizeof...(Args) != 0>::template Type_<Arg, Args...>;
+    };
+
+    template <>
+    struct TOr<false> {
+      template <class R, typename...>
+      using Type_ = R;
+    };
+  } // namespace logical_
+
+  template <typename...TT>
+  using And = decltype(logical_::and_helper_<TT...>(0));
+
+  template <typename...TT>
+  using Or = typename logical_::TOr<
+    sizeof...(TT) != 0>::template Type_<FalseType, TT...>;
+  
+  template <typename T>
+  using Not = H::BoolC<!bool(T::value)>;
 } // namespace H
 
 //=== C++11 Traits ===//
@@ -131,44 +169,6 @@ namespace H {
       swap_::TIsNothrowSwappableWith::
       template Test<T, U>(0));
   };
-
-  namespace logical_ {
-    template <typename...>
-    using ExpandToTrue = TrueType;
-
-    template <typename...TT>
-    ExpandToTrue<enable_if_<TT::value>...> 
-     and_helper_(int); // NOLINT
-    
-    template <typename...>
-    FalseType and_helper_(...); // NOLINT
-
-    template <bool>
-    struct TOr;
-
-    template <>
-    struct TOr<true> {
-      template <class, typename Arg, typename...Args>
-      using Type_ = typename TOr<!bool(Arg::value) &&
-        sizeof...(Args) != 0>::template Type_<Arg, Args...>;
-    };
-
-    template <>
-    struct TOr<false> {
-      template <class R, typename...>
-      using Type_ = R;
-    };
-  } // namespace logical_
-
-  template <typename...TT>
-  using And = decltype(logical_::and_helper_<TT...>(0));
-
-  template <typename...TT>
-  using Or = typename logical_::TOr<
-    sizeof...(TT) != 0>::template Type_<FalseType, TT...>;
-  
-  template <typename T>
-  using Not = H::BoolC<!bool(T::value)>;
 } // namespace H
 
 template <typename T, typename U>
@@ -183,7 +183,7 @@ template <typename T, typename U>
 struct is_nothrow_swappable_with 
  : H::IsNothrowSwappableWith<T, U>::type { };
 
-template <typename T, typename U>
+template <typename T>
 struct is_nothrow_swappable
  : H::IsNothrowSwappableWith<T, T>::type { };
 
@@ -221,11 +221,13 @@ USE_(is_unbounded_array)
 USE_(remove_cvref)
 USE_(type_identity)
 // Member relationships
+# ifdef __cpp_lib_is_pointer_interconvertible
 USE_(is_pointer_interconvertible_base_of)
 USE_(is_pointer_interconvertible_with_class) // Function
 // Unimplementible
 USE_(is_layout_compatible)
 USE_(is_corresponding_member) // Function
+# endif // is_pointer_interconvertible_...
 #else
 namespace H {
   /// For is_nothrow_convertible
@@ -244,11 +246,11 @@ namespace H {
     conv_::is_nothrow_convertible_<T, U>()) { };
 } // namespace H
 
-template <typename T, typename U>
+template <typename From, typename To>
 struct is_nothrow_convertible
- : H::Or<H::And<is_void<T>, is_void<U>>,
-  H::Lazy_<H::And, is_convertible<T, U>, 
-    H::IsNothrowConvertible<T, U>>>::type { };
+ : H::Or<H::And<is_void<From>, is_void<To>>,
+  H::Lazy_<H::And, is_convertible<From, To>, 
+    H::IsNothrowConvertible<From, To>>>::type { };
 
 template <typename T>
 struct is_bounded_array : H::FalseType { };
@@ -340,6 +342,19 @@ using common_type_t = typename
 
 // Value Exceptions
 #if defined(EFLI_EXCLUDE_VEXCEPTIONS_)
+// Type checks
+template <typename T, typename U>
+GLOBAL bool is_same_v =
+  std::is_same<T, U>::value;
+
+template <typename From, typename To>
+GLOBAL bool is_convertible_v =
+  std::is_convertible<From, To>::value;
+
+template <typename Base, typename Derived>
+GLOBAL bool is_base_of_v =
+  std::is_base_of<Base, Derived>::value;
+
 // Constructible
 template <typename T, typename...Args>
 GLOBAL bool is_constructible_v =
@@ -385,7 +400,6 @@ USEV_(is_null_pointer)
 USEV_(is_swappable)
 USEV_(is_nothrow_swappable)
 USEV_(negation)
-USEV_(is_nothrow_convertible)
 USEV_(is_bounded_array)
 USEV_(is_unbounded_array)
 USEV_(is_scoped_enum)
@@ -395,15 +409,19 @@ template <typename T, typename U>
 GLOBAL bool is_swappable_with_v = 
   is_swappable_with<T, U>::value;
 
-emplate <typename T, typename U>
+template <typename T, typename U>
 GLOBAL bool is_nothrow_swappable_with_v = 
   is_nothrow_swappable_with<T, U>::value;
 
-emplate <typename...TT>
+template <typename From, typename To>
+GLOBAL bool is_nothrow_convertible_v = 
+  is_nothrow_convertible<From, To>::value;
+
+template <typename...TT>
 GLOBAL bool conjunction_v = 
   conjunction<TT...>::value;
 
-emplate <typename...TT>
+template <typename...TT>
 GLOBAL bool disjunction_v = 
   disjunction<TT...>::value;
 #endif
@@ -424,8 +442,10 @@ using void_t = typename
 #endif
 
 #if CPPVER_LEAST(20)
+# ifdef __cpp_lib_is_pointer_interconvertible
 USE_(is_pointer_interconvertible_base_of_v)
 USE_(is_layout_compatible_v)
+# endif
 #endif
 
 #if CPPVER_LEAST(23)

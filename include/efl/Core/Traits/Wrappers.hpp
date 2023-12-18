@@ -32,8 +32,10 @@
 namespace efl {
 namespace C {
 namespace H {
-/// Wrapper for types.
-/// Allows for deferred construction.
+/**
+ * @brief A wrapper for types.
+ * Allows for deferred construction.
+ */
 template <typename T>
 struct TypeC {
   static constexpr SzType size_ = sizeof(T);
@@ -140,7 +142,7 @@ namespace traits_ {
 
 template <auto...VV>
 using MkValueSeq = typename
-  H::MkValueSeq<VV...>::Type;
+  traits_::MkValueSeq<VV...>::Type;
 
 template <auto V>
 using AutoC = ValueC<decltype(V), V>;
@@ -149,7 +151,6 @@ using AutoC = ValueC<decltype(V), V>;
 template <auto...VV>
 struct AutoSeq {
   static constexpr SzType size_ = sizeof...(VV);
-  using value_type = T;
   using type = AutoSeq;
 public:
   static constexpr SzType size() 

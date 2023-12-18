@@ -35,6 +35,12 @@
 # define EFLI_STL_LIBCPP_
 #endif
 
+#if (__cpp_deduction_guides >= 201907L)
+# define EFLI_HAS_ALIAS_UCTAD_ 1
+#else
+# define EFLI_HAS_ALIAS_UCTAD_ 0
+#endif
+
 #if (__cpp_if_consteval >= 202106L)
 # include <type_traits>
 # define EFLI_HAS_CXPREVAL_ 1

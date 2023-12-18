@@ -1,10 +1,17 @@
 #include "Tests.hpp"
 // #include <expected>
 #include <string_view>
+#include <memory>
 // #include <efl/Core/_Version.hpp>
 
 // TODO: Add more to Traits/Helpers.hpp
-EFLI_CXX14_CXPR_ void X() { }
+// EFLI_CXX14_CXPR_ void X() { }
+
+struct AnnotationTest {
+  int first = 0;
+  float second = 3.0f;
+  void* third = nullptr;
+};
 
 struct ToApply {
 private:
@@ -37,15 +44,8 @@ int main() {
 #endif
   MEflESAssert(C::is_nothrow_convertible<int, float>::value);
 
-  static constexpr char lit[] = "Hello!";
-  constexpr C::StrRef str(lit);
-  constexpr char lc = C::StrRef(lit)[0];
-  MEflESAssert(lc == 'H');
-
-  constexpr C::StrRef sl = 
-    str.snipPrefix(2).snipSuffix(2);
-  MEflESAssert(sl[0] == 'l' && sl[1] == 'l');
-
+  char third_arg = 'a';
+  // auto annotated = std::make_unique<AnnotationTest>(77, 9.0f, &third_arg);
   // C::panic_();
 
   std::cout << std::boolalpha;
@@ -53,7 +53,7 @@ int main() {
 
   auto tup = std::make_tuple("Hello!", ' ', "I ", 4, 'M', " G", 0, 'D');
   HH::apply(ToApply{}, tup);
-  
+
 #if CPPVER_LEAST(20)
   using Lit = HH::LitC<"Hello">;
   constexpr auto lit = C::Ls<"world!">;
@@ -62,5 +62,6 @@ int main() {
 
   invoke_tests();
   ref_tests();
+  strref_tests();
   return option_tests();
 }
