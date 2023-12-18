@@ -30,6 +30,12 @@
 # define EFL_MULTITHREADED 1
 #endif
 
+#if EFL_MULTITHREADED
+# define EFL_THREADLOCAL THREAD_LOCAL
+#else
+# define EFL_THREADLOCAL
+#endif
+
 namespace efl {
   struct IsMultithreaded {
     static constexpr bool value = EFL_MULTITHREADED;

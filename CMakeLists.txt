@@ -7,6 +7,8 @@ project(
   LANGUAGES CXX
 )
 
+set(CMAKE_CXX_STANDARD 20)
+
 option(EFL_MULTITHREADED "Enable testing for efl::core." ON)
 option(EFL_CORE_TESTING "Enable testing for efl::core." OFF)
 option(EFL_CORE_PANICGUARD "Use a mutex for the panic handler." ON)
@@ -25,7 +27,6 @@ else()
   message(DEBUG "[efl::core] core-tests: ${EFL_CORE_TESTING}")
 endif()
 
-set(CMAKE_CXX_STANDARD 20)
 add_subdirectory(src) # EFL_CORE_SRCS
 include(EflGetModules)
 Efl_Getmodules(efl::config)

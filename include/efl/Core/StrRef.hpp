@@ -34,18 +34,10 @@
 #endif
 
 #include "Traits.hpp"
-#include "_Builtins.hpp"
+#include "_Cxx11Assert.hpp"
 #include "_Version.hpp"
 
-LLVM_IGNORED("-Wc++14-extensions")
-GNU_IGNORED("-Wc++14-extensions")
-
-#if CPPVER_LEAST(14) || (defined(COMPILER_GCC) || defined(COMPILER_CLANG))
-# define EFLI_SRCXPRASSERT_(...) \
-  EFLI_DBGASSERT_(__VA_ARGS__)
-#else
-# define EFLI_SRCXPRASSERT_(...) (void)(0)
-#endif
+EFLI_CXPR11ASSERT_PROLOGUE_
 
 #if CPPVER_MOST(14) && \
  __has_builtin(__builtin_strlen)
@@ -86,7 +78,7 @@ private:
 
   ALWAYS_INLINE static int Memcmp(
    const char* l, const char* r, size_type len) NOEXCEPT {
-    if(len == 0) return 0;
+    if(EFL_UNLIKELY(len == 0)) return 0;
     return std::memcmp(l, r, len);
   }
 
@@ -141,14 +133,14 @@ public:
   /// Get character at `n`, returns `const char&`.
   NODISCARD constexpr const char& 
    operator[](size_type n) const& {
-    EFLI_SRCXPRASSERT_(n < size_);
+    EFLI_CXPR11ASSERT_(n < size_);
     return data_[n];
   }
 
   /// Get character at `n`, returns `char`.
   NODISCARD constexpr char 
    operator[](size_type n) const&& {
-    EFLI_SRCXPRASSERT_(n < size_);
+    EFLI_CXPR11ASSERT_(n < size_);
     return data_[n];
   }
 
@@ -156,25 +148,25 @@ public:
 
   /// Get first character, returns `const char&`.
   NODISCARD constexpr const char& front() const& {
-    EFLI_SRCXPRASSERT_(!isEmpty());
+    EFLI_CXPR11ASSERT_(!isEmpty());
     return data_[0];
   }
 
   /// Get first character, returns `char`.
   NODISCARD constexpr char front() const&& {
-    EFLI_SRCXPRASSERT_(!isEmpty());
+    EFLI_CXPR11ASSERT_(!isEmpty());
     return data_[0];
   }
 
   /// Get last character, returns `const char&`.
   NODISCARD constexpr const char& back() const& {
-    EFLI_SRCXPRASSERT_(!isEmpty());
+    EFLI_CXPR11ASSERT_(!isEmpty());
     return data_[size_ - 1];
   }
 
   /// Get last character, returns `char`.
   NODISCARD constexpr char back() const&& {
-    EFLI_SRCXPRASSERT_(!isEmpty());
+    EFLI_CXPR11ASSERT_(!isEmpty());
     return data_[size_ - 1];
   }
 
@@ -246,12 +238,12 @@ public:
   // TODO: consume,
 
   constexpr StrRef snipPrefix(size_type n) const {
-    EFLI_SRCXPRASSERT_(data_ && n <= size_);
+    EFLI_CXPR11ASSERT_(data_ && n <= size_);
     return { data_ + n, size_ - n };
   }
 
   constexpr StrRef snipSuffix(size_type n) const {
-    EFLI_SRCXPRASSERT_(n <= size_);
+    EFLI_CXPR11ASSERT_(n <= size_);
     return { data_, size_ - n };
   }
 
@@ -266,7 +258,6 @@ public:
 #undef EFLI_CXPR_STRLEN_
 #undef EFLI_STRLEN_
 
-GNU_POP()
-LLVM_POP()
+EFLI_CXPR11ASSERT_EPILOGUE_
 
 #endif // EFL_CORE_STRREF_HPP

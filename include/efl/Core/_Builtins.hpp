@@ -34,12 +34,10 @@
 
 /// Gives the compiler a hint, may help with optimization.
 #define EFL_ASSUME(...) EFLI_CORE_ASSUME_((__VA_ARGS__))
-
 /// For use inside statements, assume true.
 #define EFL_LIKELY(...) EFLI_EXPECT_TRUE_((__VA_ARGS__))
 /// For use inside statements, assume false.
-#define EFL_LIKELY(...) EFLI_EXPECT_FALSE_((__VA_ARGS__))
-
+#define EFL_UNLIKELY(...) EFLI_EXPECT_FALSE_((__VA_ARGS__))
 /// Marks code as unlikely to be executed.
 #define EFL_COLD_PATH EFLI_COLD_PATH_
 

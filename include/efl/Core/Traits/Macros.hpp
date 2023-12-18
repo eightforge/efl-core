@@ -21,13 +21,13 @@
 #ifndef EFL_CORE_TRAITS_MACROS_HPP
 #define EFL_CORE_TRAITS_MACROS_HPP
 
-#define EFL_COLD_PATH ::efl::C::H::AssignmentInvoker \
+/// Stops code from being local/inlined and marks it as cold.
+/// This can help with things like error handling code.
+#define EFL_COLD_BRANCH ::efl::C::H::AssignmentInvoker \
   EFLI_UNIQUE_VAR_(err_) = [&]() EFLI_COLD_PATH_
 
-/**
- * Used for optional constraints. Do NOT expect this 
- * to work if the constraint is involved with overload resolution.
- */
+/// Used for optional constraints. Do NOT expect this 
+/// to work if the constraint is involved with overload resolution.
 #define MEflOptRequires(...) EFLI_REQUIRES_(__VA_ARGS__)
 
 /// Unwraps values using statement expressions (GNU/LLVM only).
@@ -40,7 +40,8 @@
 /// Wraps `core::void_t` for trait stuffs.
 #define MEflVoidT(...) ::efl::C::void_t<__VA_ARGS__>
 
-/// Creates an object with a "unique" name.
+/// Creates an object with a "unique" name. Avoid using 
+/// multiple in macros, as it won't work without `__COUNTER__`.
 #define MEflUniqueVar(name) EFLI_UNIQUE_VAR_(EFL_CAT(_v, name))
 
 /**

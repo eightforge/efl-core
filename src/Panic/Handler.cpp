@@ -33,33 +33,47 @@
 
 using namespace efl;
 
+NORETURN static void std_thandler_();
+NORETURN static void panic_thandler_();
+
 namespace HH {
 struct THandlerInit {
-  EFLI_COLD_PATH_
-  C::THandler operator()() const NOEXCEPT {
+  EFL_COLD_PATH C::THandler 
+   operator()() const NOEXCEPT {
     // The default terminate callback
     // should exist by this point.
     return std::get_terminate();
   }
 };
 
+struct PanicHandlerSetter {
+  EFL_COLD_PATH void operator()() const NOEXCEPT {
+    std::set_terminate(&panic_thandler_);
+  }
+};
+
+// Caches the default terminate_handler on startup.
 static const C::Preload<
   C::THandler, THandlerInit> default_thandle_ { };
+
+static const C::StaticExec<
+  PanicHandlerSetter> phandler_setter_ { };
 } // namespace HH
 
 //=== Underlying Panic Implementation ===//
-namespace efl {
-namespace C {
 namespace {
   struct PanicInstance {
     virtual ~PanicInstance() = default;
   };
 } // namespace `anonymous`
 
+void efl::C::panic_() {
+  throw PanicInstance { };
+}
+
 /// Invokes the standard terminate handler.
-EFLI_COLD_PATH_
-NORETURN static void std_thandler_() {
-  THandler thandler = HH::default_thandle_();
+EFL_COLD_PATH NORETURN void std_thandler_() {
+  C::THandler thandler = HH::default_thandle_();
   if(EFLI_EXPECT_TRUE_(thandler)) {
     try {
       thandler();
@@ -77,10 +91,9 @@ NORETURN static void std_thandler_() {
 }
 
 /// Custom terminate handler.
-EFLI_COLD_PATH_
-NORETURN static void panic_thandler_() {
+EFL_COLD_PATH NORETURN void panic_thandler_() {
   EFLI_PANIC_LOCK_();
-  ExPtr e = std::current_exception();
+  C::ExPtr e = std::current_exception();
   // Non-exception termination.
   if(!e) std_thandler_();
   try { std::rethrow_exception(e); }
@@ -94,27 +107,6 @@ NORETURN static void panic_thandler_() {
   // Normal uncaught exceptions, standard handling.
   catch(const std::exception&) { std_thandler_(); } 
   catch(...) { EFLI_QABORT_(); }
-  // You should never be here...
   EFL_UNREACHABLE();
 }
 
-} // namespace C
-} // namespace efl
-
-EFLI_COLD_PATH_
-void C::panic_() {
-  throw C::PanicInstance { };
-}
-
-//=== Panic Handler Setter ===//
-namespace HH {
-struct PanicHandlerSetter {
-  EFLI_COLD_PATH_
-  void operator()() const NOEXCEPT {
-    std::set_terminate(&C::panic_thandler_);
-  }
-};
-
-static const C::StaticExec<
-  PanicHandlerSetter> phandler_setter_ { };
-} // namespace HH

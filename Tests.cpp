@@ -2,7 +2,7 @@
 // #include <expected>
 #include <string_view>
 #include <memory>
-// #include <efl/Core/_Version.hpp>
+#include <efl/Core/Panic.hpp>
 
 // TODO: Add more to Traits/Helpers.hpp
 // EFLI_CXX14_CXPR_ void X() { }
@@ -47,8 +47,8 @@ int main() {
 
   char third_arg = 'a';
   std::cout << "Is multithreaded: " << efl::is_multithreaded() << std::endl;
-  // auto annotated = std::make_unique<AnnotationTest>(77, 9.0f, &third_arg);
-  // C::panic_();
+  auto annotated = std::make_unique<AnnotationTest>(77, 9.0f, &third_arg);
+  C::panic_();
 
   std::cout << "Tests:" << std::endl;
   auto tup = std::make_tuple("Hello!", ' ', "I ", 4, 'M', " G", 0, 'D');
