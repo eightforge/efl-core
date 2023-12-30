@@ -1,5 +1,5 @@
 #include "Tests.hpp"
-// #include <expected>
+#include <expected>
 #include <string_view>
 #include <memory>
 #include <efl/Core/Panic.hpp>
@@ -35,6 +35,19 @@ public:
   }
 };
 
+struct MyBase {
+  virtual ~MyBase() {}
+  virtual void saySomething() = 0;
+};
+
+struct Meower : MyBase {
+  void saySomething() override { printf("Meow!\n"); }
+};
+
+struct Woofer : MyBase {
+  void saySomething() override { printf("Woof!\n"); }
+};
+
 int main() {
 #if CPPVER_LEAST(14)
   MEflESAssert(!HasType<X>);
@@ -48,7 +61,9 @@ int main() {
   char third_arg = 'a';
   std::cout << "Is multithreaded: " << efl::is_multithreaded() << std::endl;
   auto annotated = std::make_unique<AnnotationTest>(77, 9.0f, &third_arg);
-  C::panic_();
+  // C::panic_();
+
+  C::Poly<MyBase, Meower, Woofer> poly { };
 
   std::cout << "Tests:" << std::endl;
   auto tup = std::make_tuple("Hello!", ' ', "I ", 4, 'M', " G", 0, 'D');

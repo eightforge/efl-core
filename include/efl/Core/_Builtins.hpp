@@ -166,8 +166,6 @@ namespace efl::C::H::xx20 {
 # endif
 #endif
 
-//=== Implementation ===//
-
 /// Constexpr-able assert.
 #if CPPVER_LEAST(14)
 # define EFLI_CXPRASSERT_(...) \

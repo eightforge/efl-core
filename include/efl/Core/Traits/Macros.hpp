@@ -28,7 +28,7 @@
 
 /// Used for optional constraints. Do NOT expect this 
 /// to work if the constraint is involved with overload resolution.
-#define MEflOptRequires(...) EFLI_REQUIRES_(__VA_ARGS__)
+#define MEflOptRequires(...) EFLI_OREQUIRES_(__VA_ARGS__)
 
 /// Unwraps values using statement expressions (GNU/LLVM only).
 #define MEflUnwrap(obj, ...) EFLI_UNWRAP_(obj, ##__VA_ARGS__)
@@ -79,7 +79,7 @@
 # define EFLI_UNWRAP_(obj, ...) \
   ({ if(!(obj).has_value()) return { __VA_ARGS__ }; (obj).unwrap(); })
 #else
-# define EFLI_UNWRAP(...) []() { \
+# define EFLI_UNWRAP_(...) []() { \
   constexpr bool Unavailable = false; \
   static_assert(Unavailable, "Unable to unwrap," \
   " statement expressions are not available on your compiler."); return 0; }()
