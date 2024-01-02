@@ -54,25 +54,24 @@ namespace H {
     std::derived_from<Derived, Base>);
 #endif // Concept Check (C++20)
 
-  template <typename T, H::SzType N>
+  template <typename T, H::SzType I>
   struct PolyNode {
     AGGRESSIVE_INLINE constexpr H::SzType 
      operator()(T* base) const NOEXCEPT 
-    { return N; }
+    { return I; }
 
     AGGRESSIVE_INLINE constexpr H::SzType 
      operator()(const T* base) const NOEXCEPT
-    { return N; }
+    { return I; }
 
-    ALWAYS_INLINE EFLI_CXX20_CXPR_
-#if CPPVER_LEAST(17)
-    bool
-#else
-    char
-#endif
-     operator()(TypeC<T>, H::SzType n, ubyte* ptr) const NOEXCEPT {
-      if(n == N) launder_cast<T>(ptr)->~T();
-      return '\0';
+    template <H::SzType N>
+    ALWAYS_INLINE EFLI_CXX20_CXPR_ char
+     operator()(TypeC<T>, H::SzType n, ubyte(&ptr)[N]) const NOEXCEPT {
+      if(n == I) {
+        launder_cast<T>(ptr)->~T();
+        return true;
+      }
+      return false;
     }
   };
 
@@ -115,6 +114,9 @@ struct Poly {
 
 public:
   constexpr Poly() = default;
+  // TODO: Implement these
+  Poly(const Poly&) = delete;
+  Poly(Poly&&) = delete;
   ~Poly() NOEXCEPT { this->clear(); }
 
   template <typename T, MEflEnableIf(matchesAny<T> && 
@@ -186,6 +188,14 @@ public:
     return launder_cast<const Base>(data_.data);
   }
 
+  H::launder_t<Base> get() NOEXCEPT {
+    return launder_cast<Base>(data_.data); 
+  }
+
+  H::launder_t<const Base> get() const NOEXCEPT {
+    return launder_cast<const Base>(data_.data); 
+  }
+
   Base* operator->() NOEXCEPT {
     EFLI_DBGASSERT_(this->holdsAny());
     return (Base*)(this->asBase());
@@ -196,8 +206,34 @@ public:
     return (const Base*)(this->asBase());
   }
 
-private:
+  template <typename T, 
+    MEflEnableIf(matchesAny<T>)>
+  T& forceCast()& NOEXCEPT {
+    EFLI_DBGASSERT_(this->holdsType<T>());
+    return *launder_cast<T>(data_.data);
+  }
+
+  template <typename T, 
+    MEflEnableIf(matchesAny<T>)>
+  const T& forceCast() const& NOEXCEPT {
+    EFLI_DBGASSERT_(this->holdsType<T>());
+    return *launder_cast<const T>(data_.data);
+  }
+
+  template <typename T, 
+    MEflEnableIf(matchesAny<T>)>
+  T&& forceCast()&& NOEXCEPT {
+    EFLI_DBGASSERT_(this->holdsType<T>());
+    return std::move(*launder_cast<T>(data_.data));
+  }
+
   void clear() NOEXCEPT {
+    this->clear_();
+    id_ = emptyState;
+  }
+
+private:
+  ALWAYS_INLINE void clear_() NOEXCEPT {
     if(!holdsAny()) return;
     else if(this->id_ == 0) {
       this->asBase()->~Base();
@@ -208,12 +244,35 @@ private:
     (void)((... || nodeValues_(
       H::TypeC<Derived>{}, id_, data_.data)));
 # else
-    char dd[sizeof...(Derived) + 1] = { 
-      nodeValues_(H::TypeC<Derived>{}, 
-        id_, data_.data)...
+    bool dd[sizeof...(Derived) + 1] = { 
+      (id_ == idValue<T> && 
+       nodeValues_(H::TypeC<Derived>{}, 
+        id_, data_.data))...
     };
     (void)dd;
 # endif
+  }
+
+  template <typename T>
+  bool assignPass(const Poly& rhs) {
+    bool holds = rhs.holdsType<T>();
+    if(holds) {
+      MAYBE_UNUSED auto* p = 
+       new (data_.data) 
+       T(rhs.forceCast<T>());
+    }
+    return holds;
+  }
+
+  template <typename T>
+  bool assignPass(Poly&& rhs) {
+    bool holds = rhs.holdsType<T>();
+    if(holds) {
+      MAYBE_UNUSED auto* p = 
+       new (data_.data) 
+       T(std::move(rhs.forceCast<T>()));
+    }
+    return holds;
   }
 
 private:

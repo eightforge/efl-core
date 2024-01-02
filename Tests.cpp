@@ -64,6 +64,8 @@ int main() {
   poly->saySomething();
   poly = Woofer();
   poly->saySomething();
+  poly.clear();
+  assert(!poly.holdsAny());
 
   char third_arg = 'a';
   std::cout << "Is multithreaded: " << efl::is_multithreaded() << std::endl;
