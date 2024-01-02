@@ -41,11 +41,11 @@ struct MyBase {
 };
 
 struct Meower : MyBase {
-  void saySomething() override { printf("Meow!\n"); }
+  void saySomething() override { std::printf("Meow!\n"); }
 };
 
 struct Woofer : MyBase {
-  void saySomething() override { printf("Woof!\n"); }
+  void saySomething() override { std::printf("Woof!\n"); }
 };
 
 int main() {
@@ -58,12 +58,17 @@ int main() {
   MEflESAssert(C::is_nothrow_convertible<int, float>::value);
   std::cout << std::boolalpha;
 
+  C::Poly<MyBase, Meower, Woofer> poly { };
+  poly.asBase();
+  poly = Meower();
+  poly->saySomething();
+  poly = Woofer();
+  poly->saySomething();
+
   char third_arg = 'a';
   std::cout << "Is multithreaded: " << efl::is_multithreaded() << std::endl;
   auto annotated = std::make_unique<AnnotationTest>(77, 9.0f, &third_arg);
   // C::panic_();
-
-  C::Poly<MyBase, Meower, Woofer> poly { };
 
   std::cout << "Tests:" << std::endl;
   auto tup = std::make_tuple("Hello!", ' ', "I ", 4, 'M', " G", 0, 'D');

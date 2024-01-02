@@ -1,6 +1,6 @@
 //===- Core/Casts.hpp -----------------------------------------------===//
 //
-// Copyright (C) 2023 Eightfold
+// Copyright (C) 2023-2024 Eightfold
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@
 #define EFL_CORE_CASTS_HPP
 
 #include "Traits.hpp"
+#include "Casts/Launder.hpp"
 #include "Casts/Pun.hpp"
 
 #if EFLI_BIT_CAST_ == 1
@@ -33,6 +34,9 @@
 #else
 # define EFLI_PUNCAST_CXPR_
 #endif
+
+/// Uses the available "laundering" function.
+#define EFL_LAUNDER(...) EFLI_LAUNDER_(__VA_ARGS__)
 
 namespace efl {
 namespace C {
@@ -50,6 +54,35 @@ FICONSTEXPR bool bool_cast(T&& t) noexcept(
   return static_cast<bool>(H::cxpr_move(t));    
 }
 
+/// Identical to `std::launder(t)`.
+template <typename T>
+EFLI_LAUNDERCAST_CXPR_ auto 
+ launder_cast(T* t) -> H::launder_t<T> {
+  return H::launder_wrap(t);
+}
+
+template <typename T>
+EFLI_LAUNDERCAST_CXPR_ auto 
+ launder_cast(void* vp) -> H::launder_t<T> {
+  return static_cast<H::launder_t<T>>(vp);
+}
+
+/// Converts the argument to `T*` and invokes `H::launder_wrap`.
+template <typename T>
+EFLI_LAUNDERCAST_CXPR_ auto 
+ launder_cast(ubyte* raw_data) -> H::launder_t<T> {
+  T* data = reinterpret_cast<T*>(raw_data);
+  return H::launder_wrap(data);
+}
+
+/// Converts the argument to `T*` and invokes `H::launder_wrap`.
+template <typename T>
+EFLI_LAUNDERCAST_CXPR_ auto 
+ launder_cast(std::uintptr_t raw_ptr) -> H::launder_t<T> {
+  T* data = reinterpret_cast<T*>(raw_ptr);
+  return H::launder_wrap(data);
+}
+
 /// VERY DANGEROUS!!! Use only when absolutely necessary
 /// (eg. std::bit_cast, std::memcpy, etc. when possible).
 template <typename T, typename U>
@@ -62,6 +95,7 @@ EFLI_PUNCAST_CXPR_ T pun_cast(U u) {
 } // namespace C
 } // namespace efl
 
+#undef EFLI_LAUNDERCAST_CXPR_
 #undef EFLI_PUNCAST_CXPR_
 
 #endif // EFL_CORE_CASTS_HPP

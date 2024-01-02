@@ -62,4 +62,19 @@ namespace core = C;
 namespace CH = C::H;
 } // namespace efl
 
+//=== Debug Check ===//
+namespace efl {
+struct IsDebugMode {
+#ifdef COMPILER_DEBUG
+  static constexpr bool value = COMPILER_DEBUG;
+#else
+  static constexpr bool value = false;
+#endif
+};
+
+inline constexpr bool is_debug_mode() {
+  return IsDebugMode::value;
+}
+} // namespace efl
+
 #endif // EFL_CORECOMMON_CONFIGCACHE_HPP

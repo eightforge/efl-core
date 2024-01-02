@@ -1,0 +1,196 @@
+//===- Core/OverloadSet.cxx14.mac -----------------------------------===//
+//
+// Copyright (C) 2024 Eightfold
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+//     limitations under the License.
+//
+//===----------------------------------------------------------------===//
+
+#ifndef N_
+# define N_(n) _t ## n
+#endif
+
+#ifndef TY_
+# define TY_(n) typename N_(n)
+#endif
+
+#ifndef OV_
+# define OV_(n) using N_(n)::operator();
+#endif
+
+template <>
+struct OverloadSet<> { };
+
+template <TY_(0)>
+struct OverloadSet<N_(0)> {
+  OV_(0)
+};
+
+template <TY_(0), TY_(1)>
+struct OverloadSet<N_(0), N_(1)> {
+  OV_(0), OV_(1)
+};
+
+template <TY_(0), TY_(1), TY_(2)>
+struct OverloadSet<N_(0), N_(1), N_(2)> {
+  OV_(0), OV_(1), OV_(2)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3)> {
+  OV_(0), OV_(1), OV_(2), OV_(3)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4), N_(5)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4), OV_(5)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4), OV_(5), OV_(6)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4), OV_(5), OV_(6), OV_(7)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4), OV_(5), OV_(6), OV_(7), OV_(8)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4), OV_(5), OV_(6), OV_(7), OV_(8), OV_(9)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4), OV_(5), OV_(6), OV_(7), OV_(8), OV_(9), OV_(10)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4), OV_(5), OV_(6), OV_(7), OV_(8), OV_(9), OV_(10), OV_(11)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4), OV_(5), OV_(6), OV_(7), OV_(8), OV_(9), OV_(10), OV_(11), OV_(12)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4), OV_(5), OV_(6), OV_(7), OV_(8), OV_(9), OV_(10), OV_(11), OV_(12), OV_(13)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4), OV_(5), OV_(6), OV_(7), OV_(8), OV_(9), OV_(10), OV_(11), OV_(12), OV_(13), OV_(14)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4), OV_(5), OV_(6), OV_(7), OV_(8), OV_(9), OV_(10), OV_(11), OV_(12), OV_(13), OV_(14), OV_(15)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4), OV_(5), OV_(6), OV_(7), OV_(8), OV_(9), OV_(10), OV_(11), OV_(12), OV_(13), OV_(14), OV_(15), OV_(16)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4), OV_(5), OV_(6), OV_(7), OV_(8), OV_(9), OV_(10), OV_(11), OV_(12), OV_(13), OV_(14), OV_(15), OV_(16), OV_(17)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4), OV_(5), OV_(6), OV_(7), OV_(8), OV_(9), OV_(10), OV_(11), OV_(12), OV_(13), OV_(14), OV_(15), OV_(16), OV_(17), OV_(18)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18), TY_(19)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18), N_(19)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4), OV_(5), OV_(6), OV_(7), OV_(8), OV_(9), OV_(10), OV_(11), OV_(12), OV_(13), OV_(14), OV_(15), OV_(16), OV_(17), OV_(18), OV_(19)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18), TY_(19), TY_(20)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18), N_(19), N_(20)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4), OV_(5), OV_(6), OV_(7), OV_(8), OV_(9), OV_(10), OV_(11), OV_(12), OV_(13), OV_(14), OV_(15), OV_(16), OV_(17), OV_(18), OV_(19), OV_(20)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18), TY_(19), TY_(20), TY_(21)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18), N_(19), N_(20), N_(21)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4), OV_(5), OV_(6), OV_(7), OV_(8), OV_(9), OV_(10), OV_(11), OV_(12), OV_(13), OV_(14), OV_(15), OV_(16), OV_(17), OV_(18), OV_(19), OV_(20), OV_(21)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18), TY_(19), TY_(20), TY_(21), TY_(22)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18), N_(19), N_(20), N_(21), N_(22)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4), OV_(5), OV_(6), OV_(7), OV_(8), OV_(9), OV_(10), OV_(11), OV_(12), OV_(13), OV_(14), OV_(15), OV_(16), OV_(17), OV_(18), OV_(19), OV_(20), OV_(21), OV_(22)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18), TY_(19), TY_(20), TY_(21), TY_(22), TY_(23)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18), N_(19), N_(20), N_(21), N_(22), N_(23)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4), OV_(5), OV_(6), OV_(7), OV_(8), OV_(9), OV_(10), OV_(11), OV_(12), OV_(13), OV_(14), OV_(15), OV_(16), OV_(17), OV_(18), OV_(19), OV_(20), OV_(21), OV_(22), OV_(23)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18), TY_(19), TY_(20), TY_(21), TY_(22), TY_(23), TY_(24)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18), N_(19), N_(20), N_(21), N_(22), N_(23), N_(24)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4), OV_(5), OV_(6), OV_(7), OV_(8), OV_(9), OV_(10), OV_(11), OV_(12), OV_(13), OV_(14), OV_(15), OV_(16), OV_(17), OV_(18), OV_(19), OV_(20), OV_(21), OV_(22), OV_(23), OV_(24)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18), TY_(19), TY_(20), TY_(21), TY_(22), TY_(23), TY_(24), TY_(25)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18), N_(19), N_(20), N_(21), N_(22), N_(23), N_(24), N_(25)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4), OV_(5), OV_(6), OV_(7), OV_(8), OV_(9), OV_(10), OV_(11), OV_(12), OV_(13), OV_(14), OV_(15), OV_(16), OV_(17), OV_(18), OV_(19), OV_(20), OV_(21), OV_(22), OV_(23), OV_(24), OV_(25)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18), TY_(19), TY_(20), TY_(21), TY_(22), TY_(23), TY_(24), TY_(25), TY_(26)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18), N_(19), N_(20), N_(21), N_(22), N_(23), N_(24), N_(25), N_(26)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4), OV_(5), OV_(6), OV_(7), OV_(8), OV_(9), OV_(10), OV_(11), OV_(12), OV_(13), OV_(14), OV_(15), OV_(16), OV_(17), OV_(18), OV_(19), OV_(20), OV_(21), OV_(22), OV_(23), OV_(24), OV_(25), OV_(26)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18), TY_(19), TY_(20), TY_(21), TY_(22), TY_(23), TY_(24), TY_(25), TY_(26), TY_(27)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18), N_(19), N_(20), N_(21), N_(22), N_(23), N_(24), N_(25), N_(26), N_(27)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4), OV_(5), OV_(6), OV_(7), OV_(8), OV_(9), OV_(10), OV_(11), OV_(12), OV_(13), OV_(14), OV_(15), OV_(16), OV_(17), OV_(18), OV_(19), OV_(20), OV_(21), OV_(22), OV_(23), OV_(24), OV_(25), OV_(26), OV_(27)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18), TY_(19), TY_(20), TY_(21), TY_(22), TY_(23), TY_(24), TY_(25), TY_(26), TY_(27), TY_(28)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18), N_(19), N_(20), N_(21), N_(22), N_(23), N_(24), N_(25), N_(26), N_(27), N_(28)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4), OV_(5), OV_(6), OV_(7), OV_(8), OV_(9), OV_(10), OV_(11), OV_(12), OV_(13), OV_(14), OV_(15), OV_(16), OV_(17), OV_(18), OV_(19), OV_(20), OV_(21), OV_(22), OV_(23), OV_(24), OV_(25), OV_(26), OV_(27), OV_(28)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18), TY_(19), TY_(20), TY_(21), TY_(22), TY_(23), TY_(24), TY_(25), TY_(26), TY_(27), TY_(28), TY_(29)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18), N_(19), N_(20), N_(21), N_(22), N_(23), N_(24), N_(25), N_(26), N_(27), N_(28), N_(29)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4), OV_(5), OV_(6), OV_(7), OV_(8), OV_(9), OV_(10), OV_(11), OV_(12), OV_(13), OV_(14), OV_(15), OV_(16), OV_(17), OV_(18), OV_(19), OV_(20), OV_(21), OV_(22), OV_(23), OV_(24), OV_(25), OV_(26), OV_(27), OV_(28), OV_(29)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18), TY_(19), TY_(20), TY_(21), TY_(22), TY_(23), TY_(24), TY_(25), TY_(26), TY_(27), TY_(28), TY_(29), TY_(30)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18), N_(19), N_(20), N_(21), N_(22), N_(23), N_(24), N_(25), N_(26), N_(27), N_(28), N_(29), N_(30)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4), OV_(5), OV_(6), OV_(7), OV_(8), OV_(9), OV_(10), OV_(11), OV_(12), OV_(13), OV_(14), OV_(15), OV_(16), OV_(17), OV_(18), OV_(19), OV_(20), OV_(21), OV_(22), OV_(23), OV_(24), OV_(25), OV_(26), OV_(27), OV_(28), OV_(29), OV_(30)
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18), TY_(19), TY_(20), TY_(21), TY_(22), TY_(23), TY_(24), TY_(25), TY_(26), TY_(27), TY_(28), TY_(29), TY_(30), TY_(31)>
+struct OverloadSet<N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18), N_(19), N_(20), N_(21), N_(22), N_(23), N_(24), N_(25), N_(26), N_(27), N_(28), N_(29), N_(30), N_(31)> {
+  OV_(0), OV_(1), OV_(2), OV_(3), OV_(4), OV_(5), OV_(6), OV_(7), OV_(8), OV_(9), OV_(10), OV_(11), OV_(12), OV_(13), OV_(14), OV_(15), OV_(16), OV_(17), OV_(18), OV_(19), OV_(20), OV_(21), OV_(22), OV_(23), OV_(24), OV_(25), OV_(26), OV_(27), OV_(28), OV_(29), OV_(30), OV_(31)
+};
+
+#undef TY_
+#undef OV_
+#undef N_

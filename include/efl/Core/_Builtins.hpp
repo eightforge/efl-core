@@ -40,6 +40,8 @@
 #define EFL_UNLIKELY(...) EFLI_EXPECT_FALSE_((__VA_ARGS__))
 /// Marks code as unlikely to be executed.
 #define EFL_COLD_PATH EFLI_COLD_PATH_
+/// Marks struct as having empty bases. Used for MSVC.
+#define EFL_EMPTY_BASES EFLI_EMPTY_BASES_
 
 //=== Implementation ===//
 
@@ -182,6 +184,12 @@ namespace efl::C::H::xx20 {
 # define EFLI_COLD_PATH_ __attribute__((cold, noinline))
 #else
 # define EFLI_COLD_PATH_ NOINLINE
+#endif
+
+#if defined(COMPILER_MSVC)
+# define EFLI_EMPTY_BASES_ __declspec(empty_bases)
+#else
+# define EFLI_EMPTY_BASES_
 #endif
 
 // Explicitly constexpr assert & constexpr-able assert impl.

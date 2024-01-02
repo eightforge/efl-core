@@ -1,6 +1,6 @@
 //===- Core/Poly.hpp ------------------------------------------------===//
 //
-// Copyright (C) 2023 Eightfold
+// Copyright (C) 2024 Eightfold
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,7 +27,11 @@
 #define EFL_CORE_POLY_HPP
 
 #include "AlignedStorage.hpp"
+#include "Casts.hpp"
+#include "OverloadSet.hpp"
 #include "Traits.hpp"
+
+#include "_Builtins.hpp"
 #include "_Cxx11Assert.hpp"
 #include "_Version.hpp"
 
@@ -41,12 +45,52 @@ namespace efl {
 namespace C {
 namespace H {
 #if CPPVER_LEAST(20)
+  template <typename T, typename...UU>
+  concept one_of = (... || 
+    std::same_as<T, UU>);
+
   template <typename Base, typename...Derived>
   concept all_derived = (... && 
     std::derived_from<Derived, Base>);
 #endif // Concept Check (C++20)
 
+  template <typename T, H::SzType N>
+  struct PolyNode {
+    AGGRESSIVE_INLINE constexpr H::SzType 
+     operator()(T* base) const NOEXCEPT 
+    { return N; }
 
+    AGGRESSIVE_INLINE constexpr H::SzType 
+     operator()(const T* base) const NOEXCEPT
+    { return N; }
+
+    ALWAYS_INLINE EFLI_CXX20_CXPR_
+#if CPPVER_LEAST(17)
+    bool
+#else
+    char
+#endif
+     operator()(TypeC<T>, H::SzType n, ubyte* ptr) const NOEXCEPT {
+      if(n == N) launder_cast<T>(ptr)->~T();
+      return '\0';
+    }
+  };
+
+  template <typename Seq, typename...>
+  struct TPolyNodes {
+    COMPILE_FAILURE(Seq, "Requires a SzSeq.");
+  };
+
+  template <SzType...II, typename...TT>
+  struct EFL_EMPTY_BASES TPolyNodes<SzSeq<II...>, TT...> 
+   : OverloadSet<PolyNode<TT, II>...> { };
+  
+  template <typename Base, typename...Derived>
+  using PolyNodes = TPolyNodes<
+    MkSzSeq<sizeof...(Derived) + 1>, Base, Derived...>;
+  
+  template <typename T, typename...TT>
+  using MatchesAny = disjunction<is_same<T, TT>...>;
 } // namespace H
 
 template <typename Base, typename...Derived>
@@ -59,15 +103,117 @@ struct Poly {
 #endif
   using StorageType = AlignedUnion<Base, Derived...>;
   static constexpr auto emptyState = ~H::SzType(0);
+  static constexpr H::PolyNodes<Base, Derived...> nodeValues_ { };
+
+  template <typename T>
+  static constexpr bool matchesAny =
+    H::MatchesAny<T, Base, Derived...>::value;
+  
+  template <typename T>
+  static constexpr H::SzType idValue =
+    nodeValues_(static_cast<T*>(nullptr));
+
+public:
+  constexpr Poly() = default;
+  ~Poly() NOEXCEPT { this->clear(); }
+
+  template <typename T, MEflEnableIf(matchesAny<T> && 
+    is_copy_constructible<T>::value)>
+  Poly(const T& value) : id_(idValue<T>) {
+    MAYBE_UNUSED auto* p = 
+      new (data_.data) T(value);
+  }
+
+  template <typename T, MEflEnableIf(matchesAny<T> && 
+    is_move_constructible<T>::value)>
+  Poly(T&& value) : id_(idValue<T>) {
+    MAYBE_UNUSED auto* p = 
+      new (data_.data) T(std::move(value));
+  }
+
+  template <typename T, MEflEnableIf(matchesAny<T> && 
+    is_copy_assignable<T>::value)>
+  EFLI_CXX14_CXPR_ Poly& operator=(const T& value) {
+    this->clear();
+    id_ = idValue<T>;
+    MAYBE_UNUSED auto* p = 
+      new (data_.data) T(value);
+    return *this;
+  }
+
+  template <typename T, MEflEnableIf(matchesAny<T> && 
+    is_move_assignable<T>::value)>
+  EFLI_CXX14_CXPR_ Poly& operator=(T&& value) {
+    this->clear();
+    id_ = idValue<T>;
+    MAYBE_UNUSED auto* p = 
+      new (data_.data) T(std::move(value));
+    return *this;
+  }
 
 public:
   static CONSTEVAL H::SzType
-   Size() const NOEXCEPT {
+   Size() NOEXCEPT {
     return sizeof...(Derived);
   }
 
-  constexpr bool holdsAny() const NOEXCEPT {
+  FICONSTEXPR bool holdsAny() const NOEXCEPT {
     return !(this->id_ == emptyState);
+  }
+
+  template <typename T>
+  FICONSTEXPR bool holdsType() const NOEXCEPT {
+    return (this->id_ == idValue<T>);
+  }
+
+  template <typename T, MEflEnableIf(matchesAny<T>)>
+  AGGRESSIVE_INLINE constexpr bool
+   safeHoldsType() const NOEXCEPT {
+    return this->holdsType();
+  }
+
+  template <typename T, MEflEnableIf(!matchesAny<T>)>
+  FICONSTEXPR bool safeHoldsType() const NOEXCEPT 
+  { return false; }
+
+  ALWAYS_INLINE auto asBase() NOEXCEPT
+   -> H::launder_t<Base> {
+    return launder_cast<Base>(data_.data);
+  }
+
+  ALWAYS_INLINE auto asBase() const NOEXCEPT
+   -> H::launder_t<const Base> {
+    return launder_cast<const Base>(data_.data);
+  }
+
+  Base* operator->() NOEXCEPT {
+    EFLI_DBGASSERT_(this->holdsAny());
+    return (Base*)(this->asBase());
+  }
+
+  const Base* operator->() const NOEXCEPT {
+    EFLI_DBGASSERT_(this->holdsAny());
+    return (const Base*)(this->asBase());
+  }
+
+private:
+  void clear() NOEXCEPT {
+    if(!holdsAny()) return;
+    else if(this->id_ == 0) {
+      this->asBase()->~Base();
+      return;
+    }
+
+# if CPPVER_LEAST(17)
+    (void)((... || nodeValues_(
+      H::TypeC<Derived>{}, id_, data_.data)));
+# else
+    char dd[sizeof...(Derived) + 1] = { 
+      nodeValues_(H::TypeC<Derived>{}, 
+        id_, data_.data)...
+    };
+    (void)dd;
+# endif
   }
 
 private:

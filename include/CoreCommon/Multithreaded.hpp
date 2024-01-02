@@ -37,13 +37,13 @@
 #endif
 
 namespace efl {
-  struct IsMultithreaded {
-    static constexpr bool value = EFL_MULTITHREADED;
-  };
+struct IsMultithreaded {
+  static constexpr bool value = EFL_MULTITHREADED;
+};
 
-  inline constexpr bool is_multithreaded() {
-    return IsMultithreaded::value;
-  }
+inline constexpr bool is_multithreaded() {
+  return IsMultithreaded::value;
+}
 } // namespace efl
 
 #endif // EFL_COMMON_MULTITHREADED_HPP
