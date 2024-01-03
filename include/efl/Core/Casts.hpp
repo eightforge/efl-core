@@ -54,6 +54,14 @@ FICONSTEXPR bool bool_cast(T&& t) noexcept(
   return static_cast<bool>(H::cxpr_move(t));    
 }
 
+/// Wraps the implementation of `launder`.
+/// Uses a volatile pointer wrapper as a fallback.
+template <typename T>
+EFLI_LAUNDERCAST_CXPR_ auto
+ launder(T* t) -> H::launder_t<T> {
+  return H::launder_wrap(t);
+}
+
 /// Identical to `std::launder(t)`.
 template <typename T>
 EFLI_LAUNDERCAST_CXPR_ auto 

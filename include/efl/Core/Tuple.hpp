@@ -32,6 +32,7 @@
 # error C++17 required for this library!
 #endif
 
+#if CPPVER_LEAST(17)
 //=== Basic Tuple Helpers ===//
 namespace efl::C::H {
 template <IdType I, typename T>
@@ -217,6 +218,7 @@ FICONSTEXPR auto make_tuple(TT&&...tt)
 }
 } // namespace efl::C
 
+
 //=== Std Traits ===//
 template <std::size_t I, typename T, typename...TT>
 struct std::tuple_element<I, efl::C::Tuple<T, TT...>>
@@ -236,5 +238,7 @@ struct std::tuple_element<I, const efl::C::Tuple<TT...>> {
 template <typename...TT>
 struct std::tuple_size<efl::C::Tuple<TT...>>
  : std::integral_constant<std::size_t, sizeof...(TT)> { };
+
+#endif // C++17 Check
 
 #endif // EFL_CORE_TUPLE_HPP

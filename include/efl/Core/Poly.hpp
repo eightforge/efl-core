@@ -30,8 +30,6 @@
 #include "Casts.hpp"
 #include "OverloadSet.hpp"
 #include "Traits.hpp"
-
-#include "_Builtins.hpp"
 #include "_Cxx11Assert.hpp"
 #include "_Version.hpp"
 
@@ -81,7 +79,7 @@ namespace H {
   };
 
   template <SzType...II, typename...TT>
-  struct EFL_EMPTY_BASES TPolyNodes<SzSeq<II...>, TT...> 
+  struct MSVC_EMPTY_BASES TPolyNodes<SzSeq<II...>, TT...> 
    : OverloadSet<PolyNode<TT, II>...> { };
   
   template <typename Base, typename...Derived>

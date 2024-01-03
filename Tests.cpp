@@ -67,6 +67,9 @@ int main() {
   poly.clear();
   assert(!poly.holdsAny());
 
+  int i = 0;
+  std::destroy_at(&i);
+
   char third_arg = 'a';
   std::cout << "Is multithreaded: " << efl::is_multithreaded() << std::endl;
   auto annotated = std::make_unique<AnnotationTest>(77, 9.0f, &third_arg);

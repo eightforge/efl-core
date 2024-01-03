@@ -28,6 +28,7 @@
 
 #include <cassert>
 #include <efl/Core/_Fwd/Option.hpp>
+#include <efl/Core/_Cxx11Assert.hpp>
 
 #if CPPVER_MOST(14)
 namespace efl {

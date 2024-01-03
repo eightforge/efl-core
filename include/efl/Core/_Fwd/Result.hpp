@@ -1,4 +1,4 @@
-//===- Core/Unwrap.hpp ----------------------------------------------===//
+//===- Core/Fwd_/Result.hpp -----------------------------------------===//
 //
 // Copyright (C) 2024 Eightfold
 //
@@ -16,15 +16,37 @@
 //
 //===----------------------------------------------------------------===//
 //
-//  This file implements a utility macro for unwrapping values.
-//  Doesn't work on MSVC at the moment, but I will implement a 
-//  plugin for it at some point.
+//  Forward declarations for Result<...>.
+//  Includes Result, Error, Unexpect, and unexpect.
 //
 //===----------------------------------------------------------------===//
 
-#pragma once
+#ifndef EFL_CORE_FWD__RESULT_HPP
+#define EFL_CORE_FWD__RESULT_HPP
 
-#ifndef EFL_CORE_UNWRAP_HPP
-#define EFL_CORE_UNWRAP_HPP
+#include <CoreCommon/ConfigCache.hpp>
 
-#endif // EFL_CORE_UNWRAP_HPP
+//=== Option Base ===//
+namespace efl {
+namespace C {
+template <typename T, typename E>
+struct Result;
+
+template <typename E>
+struct Error;
+
+/// Used for the explicit construction of an error.
+struct Unexpect {
+  explicit Unexpect() = default;
+};
+
+/// Alias of `Unexpect` matching the stl.
+using unexpect_t = Unexpect;
+
+/// Allows for the explicit construction of an error.
+GLOBAL Unexpect unexpect { };
+
+} // namespace C
+} // namespace efl
+
+#endif // EFL_CORE_FWD__RESULT_HPP

@@ -1,6 +1,6 @@
 //===- Core/StrRef.hpp ----------------------------------------------===//
 //
-// Copyright (C) 2023 Eightfold
+// Copyright (C) 2023-2024 Eightfold
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -235,7 +235,7 @@ public:
     return static_cast<size_type>(odst - dst);
   }
 
-  // TODO: consume,
+  // TODO: consume, parse, search functions
 
   constexpr StrRef snipPrefix(size_type n) const {
     EFLI_CXPR11ASSERT_(data_ && n <= size_);

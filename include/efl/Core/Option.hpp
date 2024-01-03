@@ -1,6 +1,6 @@
 //===- Core/Option.hpp ----------------------------------------------===//
 //
-// Copyright (C) 2023 Eightfold
+// Copyright (C) 2023-2024 Eightfold
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,9 +29,7 @@
 #define EFL_CORE_OPTION_HPP
 
 #include "_Fwd/Option.hpp"
-#include "AlignedStorage.hpp"
 #include "Option/Cxx14Base.hpp"
-#include "_Cxx11Assert.hpp"
 #include "_Version.hpp"
 
 EFLI_CXPR11ASSERT_PROLOGUE_
@@ -325,7 +323,7 @@ public:
   template <typename U>
   EFLI_CXX14_CXPR_ T unwrapOr(U&& u)&& {
     if(this->active()) {
-      return EFLI_CXPRMV_(this->unwrap());
+      return H::cxpr_move(this->unwrap());
     } else {
       return static_cast<T>(
         H::cxpr_forward<U>(u));

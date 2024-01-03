@@ -27,6 +27,7 @@
 #define EFL_CORE_TRAITS_FUNCTIONS_HPP
 
 #include <memory>
+#include <efl/Core/_Version.hpp>
 #include "Std.hpp"
 
 #define EFLI_RMREF_(...) typename \
@@ -97,10 +98,23 @@ namespace H {
 #endif // constexpr std::addressof check (C++17)
 
     template <typename T, typename...Args>
-    NODISCARD ALWAYS_INLINE T* construct(T* t, Args&&...args) 
-     noexcept(noexcept(T(cxpr_forward<Args>(args)...))) {
+    NODISCARD FICONSTEXPR auto construct(T* t, Args&&...args) 
+     noexcept(noexcept(T(cxpr_forward<Args>(args)...)))
+     -> decltype(::new((void*)0) T(Decl<Args>()...)) {
       return ::new(static_cast<void*>(t)) 
         T(cxpr_forward<Args>(args)...);
+    }
+
+    template <typename T, MEflEnableIf(
+      is_trivially_destructible<T>::value)>
+    EFLI_CXX14_CXPR_ void destruct(T*) { }
+
+    template <typename T, MEflEnableIf(
+      (!is_trivially_destructible<T>::value))>
+    EFLI_CXX14_CXPR_ void destruct(T* t) {
+      static_assert(!is_void<T>::value, 
+        "You cannot pass a void* to destruct.");
+      (!!t) ? void(t->~T()) : void(0);
     }
   } // namespace xx11
 } // namespace H
