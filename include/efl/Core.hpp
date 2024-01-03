@@ -37,6 +37,7 @@
 #include "Core/Fundamental.hpp"
 #include "Core/Mtx.hpp"
 #include "Core/Option.hpp"
+#include "Core/OverloadSet.hpp"
 // #include "Core/Panic.hpp" // Unfinished
 #include "Core/Poly.hpp"
 #include "Core/Preload.hpp"

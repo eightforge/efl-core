@@ -29,12 +29,6 @@
 #include "Fundamental.hpp"
 #include "Traits.hpp"
 
-#if EFLI_MUTABLE_CXPR_ == 1
-# define EFLI_REFMUTCXPR_ constexpr
-#else
-# define EFLI_REFMUTCXPR_
-#endif
-
 namespace efl {
 namespace C {
 namespace H {
