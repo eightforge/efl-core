@@ -33,6 +33,8 @@
 
 EFLI_CXPR11ASSERT_PROLOGUE_
 
+// TODO: Finish implementation
+
 namespace efl {
 namespace C {
 /// @brief An object representing an error state.
@@ -98,7 +100,7 @@ struct Result : private H::ResultBase<T, E> {
 private:
   static_assert(!is_reference<T>::value);
   static_assert(!is_function<T>::value);
-  static_assert(!H::result_::IsReservedTag<T, in_place_t>::value);
+  static_assert(!H::result_::IsReservedTag<T>::value);
   static_assert(!H::result_::IsError<remove_cv_t<T>>::value );
   static_assert(H::result_::IsValidError<E>::value);
   using type_ = H::ResultBase<T, E>::type_;
@@ -190,7 +192,7 @@ public:
   constexpr Result(U&& u)
    noexcept(is_nothrow_constructible<T, U>::value)
    : H::ResultBase<T, E>(
-    in_place_t, H::cxpr_forward<U>(u)) { }
+    in_place, H::cxpr_forward<U>(u)) { }
 
   template <typename Err = E, MEflEnableIf(
     is_convertible<const Err&, E>::value)>
@@ -353,6 +355,8 @@ Error(T) -> Error<T>;
 #endif // Deduction guides (C++17)
 } // namespace C
 } // namespace efl
+
+#include "Result/Helpers.hpp"
 
 EFLI_CXPR11ASSERT_EPILOGUE_
 

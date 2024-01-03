@@ -48,6 +48,12 @@ struct Woofer : MyBase {
   void saySomething() override { std::printf("Woof!\n"); }
 };
 
+auto result_test(int i) 
+ -> C::Result<C::Str, C::ubyte> {
+  if(i >= 0) return $Ok(std::to_string(i));
+  else return $Err(C::ubyte(i));
+}
+
 int main() {
 #if CPPVER_LEAST(14)
   MEflESAssert(!HasType<X>);
@@ -66,6 +72,13 @@ int main() {
   poly->saySomething();
   poly.clear();
   assert(!poly.holdsAny());
+
+  auto res = result_test(5);
+  assert(res.unwrap() == "5");
+  res = result_test(-3);
+  assert(!res.hasValue());
+  res = result_test(453);
+  std::cout << "res: " << res.unwrap() << std::endl;
 
   int i = 0;
   std::destroy_at(&i);

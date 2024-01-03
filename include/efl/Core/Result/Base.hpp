@@ -137,19 +137,19 @@ public:
    : data_(in_place, cxpr_move(t)), active_(true) { }
   
   template <typename...TT>
-  constexpr ResultStorage(in_place_t ip, TT&&...tt)
+  constexpr ResultBase(in_place_t ip, TT&&...tt)
    : data_(ip, cxpr_forward<TT>(tt)...), active_(true) { }
   
   template <typename U, typename...TT>
-  constexpr ResultStorage(InitList<U> il, TT&&...tt)
+  constexpr ResultBase(InitList<U> il, TT&&...tt)
    : data_(in_place, il, cxpr_forward<TT>(tt)...), active_(true) { }
   
   template <typename...TT>
-  constexpr ResultStorage(Unexpect ux, TT&&...tt)
+  constexpr ResultBase(Unexpect ux, TT&&...tt)
    : data_(ux, cxpr_forward<TT>(tt)...), active_(false) { }
   
   template <typename U, typename...TT>
-  constexpr ResultStorage(Unexpect ux, InitList<U> il, TT&&...tt)
+  constexpr ResultBase(Unexpect ux, InitList<U> il, TT&&...tt)
    : data_(ux, il, cxpr_forward<TT>(tt)...), active_(false) { }
 
 private:
@@ -175,30 +175,30 @@ public:
    : data_(in_place, cxpr_move(t)), active_(true) { }
   
   template <typename...TT>
-  constexpr ResultStorage(in_place_t ip, TT&&...tt)
+  constexpr ResultBase(in_place_t ip, TT&&...tt)
    : data_(ip, cxpr_forward<TT>(tt)...), active_(true) { }
   
   template <typename U, typename...TT>
-  constexpr ResultStorage(InitList<U> il, TT&&...tt)
+  constexpr ResultBase(InitList<U> il, TT&&...tt)
    : data_(in_place, il, cxpr_forward<TT>(tt)...), active_(true) { }
   
   template <typename...TT>
-  constexpr ResultStorage(Unexpect ux, TT&&...tt)
+  constexpr ResultBase(Unexpect ux, TT&&...tt)
    : data_(ux, cxpr_forward<TT>(tt)...), active_(false) { }
   
   template <typename U, typename...TT>
-  constexpr ResultStorage(Unexpect ux, InitList<U> il, TT&&...tt)
+  constexpr ResultBase(Unexpect ux, InitList<U> il, TT&&...tt)
    : data_(ux, il, cxpr_forward<TT>(tt)...), active_(false) { }
 
   EFLI_CXX17_CXPR_ ~ResultBase() {
     this->destroy();
   }
 
-private:
+protected:
   ALWAYS_INLINE EFLI_CXX17_CXPR_ 
    void destroy() NOEXCEPT {
-    if(active_) xx11::destroy(&data_.data_);
-    else xx11::destroy(&data_.err_);
+    if(active_) xx11::destruct(&data_.data_);
+    else xx11::destruct(&data_.err_);
   }
 
 public:

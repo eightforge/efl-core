@@ -29,6 +29,9 @@
 
 #include "Cxx14Base.hpp"
 
+#define $Some(...) { ::efl::C::in_place, __VA_ARGS__ }
+#define $None ::efl::C::nullopt
+
 namespace efl {
 namespace C {
 template <typename T>
