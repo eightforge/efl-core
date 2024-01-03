@@ -1,2 +1,3 @@
 # efl-core
- Basic objects and utilities for other libraries
+
+Basic objects and utilities for other libraries.
