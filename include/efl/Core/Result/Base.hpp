@@ -30,6 +30,7 @@
 namespace efl {
 namespace C {
 namespace H {
+//=== Template Utilities ===//
 namespace result_ {
   template <typename T, typename E>
   struct IsTrivial : BoolC<
@@ -130,10 +131,10 @@ struct ResultBase {
 public:
   constexpr ResultBase() = default;
 
-  constexpr ResultBase(const T& t)
+  constexpr ResultBase(const type_& t)
    : data_(in_place, t), active_(true) { }
   
-  constexpr ResultBase(T&& t)
+  constexpr ResultBase(type_&& t)
    : data_(in_place, cxpr_move(t)), active_(true) { }
   
   template <typename...TT>
@@ -152,7 +153,7 @@ public:
   constexpr ResultBase(Unexpect ux, InitList<U> il, TT&&...tt)
    : data_(ux, il, cxpr_forward<TT>(tt)...), active_(false) { }
 
-private:
+protected:
   ALWAYS_INLINE EFLI_CXX14_CXPR_ 
    void destroy() NOEXCEPT { }
 
@@ -168,10 +169,10 @@ struct ResultBase<T, E, false> {
 public:
   constexpr ResultBase() = default;
 
-  constexpr ResultBase(const T& t)
+  constexpr ResultBase(const type_& t)
    : data_(in_place, t), active_(true) { }
   
-  constexpr ResultBase(T&& t)
+  constexpr ResultBase(type_&& t)
    : data_(in_place, cxpr_move(t)), active_(true) { }
   
   template <typename...TT>

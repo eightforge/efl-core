@@ -80,6 +80,13 @@ int main() {
   res = result_test(453);
   std::cout << "res: " << res.unwrap() << std::endl;
 
+  C::Result<void, int> res_v {};
+  assert(res_v.hasValue());
+  res_v = $Err(5);
+  assert(res_v.error() == 5);
+  res_v.emplace();
+  assert(res_v.hasValue());
+
   int i = 0;
   std::destroy_at(&i);
 

@@ -344,8 +344,168 @@ public:
   //=== Modifiers ===//
 
   template <typename...Args>
-  void emplace(Args&&...args) {
+  void emplace(Args&&...args) NOEXCEPT {
     this->initialize_data(FWD(args)...);
+  }
+};
+
+/// @brief An object which can contain nothing or an error.
+/// @tparam E The type of the error state.
+template <typename E>
+struct Result<void, E> : private H::ResultBase<void, E> {
+private:
+  static_assert(H::result_::IsValidError<E>::value);
+  using T = void;
+  using type_ = H::ResultBase<T, E>::type_;
+public:
+  using value_type = T;
+  using error_type = E;
+  using unexpected_type = Error<E>;
+
+  template <typename U>
+  using rebind = Result<U, E>;
+
+  FICONSTEXPR bool has_value() const NOEXCEPT {
+    return H::ResultBase<T, E>::active_;
+  }
+
+private:
+  ALWAYS_INLINE EFLI_CXX14_CXPR_ void 
+   clear() NOEXCEPT {
+    H::ResultBase<T, E>::destroy();
+  }
+
+  ALWAYS_INLINE EFLI_CXX14_CXPR_ E* perr() {
+    return std::addressof(
+      H::ResultBase<T, E>::data_.err_);
+  }
+
+  FICONSTEXPR const E* perr() const {
+    return H::xx11::addressof(
+      H::ResultBase<T, E>::data_.err_);
+  }
+
+  EFLI_CXX14_CXPR_ void initialize_data() NOEXCEPT {
+    H::ResultBase<T, E>::active_ = true;
+  }
+
+  template <typename...Args>
+  void initialize_err(Args&&...args) 
+   noexcept(noexcept(E(FWD(args)...))) {
+    this->clear();
+    (void) X11::construct(
+      perr(), FWD(args)...);
+    H::ResultBase<T, E>::active_ = false;
+  }
+
+public:
+  constexpr Result() = default;
+
+  constexpr Result(const Result& res)
+   noexcept(is_nothrow_copy_constructible<E>::value)
+   : H::ResultBase<T, E>::active_(res.active_) {
+    if(!res.has_value())
+      X11::construct(perr(), res.data_.err_);
+  }
+
+  constexpr Result(Result&& res)
+   noexcept(is_nothrow_move_constructible<E>::value)
+   : H::ResultBase<T, E>::active_(res.active_) {
+    if(!res.has_value())
+      X11::construct(perr(),
+        H::cxpr_move(res).data_.err_);
+  }
+
+  template <typename U = T, MEflEnableIf(
+    is_convertible<U, T>::value)>
+  constexpr Result(U&& u) NOEXCEPT
+   : H::ResultBase<T, E>(in_place) { }
+
+  template <typename Err = E, MEflEnableIf(
+    is_convertible<const Err&, E>::value)>
+  constexpr Result(const Error<Err>& err)
+   noexcept(is_nothrow_copy_constructible<Err>::value)
+   : H::ResultBase<T, E>(unexpect, err.error()) { }
+  
+  template <typename Err = E, MEflEnableIf(
+    is_convertible<Err&&, E>::value)>
+  constexpr Result(Error<Err>&& err)
+   noexcept(is_nothrow_move_constructible<Err>::value)
+   : H::ResultBase<T, E>(
+    unexpect, H::cxpr_move(err).error()) { }
+  
+  template <typename...Args>
+  constexpr Result(unexpect_t ux, Args&&...args)
+   : H::ResultBase<T, E>(
+    ux, H::cxpr_forward<Args>(args)...) { }
+
+  EFLI_CXX20_CXPR_ ~Result() = default;
+
+  EFLI_CXX17_CXPR_ Result&
+   operator=(const Result& res) {
+    if(res.has_value()) initialize_data();
+    else initialize_err(res.error());
+    return *this;
+  }
+
+  EFLI_CXX17_CXPR_ Result&
+   operator=(Result&& res) {
+    if(res.has_value()) initialize_data();
+    else initialize_err(
+      H::cxpr_move(res).error());
+    return *this;
+  }
+
+  //=== Observers ===//
+
+  /// Returns `true` if data is active.
+  FICONSTEXPR explicit operator bool() CNOEXCEPT {
+    return this->has_value();
+  }
+
+  /// Returns `true` if data is active.
+  FICONSTEXPR bool hasValue() const NOEXCEPT {
+    return this->has_value();
+  }
+
+  EFLI_CXX14_CXPR_ void unwrap()&& {
+    EFLI_DBGASSERT_(this->has_value());
+  }
+
+  EFLI_CXX14_CXPR_ const void unwrap() const& {
+    EFLI_DBGASSERT_(this->has_value());
+  }
+
+  EFLI_CXX14_CXPR_ void operator*() {
+    EFLI_DBGASSERT_(this->has_value());
+  }
+
+  EFLI_CXX14_CXPR_ E& error()& {
+    EFLI_CXPRASSERT_(!this->has_value());
+    return H::ResultBase<T, E>::data_.err_;
+  }
+
+  EFLI_CXX14_CXPR_ E&& error()&& {
+    EFLI_CXPRASSERT_(!this->has_value());
+    return H::cxpr_move(
+      H::ResultBase<T, E>::data_.err_);
+  }
+
+  constexpr const E& error() const& {
+    EFLI_CXPR11ASSERT_(!this->has_value());
+    return H::ResultBase<T, E>::data_.err_;
+  }
+
+  constexpr const E& error() const&& {
+    EFLI_CXPR11ASSERT_(!this->has_value());
+    return H::cxpr_move(
+      H::ResultBase<T, E>::data_.err_);
+  }
+
+  //=== Modifiers ===//
+
+  EFLI_CXX14_CXPR_ void emplace() NOEXCEPT {
+    this->initialize_data();
   }
 };
 
