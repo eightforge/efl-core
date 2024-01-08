@@ -191,7 +191,7 @@ public:
   constexpr ResultBase(Unexpect ux, InitList<U> il, TT&&...tt)
    : data_(ux, il, cxpr_forward<TT>(tt)...), active_(false) { }
 
-  EFLI_CXX17_CXPR_ ~ResultBase() {
+  EFLI_CXX20_CXPR_ ~ResultBase() {
     this->destroy();
   }
 

@@ -1,0 +1,436 @@
+//===- Core/Tuple/Tuple.cxx14.mac -----------------------------------===//
+//
+// Copyright (C) 2024 Eightfold
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+//     limitations under the License.
+//
+//===----------------------------------------------------------------===//
+
+#ifndef N_
+# define N_(n) TupleLeaf<n, _T##n>
+#endif
+
+#ifndef TY_
+# define TY_(n) typename _T##n
+#endif
+
+#ifndef ID_
+# define ID_(n) _T##n
+#endif
+
+#ifndef ARG_
+# define ARG_(n) _T##n _t##n 
+#endif
+
+#ifndef IN_
+# define IN_(n) N_(n){_t##n} 
+#endif
+
+
+template <>
+struct TTupleBranch<> {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 0;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+};
+
+template <TY_(0)>
+struct TTupleBranch<ID_(0)>
+ : N_(0) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 1;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0))
+   : IN_(0) { }
+};
+
+template <TY_(0), TY_(1)>
+struct TTupleBranch<ID_(0), ID_(1)>
+ : N_(0), N_(1) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 2;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1))
+   : IN_(0), IN_(1) { }
+};
+
+template <TY_(0), TY_(1), TY_(2)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2)>
+ : N_(0), N_(1), N_(2) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 3;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2))
+   : IN_(0), IN_(1), IN_(2) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3)>
+ : N_(0), N_(1), N_(2), N_(3) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 4;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3))
+   : IN_(0), IN_(1), IN_(2), IN_(3) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 5;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4), ID_(5)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4), N_(5) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 6;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4), ARG_(5))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4), IN_(5) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4), ID_(5), ID_(6)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 7;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4), ARG_(5), ARG_(6))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4), IN_(5), IN_(6) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4), ID_(5), ID_(6), ID_(7)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 8;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4), ARG_(5), ARG_(6), ARG_(7))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4), IN_(5), IN_(6), IN_(7) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4), ID_(5), ID_(6), ID_(7), ID_(8)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 9;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4), ARG_(5), ARG_(6), ARG_(7), ARG_(8))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4), IN_(5), IN_(6), IN_(7), IN_(8) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4), ID_(5), ID_(6), ID_(7), ID_(8), ID_(9)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 10;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4), ARG_(5), ARG_(6), ARG_(7), ARG_(8), ARG_(9))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4), IN_(5), IN_(6), IN_(7), IN_(8), IN_(9) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4), ID_(5), ID_(6), ID_(7), ID_(8), ID_(9), ID_(10)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 11;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4), ARG_(5), ARG_(6), ARG_(7), ARG_(8), ARG_(9), ARG_(10))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4), IN_(5), IN_(6), IN_(7), IN_(8), IN_(9), IN_(10) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4), ID_(5), ID_(6), ID_(7), ID_(8), ID_(9), ID_(10), ID_(11)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 12;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4), ARG_(5), ARG_(6), ARG_(7), ARG_(8), ARG_(9), ARG_(10), ARG_(11))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4), IN_(5), IN_(6), IN_(7), IN_(8), IN_(9), IN_(10), IN_(11) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4), ID_(5), ID_(6), ID_(7), ID_(8), ID_(9), ID_(10), ID_(11), ID_(12)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 13;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4), ARG_(5), ARG_(6), ARG_(7), ARG_(8), ARG_(9), ARG_(10), ARG_(11), ARG_(12))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4), IN_(5), IN_(6), IN_(7), IN_(8), IN_(9), IN_(10), IN_(11), IN_(12) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4), ID_(5), ID_(6), ID_(7), ID_(8), ID_(9), ID_(10), ID_(11), ID_(12), ID_(13)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 14;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4), ARG_(5), ARG_(6), ARG_(7), ARG_(8), ARG_(9), ARG_(10), ARG_(11), ARG_(12), ARG_(13))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4), IN_(5), IN_(6), IN_(7), IN_(8), IN_(9), IN_(10), IN_(11), IN_(12), IN_(13) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4), ID_(5), ID_(6), ID_(7), ID_(8), ID_(9), ID_(10), ID_(11), ID_(12), ID_(13), ID_(14)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 15;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4), ARG_(5), ARG_(6), ARG_(7), ARG_(8), ARG_(9), ARG_(10), ARG_(11), ARG_(12), ARG_(13), ARG_(14))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4), IN_(5), IN_(6), IN_(7), IN_(8), IN_(9), IN_(10), IN_(11), IN_(12), IN_(13), IN_(14) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4), ID_(5), ID_(6), ID_(7), ID_(8), ID_(9), ID_(10), ID_(11), ID_(12), ID_(13), ID_(14), ID_(15)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 16;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4), ARG_(5), ARG_(6), ARG_(7), ARG_(8), ARG_(9), ARG_(10), ARG_(11), ARG_(12), ARG_(13), ARG_(14), ARG_(15))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4), IN_(5), IN_(6), IN_(7), IN_(8), IN_(9), IN_(10), IN_(11), IN_(12), IN_(13), IN_(14), IN_(15) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4), ID_(5), ID_(6), ID_(7), ID_(8), ID_(9), ID_(10), ID_(11), ID_(12), ID_(13), ID_(14), ID_(15), ID_(16)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 17;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4), ARG_(5), ARG_(6), ARG_(7), ARG_(8), ARG_(9), ARG_(10), ARG_(11), ARG_(12), ARG_(13), ARG_(14), ARG_(15), ARG_(16))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4), IN_(5), IN_(6), IN_(7), IN_(8), IN_(9), IN_(10), IN_(11), IN_(12), IN_(13), IN_(14), IN_(15), IN_(16) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4), ID_(5), ID_(6), ID_(7), ID_(8), ID_(9), ID_(10), ID_(11), ID_(12), ID_(13), ID_(14), ID_(15), ID_(16), ID_(17)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 18;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4), ARG_(5), ARG_(6), ARG_(7), ARG_(8), ARG_(9), ARG_(10), ARG_(11), ARG_(12), ARG_(13), ARG_(14), ARG_(15), ARG_(16), ARG_(17))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4), IN_(5), IN_(6), IN_(7), IN_(8), IN_(9), IN_(10), IN_(11), IN_(12), IN_(13), IN_(14), IN_(15), IN_(16), IN_(17) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4), ID_(5), ID_(6), ID_(7), ID_(8), ID_(9), ID_(10), ID_(11), ID_(12), ID_(13), ID_(14), ID_(15), ID_(16), ID_(17), ID_(18)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 19;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4), ARG_(5), ARG_(6), ARG_(7), ARG_(8), ARG_(9), ARG_(10), ARG_(11), ARG_(12), ARG_(13), ARG_(14), ARG_(15), ARG_(16), ARG_(17), ARG_(18))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4), IN_(5), IN_(6), IN_(7), IN_(8), IN_(9), IN_(10), IN_(11), IN_(12), IN_(13), IN_(14), IN_(15), IN_(16), IN_(17), IN_(18) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18), TY_(19)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4), ID_(5), ID_(6), ID_(7), ID_(8), ID_(9), ID_(10), ID_(11), ID_(12), ID_(13), ID_(14), ID_(15), ID_(16), ID_(17), ID_(18), ID_(19)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18), N_(19) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 20;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4), ARG_(5), ARG_(6), ARG_(7), ARG_(8), ARG_(9), ARG_(10), ARG_(11), ARG_(12), ARG_(13), ARG_(14), ARG_(15), ARG_(16), ARG_(17), ARG_(18), ARG_(19))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4), IN_(5), IN_(6), IN_(7), IN_(8), IN_(9), IN_(10), IN_(11), IN_(12), IN_(13), IN_(14), IN_(15), IN_(16), IN_(17), IN_(18), IN_(19) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18), TY_(19), TY_(20)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4), ID_(5), ID_(6), ID_(7), ID_(8), ID_(9), ID_(10), ID_(11), ID_(12), ID_(13), ID_(14), ID_(15), ID_(16), ID_(17), ID_(18), ID_(19), ID_(20)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18), N_(19), N_(20) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 21;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4), ARG_(5), ARG_(6), ARG_(7), ARG_(8), ARG_(9), ARG_(10), ARG_(11), ARG_(12), ARG_(13), ARG_(14), ARG_(15), ARG_(16), ARG_(17), ARG_(18), ARG_(19), ARG_(20))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4), IN_(5), IN_(6), IN_(7), IN_(8), IN_(9), IN_(10), IN_(11), IN_(12), IN_(13), IN_(14), IN_(15), IN_(16), IN_(17), IN_(18), IN_(19), IN_(20) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18), TY_(19), TY_(20), TY_(21)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4), ID_(5), ID_(6), ID_(7), ID_(8), ID_(9), ID_(10), ID_(11), ID_(12), ID_(13), ID_(14), ID_(15), ID_(16), ID_(17), ID_(18), ID_(19), ID_(20), ID_(21)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18), N_(19), N_(20), N_(21) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 22;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4), ARG_(5), ARG_(6), ARG_(7), ARG_(8), ARG_(9), ARG_(10), ARG_(11), ARG_(12), ARG_(13), ARG_(14), ARG_(15), ARG_(16), ARG_(17), ARG_(18), ARG_(19), ARG_(20), ARG_(21))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4), IN_(5), IN_(6), IN_(7), IN_(8), IN_(9), IN_(10), IN_(11), IN_(12), IN_(13), IN_(14), IN_(15), IN_(16), IN_(17), IN_(18), IN_(19), IN_(20), IN_(21) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18), TY_(19), TY_(20), TY_(21), TY_(22)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4), ID_(5), ID_(6), ID_(7), ID_(8), ID_(9), ID_(10), ID_(11), ID_(12), ID_(13), ID_(14), ID_(15), ID_(16), ID_(17), ID_(18), ID_(19), ID_(20), ID_(21), ID_(22)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18), N_(19), N_(20), N_(21), N_(22) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 23;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4), ARG_(5), ARG_(6), ARG_(7), ARG_(8), ARG_(9), ARG_(10), ARG_(11), ARG_(12), ARG_(13), ARG_(14), ARG_(15), ARG_(16), ARG_(17), ARG_(18), ARG_(19), ARG_(20), ARG_(21), ARG_(22))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4), IN_(5), IN_(6), IN_(7), IN_(8), IN_(9), IN_(10), IN_(11), IN_(12), IN_(13), IN_(14), IN_(15), IN_(16), IN_(17), IN_(18), IN_(19), IN_(20), IN_(21), IN_(22) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18), TY_(19), TY_(20), TY_(21), TY_(22), TY_(23)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4), ID_(5), ID_(6), ID_(7), ID_(8), ID_(9), ID_(10), ID_(11), ID_(12), ID_(13), ID_(14), ID_(15), ID_(16), ID_(17), ID_(18), ID_(19), ID_(20), ID_(21), ID_(22), ID_(23)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18), N_(19), N_(20), N_(21), N_(22), N_(23) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 24;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4), ARG_(5), ARG_(6), ARG_(7), ARG_(8), ARG_(9), ARG_(10), ARG_(11), ARG_(12), ARG_(13), ARG_(14), ARG_(15), ARG_(16), ARG_(17), ARG_(18), ARG_(19), ARG_(20), ARG_(21), ARG_(22), ARG_(23))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4), IN_(5), IN_(6), IN_(7), IN_(8), IN_(9), IN_(10), IN_(11), IN_(12), IN_(13), IN_(14), IN_(15), IN_(16), IN_(17), IN_(18), IN_(19), IN_(20), IN_(21), IN_(22), IN_(23) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18), TY_(19), TY_(20), TY_(21), TY_(22), TY_(23), TY_(24)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4), ID_(5), ID_(6), ID_(7), ID_(8), ID_(9), ID_(10), ID_(11), ID_(12), ID_(13), ID_(14), ID_(15), ID_(16), ID_(17), ID_(18), ID_(19), ID_(20), ID_(21), ID_(22), ID_(23), ID_(24)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18), N_(19), N_(20), N_(21), N_(22), N_(23), N_(24) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 25;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4), ARG_(5), ARG_(6), ARG_(7), ARG_(8), ARG_(9), ARG_(10), ARG_(11), ARG_(12), ARG_(13), ARG_(14), ARG_(15), ARG_(16), ARG_(17), ARG_(18), ARG_(19), ARG_(20), ARG_(21), ARG_(22), ARG_(23), ARG_(24))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4), IN_(5), IN_(6), IN_(7), IN_(8), IN_(9), IN_(10), IN_(11), IN_(12), IN_(13), IN_(14), IN_(15), IN_(16), IN_(17), IN_(18), IN_(19), IN_(20), IN_(21), IN_(22), IN_(23), IN_(24) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18), TY_(19), TY_(20), TY_(21), TY_(22), TY_(23), TY_(24), TY_(25)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4), ID_(5), ID_(6), ID_(7), ID_(8), ID_(9), ID_(10), ID_(11), ID_(12), ID_(13), ID_(14), ID_(15), ID_(16), ID_(17), ID_(18), ID_(19), ID_(20), ID_(21), ID_(22), ID_(23), ID_(24), ID_(25)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18), N_(19), N_(20), N_(21), N_(22), N_(23), N_(24), N_(25) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 26;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4), ARG_(5), ARG_(6), ARG_(7), ARG_(8), ARG_(9), ARG_(10), ARG_(11), ARG_(12), ARG_(13), ARG_(14), ARG_(15), ARG_(16), ARG_(17), ARG_(18), ARG_(19), ARG_(20), ARG_(21), ARG_(22), ARG_(23), ARG_(24), ARG_(25))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4), IN_(5), IN_(6), IN_(7), IN_(8), IN_(9), IN_(10), IN_(11), IN_(12), IN_(13), IN_(14), IN_(15), IN_(16), IN_(17), IN_(18), IN_(19), IN_(20), IN_(21), IN_(22), IN_(23), IN_(24), IN_(25) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18), TY_(19), TY_(20), TY_(21), TY_(22), TY_(23), TY_(24), TY_(25), TY_(26)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4), ID_(5), ID_(6), ID_(7), ID_(8), ID_(9), ID_(10), ID_(11), ID_(12), ID_(13), ID_(14), ID_(15), ID_(16), ID_(17), ID_(18), ID_(19), ID_(20), ID_(21), ID_(22), ID_(23), ID_(24), ID_(25), ID_(26)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18), N_(19), N_(20), N_(21), N_(22), N_(23), N_(24), N_(25), N_(26) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 27;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4), ARG_(5), ARG_(6), ARG_(7), ARG_(8), ARG_(9), ARG_(10), ARG_(11), ARG_(12), ARG_(13), ARG_(14), ARG_(15), ARG_(16), ARG_(17), ARG_(18), ARG_(19), ARG_(20), ARG_(21), ARG_(22), ARG_(23), ARG_(24), ARG_(25), ARG_(26))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4), IN_(5), IN_(6), IN_(7), IN_(8), IN_(9), IN_(10), IN_(11), IN_(12), IN_(13), IN_(14), IN_(15), IN_(16), IN_(17), IN_(18), IN_(19), IN_(20), IN_(21), IN_(22), IN_(23), IN_(24), IN_(25), IN_(26) { }};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18), TY_(19), TY_(20), TY_(21), TY_(22), TY_(23), TY_(24), TY_(25), TY_(26), TY_(27)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4), ID_(5), ID_(6), ID_(7), ID_(8), ID_(9), ID_(10), ID_(11), ID_(12), ID_(13), ID_(14), ID_(15), ID_(16), ID_(17), ID_(18), ID_(19), ID_(20), ID_(21), ID_(22), ID_(23), ID_(24), ID_(25), ID_(26), ID_(27)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18), N_(19), N_(20), N_(21), N_(22), N_(23), N_(24), N_(25), N_(26), N_(27) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 28;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4), ARG_(5), ARG_(6), ARG_(7), ARG_(8), ARG_(9), ARG_(10), ARG_(11), ARG_(12), ARG_(13), ARG_(14), ARG_(15), ARG_(16), ARG_(17), ARG_(18), ARG_(19), ARG_(20), ARG_(21), ARG_(22), ARG_(23), ARG_(24), ARG_(25), ARG_(26), ARG_(27))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4), IN_(5), IN_(6), IN_(7), IN_(8), IN_(9), IN_(10), IN_(11), IN_(12), IN_(13), IN_(14), IN_(15), IN_(16), IN_(17), IN_(18), IN_(19), IN_(20), IN_(21), IN_(22), IN_(23), IN_(24), IN_(25), IN_(26), IN_(27) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18), TY_(19), TY_(20), TY_(21), TY_(22), TY_(23), TY_(24), TY_(25), TY_(26), TY_(27), TY_(28)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4), ID_(5), ID_(6), ID_(7), ID_(8), ID_(9), ID_(10), ID_(11), ID_(12), ID_(13), ID_(14), ID_(15), ID_(16), ID_(17), ID_(18), ID_(19), ID_(20), ID_(21), ID_(22), ID_(23), ID_(24), ID_(25), ID_(26), ID_(27), ID_(28)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18), N_(19), N_(20), N_(21), N_(22), N_(23), N_(24), N_(25), N_(26), N_(27), N_(28) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 29;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4), ARG_(5), ARG_(6), ARG_(7), ARG_(8), ARG_(9), ARG_(10), ARG_(11), ARG_(12), ARG_(13), ARG_(14), ARG_(15), ARG_(16), ARG_(17), ARG_(18), ARG_(19), ARG_(20), ARG_(21), ARG_(22), ARG_(23), ARG_(24), ARG_(25), ARG_(26), ARG_(27), ARG_(28))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4), IN_(5), IN_(6), IN_(7), IN_(8), IN_(9), IN_(10), IN_(11), IN_(12), IN_(13), IN_(14), IN_(15), IN_(16), IN_(17), IN_(18), IN_(19), IN_(20), IN_(21), IN_(22), IN_(23), IN_(24), IN_(25), IN_(26), IN_(27), IN_(28) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18), TY_(19), TY_(20), TY_(21), TY_(22), TY_(23), TY_(24), TY_(25), TY_(26), TY_(27), TY_(28), TY_(29)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4), ID_(5), ID_(6), ID_(7), ID_(8), ID_(9), ID_(10), ID_(11), ID_(12), ID_(13), ID_(14), ID_(15), ID_(16), ID_(17), ID_(18), ID_(19), ID_(20), ID_(21), ID_(22), ID_(23), ID_(24), ID_(25), ID_(26), ID_(27), ID_(28), ID_(29)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18), N_(19), N_(20), N_(21), N_(22), N_(23), N_(24), N_(25), N_(26), N_(27), N_(28), N_(29) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 30;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4), ARG_(5), ARG_(6), ARG_(7), ARG_(8), ARG_(9), ARG_(10), ARG_(11), ARG_(12), ARG_(13), ARG_(14), ARG_(15), ARG_(16), ARG_(17), ARG_(18), ARG_(19), ARG_(20), ARG_(21), ARG_(22), ARG_(23), ARG_(24), ARG_(25), ARG_(26), ARG_(27), ARG_(28), ARG_(29))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4), IN_(5), IN_(6), IN_(7), IN_(8), IN_(9), IN_(10), IN_(11), IN_(12), IN_(13), IN_(14), IN_(15), IN_(16), IN_(17), IN_(18), IN_(19), IN_(20), IN_(21), IN_(22), IN_(23), IN_(24), IN_(25), IN_(26), IN_(27), IN_(28), IN_(29) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18), TY_(19), TY_(20), TY_(21), TY_(22), TY_(23), TY_(24), TY_(25), TY_(26), TY_(27), TY_(28), TY_(29), TY_(30)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4), ID_(5), ID_(6), ID_(7), ID_(8), ID_(9), ID_(10), ID_(11), ID_(12), ID_(13), ID_(14), ID_(15), ID_(16), ID_(17), ID_(18), ID_(19), ID_(20), ID_(21), ID_(22), ID_(23), ID_(24), ID_(25), ID_(26), ID_(27), ID_(28), ID_(29), ID_(30)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18), N_(19), N_(20), N_(21), N_(22), N_(23), N_(24), N_(25), N_(26), N_(27), N_(28), N_(29), N_(30) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 31;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4), ARG_(5), ARG_(6), ARG_(7), ARG_(8), ARG_(9), ARG_(10), ARG_(11), ARG_(12), ARG_(13), ARG_(14), ARG_(15), ARG_(16), ARG_(17), ARG_(18), ARG_(19), ARG_(20), ARG_(21), ARG_(22), ARG_(23), ARG_(24), ARG_(25), ARG_(26), ARG_(27), ARG_(28), ARG_(29), ARG_(30))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4), IN_(5), IN_(6), IN_(7), IN_(8), IN_(9), IN_(10), IN_(11), IN_(12), IN_(13), IN_(14), IN_(15), IN_(16), IN_(17), IN_(18), IN_(19), IN_(20), IN_(21), IN_(22), IN_(23), IN_(24), IN_(25), IN_(26), IN_(27), IN_(28), IN_(29), IN_(30) { }
+};
+
+template <TY_(0), TY_(1), TY_(2), TY_(3), TY_(4), TY_(5), TY_(6), TY_(7), TY_(8), TY_(9), TY_(10), TY_(11), TY_(12), TY_(13), TY_(14), TY_(15), TY_(16), TY_(17), TY_(18), TY_(19), TY_(20), TY_(21), TY_(22), TY_(23), TY_(24), TY_(25), TY_(26), TY_(27), TY_(28), TY_(29), TY_(30), TY_(31)>
+struct TTupleBranch<ID_(0), ID_(1), ID_(2), ID_(3), ID_(4), ID_(5), ID_(6), ID_(7), ID_(8), ID_(9), ID_(10), ID_(11), ID_(12), ID_(13), ID_(14), ID_(15), ID_(16), ID_(17), ID_(18), ID_(19), ID_(20), ID_(21), ID_(22), ID_(23), ID_(24), ID_(25), ID_(26), ID_(27), ID_(28), ID_(29), ID_(30), ID_(31)>
+ : N_(0), N_(1), N_(2), N_(3), N_(4), N_(5), N_(6), N_(7), N_(8), N_(9), N_(10), N_(11), N_(12), N_(13), N_(14), N_(15), N_(16), N_(17), N_(18), N_(19), N_(20), N_(21), N_(22), N_(23), N_(24), N_(25), N_(26), N_(27), N_(28), N_(29), N_(30), N_(31) {
+  static constexpr bool isArray_ = false;
+  static constexpr SzType size = 32;
+  TTupleBranch() = default;
+  TTupleBranch(const TTupleBranch&) = default;
+  TTupleBranch(TTupleBranch&&) = default;
+  constexpr TTupleBranch(ARG_(0), ARG_(1), ARG_(2), ARG_(3), ARG_(4), ARG_(5), ARG_(6), ARG_(7), ARG_(8), ARG_(9), ARG_(10), ARG_(11), ARG_(12), ARG_(13), ARG_(14), ARG_(15), ARG_(16), ARG_(17), ARG_(18), ARG_(19), ARG_(20), ARG_(21), ARG_(22), ARG_(23), ARG_(24), ARG_(25), ARG_(26), ARG_(27), ARG_(28), ARG_(29), ARG_(30), ARG_(31))
+   : IN_(0), IN_(1), IN_(2), IN_(3), IN_(4), IN_(5), IN_(6), IN_(7), IN_(8), IN_(9), IN_(10), IN_(11), IN_(12), IN_(13), IN_(14), IN_(15), IN_(16), IN_(17), IN_(18), IN_(19), IN_(20), IN_(21), IN_(22), IN_(23), IN_(24), IN_(25), IN_(26), IN_(27), IN_(28), IN_(29), IN_(30), IN_(31) { }
+};
+
+#undef IN_
+#undef ARG_
+#undef TY_
+#undef N_
+#undef ID_

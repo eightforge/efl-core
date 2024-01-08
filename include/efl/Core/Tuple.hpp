@@ -1,6 +1,6 @@
 //===- Core/Tuple.hpp -----------------------------------------------===//
 //
-// Copyright (C) 2023 Eightfold
+// Copyright (C) 2023-2024 Eightfold
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 //===----------------------------------------------------------------===//
 //
 //  This file implements a tuple utilizing multiple inheritance.
-//  Based on https://github.com/jfalcou/kumi.
+//  The C++17 variant is based on kumi::tuple.
 //
 //===----------------------------------------------------------------===//
 
@@ -26,56 +26,21 @@
 #ifndef EFL_CORE_TUPLE_HPP
 #define EFL_CORE_TUPLE_HPP
 
-#include "Traits.hpp"
-
-#if !CPPVER_LEAST(17)
-# error C++17 required for this library!
-#endif
-
-// TODO: Add a pre-c++17 implementation, C++20 optimizations
+#include "_Version.hpp"
 
 #if CPPVER_LEAST(17)
-//=== Basic Tuple Helpers ===//
-namespace efl::C::H {
-template <IdType I, typename T>
-struct TupleLeaf { T data_; };
+# include "Tuple/Cxx17Base.hpp"
+#else
+# include "Tuple/Cxx14Base.hpp"
+#endif
 
-template <IdType I, typename T>
-AGGRESSIVE_INLINE constexpr T& extract_leaf(
- TupleLeaf<I, T>& l) NOEXCEPT {
-  return l.data_;
-}
+// TODO: Add C++20 optimizations
 
-template <IdType I, typename T>
-AGGRESSIVE_INLINE constexpr T&& extract_leaf(
- TupleLeaf<I, T>&& l) NOEXCEPT {
-  return static_cast<T&&>(l.data_);
-}
-
-template <IdType I, typename T>
-AGGRESSIVE_INLINE constexpr const T& extract_leaf(
- const TupleLeaf<I, T>& l) NOEXCEPT {
-  return l.data_;
-}
-
-template <IdType I, typename T>
-AGGRESSIVE_INLINE constexpr const T&& extract_leaf(
- const TupleLeaf<I, T>&& l) NOEXCEPT {
-  return static_cast<const T&&>(l.data_);
-}
-
-template <typename, typename...>
-struct TupleBranch;
-
-template <IdType...II, typename...TT>
-struct TupleBranch<IdSeq<II...>, TT...> : TupleLeaf<II, TT>... {
-  static constexpr bool isArray_ = false;
-  static constexpr auto size = sizeof...(TT);
-};
-} // namespace efl::C::H
-
+namespace efl {
+namespace C {
+namespace H {
 //=== Array Backing Optimization ===//
-namespace efl::C::H {
+
 template <IdType N, typename T>
 struct TupleArr {
   static constexpr bool isArray_ = true;
@@ -106,10 +71,9 @@ AGGRESSIVE_INLINE constexpr const T&& extract_leaf(
  const TupleArr<N, T>&& l) NOEXCEPT {
   return static_cast<const T&&>(l.data_[N]);
 }
-} // namespace efl::C::H
 
 //=== Binding Type ===//
-namespace efl::C::H {
+
 template <typename IIs, typename...TT>
 struct TupleSelector {
   using type = TupleBranch<IIs, TT...>;
@@ -136,18 +100,22 @@ struct TupleSelector<IdSeq<II...>, Tx, Ty, TT...> {
 template <typename...TT>
 using tuple_type = typename TupleSelector<
   MkIdSeq<sizeof...(TT)>, TT...>::type;
-} // namespace efl::C::H
+
+} // namespace H
+} // namespace C
+} // namespace efl
 
 //=== Tuple Implementation ===//
-namespace efl::C {
+namespace efl {
+namespace C {
 /**
  * A multi-inheritance based tuple for faster
  * compile times and a simpler API.
  */
 template <typename...TT>
 struct Tuple {
-  using baseType_ = H::tuple_type<TT...>;
-  static constexpr auto isArray_ = baseType_::isArray_;
+  using BaseType = H::tuple_type<TT...>;
+  static constexpr auto isArray_ = BaseType::isArray_;
   static constexpr H::SzType size = sizeof...(TT);
   
 public:
@@ -158,28 +126,32 @@ public:
    */
   template <H::IdType I>
   EFLI_OREQUIRES_(I < sizeof...(TT))
-  FICONSTEXPR decltype(auto) operator[](H::Id<I>)& {
+  ALWAYS_INLINE EFLI_CXX14_CXPR_ auto operator[](H::Id<I>)&
+   -> decltype(H::extract_leaf<I>(H::Decl<BaseType&>())) {
     return H::extract_leaf<I>(data_);
   }
   /// @overload
   template <H::IdType I>
   EFLI_OREQUIRES_(I < sizeof...(TT))
-  FICONSTEXPR decltype(auto) operator[](H::Id<I>)&& NOEXCEPT {
-    return H::extract_leaf<I>(static_cast<baseType_&&>(data_));
+  ALWAYS_INLINE EFLI_CXX14_CXPR_ auto operator[](H::Id<I>)&& NOEXCEPT
+   -> decltype(H::extract_leaf<I>(H::Decl<BaseType&&>())) {
+    return H::extract_leaf<I>(static_cast<BaseType&&>(data_));
   }
 
   /// @overload
   template <H::IdType I>
   EFLI_OREQUIRES_(I < sizeof...(TT))
-  FICONSTEXPR decltype(auto) operator[](H::Id<I>) CONST& {
+  FICONSTEXPR auto operator[](H::Id<I>) CONST&
+   -> decltype(H::extract_leaf<I>(H::Decl<const BaseType&>())) {
     return H::extract_leaf<I>(data_);
   }
 
   /// @overload
   template <H::IdType I>
   EFLI_OREQUIRES_(I < sizeof...(TT))
-  FICONSTEXPR decltype(auto) operator[](H::Id<I>) CONST&& NOEXCEPT {
-    return H::extract_leaf<I>(static_cast<const baseType_&&>(data_));
+  FICONSTEXPR auto operator[](H::Id<I>) CONST&& NOEXCEPT
+   -> decltype(H::extract_leaf<I>(H::Decl<const BaseType&>())) {
+    return H::extract_leaf<I>(static_cast<const BaseType&&>(data_));
   }
 
   /// Returns sizeof...(TT).
@@ -190,11 +162,23 @@ public:
   FICONSTEXPR static bool IsArray() NOEXCEPT { return Tuple::isArray_; }
 
 public:
-  baseType_ data_;
+  BaseType data_;
 };
 
+template <H::SzType I, typename Tup>
+using tuple_element_t = typename
+  std::tuple_element<I, Tup>::type;
+
+namespace H {
+  template <H::SzType I, typename...TT>
+  using tuple_element2_t = typename
+  std::tuple_element<I, Tuple<TT...>>::type;
+} // namespace H
+
+#ifdef __cpp_deduction_guides
 template <typename...TT>
 Tuple(TT&&...) -> Tuple<std::decay_t<TT>...>;
+#endif // Deduction guides (C++17)
 
 /**
  * Converts a set of references (TT...)
@@ -202,24 +186,56 @@ Tuple(TT&&...) -> Tuple<std::decay_t<TT>...>;
  */
 template <typename...TT>
 constexpr auto tie(TT&...tt) -> Tuple<TT&...> {
-  return { tt... };
+  return Tuple<TT&...> {
+    H::tuple_type<TT&...> { tt... }};
 }
 
 /// Perfectly forwards a set of types as a `Tuple`.
 template <typename...TT>
 FICONSTEXPR auto tuple_fwd(TT&&...tt) 
  -> Tuple<decltype(tt)...> {
-  return { FWD(tt)... };
+  return Tuple<decltype(tt)...> {
+    H::tuple_type<decltype(tt)...> { FWD(tt)... }};
 }
 
 /// May be used for compatibility with older versions.
 template <typename...TT>
 FICONSTEXPR auto make_tuple(TT&&...tt)
- -> Tuple<std::decay_t<TT>...> {
-  return { FWD(tt)... };
+ -> Tuple<decay_t<TT>...> {
+  return Tuple<decay_t<TT>...> {
+    H::tuple_type<decay_t<TT>...> { FWD(tt)... }};
 }
-} // namespace efl::C
 
+template <size_t I, typename...TT>
+EFLI_CXX14_CXPR_ H::tuple_element2_t<I, TT...>&
+ get(Tuple<TT...>& tup) noexcept {
+  return H::extract_leaf<H::IdType(I)>(tup.data_);
+}
+
+template <size_t I, typename...TT>
+EFLI_CXX14_CXPR_ H::tuple_element2_t<I, TT...>&&
+ get(Tuple<TT...>&& tup) noexcept {
+  using BaseType = typename Tuple<TT...>::BaseType;
+  return H::extract_leaf<H::IdType(I)>(
+    static_cast<BaseType&&>(tup.data_));
+}
+
+template <size_t I, typename...TT>
+constexpr const H::tuple_element2_t<I, TT...>&
+ get(const Tuple<TT...>& tup) noexcept {
+  return H::extract_leaf<H::IdType(I)>(tup.data_);
+}
+
+template <size_t I, typename...TT>
+constexpr const H::tuple_element2_t<I, TT...>&&
+ get(const Tuple<TT...>&& tup) noexcept {
+  using BaseType = typename Tuple<TT...>::BaseType;
+  return H::extract_leaf<H::IdType(I)>(
+    static_cast<const BaseType&&>(tup.data_));
+}
+
+} // namespace C
+} // namespace efl
 
 //=== Std Traits ===//
 template <std::size_t I, typename T, typename...TT>
@@ -233,14 +249,12 @@ struct std::tuple_element<0, efl::C::Tuple<T, TT...>> {
 
 template <std::size_t I, typename...TT>
 struct std::tuple_element<I, const efl::C::Tuple<TT...>> {
-  using type = const std::tuple_element_t<
+  using type = const efl::C::tuple_element_t<
     I, efl::C::Tuple<TT...>>;
 };
 
 template <typename...TT>
 struct std::tuple_size<efl::C::Tuple<TT...>>
  : std::integral_constant<std::size_t, sizeof...(TT)> { };
-
-#endif // C++17 Check
 
 #endif // EFL_CORE_TUPLE_HPP

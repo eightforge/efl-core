@@ -1,11 +1,9 @@
 #include "Tests.hpp"
+#include "Codegen.hpp"
 // #include <expected>
 #include <string_view>
 #include <memory>
 #include <efl/Core/Panic.hpp>
-
-// TODO: Add more to Traits/Helpers.hpp
-// EFLI_CXX14_CXPR_ void X() { }
 
 struct AnnotationTest {
   int first = 0;
@@ -54,30 +52,6 @@ auto result_test(int i)
   else return $Err(C::ubyte(i));
 }
 
-template <bool HasComma = true>
-void gen_apply(const char* name, int n, int start_off = 0) {
-  constexpr auto lit = HasComma ? ", " : " ";
-  if(n == start_off) return;
-  std::cout << name << "(" << start_off << ")";
-  for(int idx = (start_off + 1); idx < n; ++idx)
-    std::cout << lit << name 
-      << "(" << idx << ")";
-}
-
-void gen_overload_bases(int count = 32) {
-  for(int n = 1; n <= count; ++n) {
-    std::cout << "template <";
-    gen_apply("TY_", n);
-    std::cout << ">\nstruct OverloadSet<";
-    gen_apply("N_", n);
-    std::cout << ">\n : ";
-    gen_apply("N_", n);
-    std::cout << " {\n  ";
-    gen_apply<false>("OV_", n);
-    std::cout << "\n};\n" << std::endl;
-  }
-}
-
 int main() {
 #if CPPVER_LEAST(14)
   MEflESAssert(!HasType<X>);
@@ -114,13 +88,17 @@ int main() {
     assert(res.hasValue());
   }
 
-  char third_arg = 'a';
   std::cout << "Is multithreaded: " << efl::is_multithreaded() << std::endl;
   // C::panic_();
 
   std::cout << "Tests:" << std::endl;
-  auto tup = std::make_tuple("Hello!", ' ', "I ", 4, 'M', " G", 0, 'D');
+  auto tup = C::make_tuple("Hello!", ' ', "I ", 4, 'M', " G", 0, 'D');
   HH::apply(ToApply{}, tup);
+
+  int i = 0;
+  auto arr3 = C::make_array(i, 1, 2);
+  auto arr2 = C::make_array_of<C::Str>("0", "1");
+  auto arr0 = C::make_array();
 
 #if CPPVER_LEAST(20)
   using Lit = HH::LitC<"Hello">;

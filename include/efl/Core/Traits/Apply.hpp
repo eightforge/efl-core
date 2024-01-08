@@ -1,6 +1,6 @@
 //===- Core/Traits/Apply.hpp ----------------------------------------===//
 //
-// Copyright (C) 2023 Eightfold
+// Copyright (C) 2023-2024 Eightfold
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,11 +30,13 @@ namespace H {
 #ifdef __cpp_lib_apply
 using ::std::apply;
 #else
-namespace xx11 {
+namespace apply_ {
+  using std::get;
+
   template <typename F, typename Tup, H::SzType...II>
   struct apply_i_result {
     using type = invoke_result_t<F,
-      decltype(std::get<II>(Decl<Tup>()))...>;
+      decltype(get<II>(Decl<Tup>()))...>;
   };
 
   template <typename F, 
@@ -47,7 +49,7 @@ namespace xx11 {
    F&& f, Tup&& tup, SzSeq<II...>)
    -> apply_i_result_t<F, Tup, II...> {
     return invoke(cxpr_forward<F>(f),
-      std::get<II>(cxpr_forward<Tup>(tup))...);
+      get<II>(cxpr_forward<Tup>(tup))...);
   }
 
   template <typename F, typename Tup>
@@ -70,10 +72,10 @@ namespace xx11 {
     return apply_i(cxpr_forward<F>(f), 
       cxpr_forward<Tup>(tup), MkSzSeq<Result::seqValue>{});
   }
-} // namespace xx11
+} // namespace apply_
 
-using xx11::apply;
-using xx11::apply_result_t;
+using apply_::apply;
+using apply_::apply_result_t;
 
 #endif // Feature check (C++17)
 } // namespace H

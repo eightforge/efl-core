@@ -3,11 +3,11 @@ include_guard(DIRECTORY)
 
 project(
   efl-core
-  VERSION 0.1.5
+  VERSION 0.1.6
   LANGUAGES CXX
 )
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 11)
 
 option(EFL_MULTITHREADED "Enable testing for efl::core." ON)
 option(EFL_CORE_TESTING "Enable testing for efl::core." OFF)

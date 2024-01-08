@@ -7,6 +7,7 @@ The following are/will be found under ``Core/*.hpp``:
 ## Fully implemented
 
 - AlignedStorage
+- Array
 - Fundamental
 - Mtx
 - OverloadSet
@@ -14,6 +15,7 @@ The following are/will be found under ``Core/*.hpp``:
 - Preload
 - Ref
 - Result
+- Tuple
 - Unwrap
 
 ## Partially implemented
@@ -23,11 +25,11 @@ The following are/will be found under ``Core/*.hpp``:
 - Panic
 - StrRef
 - Traits
-- Tuple
 - Wrapper
   
 ## Unimplemented
 
+- ArrayRef
 - Atomic
 - Binding
 - Enum

@@ -1,6 +1,6 @@
 //===- Core/Tuple.hpp -----------------------------------------------===//
 //
-// Copyright (C) 2023 Eightfold
+// Copyright (C) 2023-2024 Eightfold
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,6 +35,8 @@
 #include "Traits/Invoke.hpp"    // invoke, is_invokable, invoke_result
 #include "Traits/Apply.hpp"     // apply, apply_result_t
 #include "Fundamental.hpp"
+
+// TODO: Add more to Traits/Helpers.hpp
 
 namespace efl {
 namespace C {
@@ -104,7 +106,6 @@ namespace cref_ {
     cref_::MkCRef<T>::type;
 } // namespace H
 
-#if CPPVER_LEAST(14)
 namespace H {
   template <IdType I>
   using Id = IntC<IdType, I>;
@@ -116,6 +117,7 @@ namespace H {
   using MkIdSeq = MkIntSeq<IdType, N>;
 } // namespace H
 
+#if CPPVER_LEAST(14)
 /// Global `IdType` constant.
 template <H::IdType I>
 GLOBAL H::Id<I> Ix { };

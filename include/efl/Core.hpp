@@ -32,6 +32,7 @@
 //=== C++11 Includes ===//
 
 #include "Core/AlignedStorage.hpp"
+#include "Core/Array.hpp"
 #include "Core/Binding.hpp"
 #include "Core/Casts.hpp"
 #include "Core/Fundamental.hpp"
@@ -45,12 +46,7 @@
 #include "Core/Result.hpp"
 #include "Core/StrRef.hpp"
 #include "Core/Traits.hpp"
-#include "Core/Unwrap.hpp"
-
-//=== Other Includes ===//
-
-#if CPPVER_LEAST(17)
 #include "Core/Tuple.hpp"
-#endif
+#include "Core/Unwrap.hpp"
 
 #endif // EFL_CORE_HPP
