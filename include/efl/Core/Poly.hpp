@@ -99,8 +99,18 @@ struct Poly {
     "Types must be derived from Base.");
 #endif
   using StorageType = AlignedUnion<Base, Derived...>;
+  using NodeValuesType = H::PolyNodes<Base, Derived...>;
   static constexpr auto emptyState = ~H::SzType(0);
-  static constexpr H::PolyNodes<Base, Derived...> nodeValues_ { };
+
+protected:
+  template <typename...Args>
+  ALWAYS_INLINE static constexpr auto
+   NodeValues(Args&&...args) NOEXCEPT
+   -> decltype(H::Decl<NodeValuesType&&>()(
+     H::Decl<Args>()...)) {
+    return NodeValuesType{}(
+      H::cxpr_forward<Args>(args)...);
+  }
 
   template <typename T>
   static constexpr bool matchesAny =
@@ -108,7 +118,7 @@ struct Poly {
   
   template <typename T>
   static constexpr H::SzType idValue =
-    nodeValues_(static_cast<T*>(nullptr));
+    NodeValues(static_cast<T*>(nullptr));
 
 public:
   constexpr Poly() = default;
@@ -239,12 +249,12 @@ private:
     }
 
 # if CPPVER_LEAST(17)
-    (void)((... || nodeValues_(
+    (void)((... || NodeValues(
       H::TypeC<Derived>{}, id_, data_.data)));
 # else
     bool dd[sizeof...(Derived) + 1] = { 
-      (id_ == idValue<T> && 
-       nodeValues_(H::TypeC<Derived>{}, 
+      (id_ == idValue<Base> && 
+       NodeValues(H::TypeC<Derived>{}, 
         id_, data_.data))...
     };
     (void)dd;

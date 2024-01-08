@@ -27,6 +27,7 @@
 #define EFL_CORE_CASTS_LAUNDER_HPP
 
 #include <efl/Core/Traits.hpp>
+#include <efl/Core/_Version.hpp>
 
 #if CPPVER_LEAST(20)
 # include <new>
@@ -36,7 +37,7 @@
 #elif __has_builtin(__builtin_launder) || defined(__GNUC__) || \
  (defined(COMPILER_MSVC) && defined(_BUILTIN_LAUNDER_SUPPORTED))
 # define EFLI_LAUNDER_(...) __builtin_launder((__VA_ARGS__))
-# define EFLI_LAUNDERCAST_CXPR_ ALWAYS_INLINE constexpr
+# define EFLI_LAUNDERCAST_CXPR_ ALWAYS_INLINE EFLI_CXX14_CXPR_
 # define EFLI_LAUNDER_BUILTIN_ 1
 #elif CPPVER_LEAST(17)
 # include <new>
@@ -102,7 +103,7 @@ using launder_t = VolatilePtr<T>;
 
 #if (EFLI_LAUNDER_BUILTIN_ == 1)
 # undef EFLI_LAUNDERCAST_CXPR_
-# define EFLI_LAUNDERCAST_CXPR_ HINT_INLINE constexpr
+# define EFLI_LAUNDERCAST_CXPR_ HINT_INLINE EFLI_CXX14_CXPR_
 #endif
 
 #undef EFLI_LAUNDER_FALLBACK_

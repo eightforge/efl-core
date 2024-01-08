@@ -98,12 +98,13 @@ private:
 template <typename T, typename E>
 struct Result : private H::ResultBase<T, E> {
 private:
-  static_assert(!is_reference<T>::value);
-  static_assert(!is_function<T>::value);
-  static_assert(!H::result_::IsReservedTag<T>::value);
-  static_assert(!H::result_::IsError<remove_cv_t<T>>::value );
-  static_assert(H::result_::IsValidError<E>::value);
-  using type_ = H::ResultBase<T, E>::type_;
+  MEflESAssert(!is_reference<T>::value);
+  MEflESAssert(!is_function<T>::value);
+  MEflESAssert(!H::result_::IsReservedTag<T>::value);
+  MEflESAssert(!H::result_::IsError<remove_cv_t<T>>::value );
+  MEflESAssert(H::result_::IsValidError<E>::value);
+  using type_ = typename
+    H::ResultBase<T, E>::type_;
 public:
   using value_type = T;
   using error_type = E;
@@ -166,24 +167,24 @@ public:
   constexpr Result(const Result& res)
    noexcept(conjunction<
      is_nothrow_copy_constructible<type_>,
-     is_nothrow_copy_constructible<E>>::value)
-   : H::ResultBase<T, E>::active_(res.active_) {
+     is_nothrow_copy_constructible<E>>::value) {
+    H::ResultBase<T, E>::active_ = res.active_;
     if(res.has_value())
-      X11::construct(pdata(), res.data_.data_);
+      (void) X11::construct(pdata(), res.data_.data_);
     else
-      X11::construct(perr(), res.data_.err_);
+      (void) X11::construct(perr(), res.data_.err_);
   }
 
   constexpr Result(Result&& res)
    noexcept(conjunction<
      is_nothrow_move_constructible<type_>,
-     is_nothrow_move_constructible<E>>::value)
-   : H::ResultBase<T, E>::active_(res.active_) {
+     is_nothrow_move_constructible<E>>::value) {
+    H::ResultBase<T, E>::active_ = res.active_;
     if(res.has_value())
-      X11::construct(pdata(),
+      (void) X11::construct(pdata(),
         H::cxpr_move(res).data_.data_);
     else
-      X11::construct(perr(),
+      (void) X11::construct(perr(),
         H::cxpr_move(res).data_.err_);
   }
 
@@ -219,6 +220,8 @@ public:
 
   EFLI_CXX20_CXPR_ ~Result() = default;
 
+  //=== Assignment Operators ===//
+
   EFLI_CXX17_CXPR_ Result&
    operator=(const Result& res) {
     if(res.has_value()) initialize_data(res.unwrap());
@@ -232,6 +235,23 @@ public:
       H::cxpr_move(res).unwrap());
     else initialize_err(
       H::cxpr_move(res).error());
+    return *this;
+  }
+
+  template <typename U = T, MEflEnableIf(
+    conjunction<
+      negation<is_same<Result, remove_cvref_t<U>>>,
+      negation<H::result_::IsReservedTag<U>>,
+      is_constructible<T, U>,
+      is_assignable<T&, U>
+    >::value)>
+  EFLI_CXX17_CXPR_ Result&
+   operator=(U&& u) {
+    if(this->has_value())
+      **this = H::cxpr_forward<U>(u);
+    else
+      this->initialize_data(
+        H::cxpr_forward<U>(u));
     return *this;
   }
 
@@ -344,7 +364,7 @@ public:
   //=== Modifiers ===//
 
   template <typename...Args>
-  void emplace(Args&&...args) NOEXCEPT {
+  ALWAYS_INLINE void emplace(Args&&...args) NOEXCEPT {
     this->initialize_data(FWD(args)...);
   }
 };
@@ -354,9 +374,10 @@ public:
 template <typename E>
 struct Result<void, E> : private H::ResultBase<void, E> {
 private:
-  static_assert(H::result_::IsValidError<E>::value);
+  MEflESAssert(H::result_::IsValidError<E>::value);
   using T = void;
-  using type_ = H::ResultBase<T, E>::type_;
+  using type_ = typename
+    H::ResultBase<T, E>::type_;
 public:
   using value_type = T;
   using error_type = E;
@@ -386,6 +407,7 @@ private:
   }
 
   EFLI_CXX14_CXPR_ void initialize_data() NOEXCEPT {
+    this->clear();
     H::ResultBase<T, E>::active_ = true;
   }
 
@@ -402,17 +424,17 @@ public:
   constexpr Result() = default;
 
   constexpr Result(const Result& res)
-   noexcept(is_nothrow_copy_constructible<E>::value)
-   : H::ResultBase<T, E>::active_(res.active_) {
+   noexcept(is_nothrow_copy_constructible<E>::value) {
+    H::ResultBase<T, E>::active_ = res.active_;
     if(!res.has_value())
-      X11::construct(perr(), res.data_.err_);
+      (void) X11::construct(perr(), res.data_.err_);
   }
 
   constexpr Result(Result&& res)
-   noexcept(is_nothrow_move_constructible<E>::value)
-   : H::ResultBase<T, E>::active_(res.active_) {
+   noexcept(is_nothrow_move_constructible<E>::value) {
+    H::ResultBase<T, E>::active_ = res.active_;
     if(!res.has_value())
-      X11::construct(perr(),
+      (void) X11::construct(perr(),
         H::cxpr_move(res).data_.err_);
   }
 
@@ -441,6 +463,8 @@ public:
 
   EFLI_CXX20_CXPR_ ~Result() = default;
 
+  //=== Assignment Operators ===//
+
   EFLI_CXX17_CXPR_ Result&
    operator=(const Result& res) {
     if(res.has_value()) initialize_data();
@@ -453,6 +477,12 @@ public:
     if(res.has_value()) initialize_data();
     else initialize_err(
       H::cxpr_move(res).error());
+    return *this;
+  }
+
+  EFLI_CXX17_CXPR_ Result&
+   operator=(H::Dummy) {
+    initialize_data();
     return *this;
   }
 
@@ -504,7 +534,7 @@ public:
 
   //=== Modifiers ===//
 
-  EFLI_CXX14_CXPR_ void emplace() NOEXCEPT {
+  ALWAYS_INLINE EFLI_CXX14_CXPR_ void emplace() NOEXCEPT {
     this->initialize_data();
   }
 };

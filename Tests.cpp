@@ -54,6 +54,30 @@ auto result_test(int i)
   else return $Err(C::ubyte(i));
 }
 
+template <bool HasComma = true>
+void gen_apply(const char* name, int n, int start_off = 0) {
+  constexpr auto lit = HasComma ? ", " : " ";
+  if(n == start_off) return;
+  std::cout << name << "(" << start_off << ")";
+  for(int idx = (start_off + 1); idx < n; ++idx)
+    std::cout << lit << name 
+      << "(" << idx << ")";
+}
+
+void gen_overload_bases(int count = 32) {
+  for(int n = 1; n <= count; ++n) {
+    std::cout << "template <";
+    gen_apply("TY_", n);
+    std::cout << ">\nstruct OverloadSet<";
+    gen_apply("N_", n);
+    std::cout << ">\n : ";
+    gen_apply("N_", n);
+    std::cout << " {\n  ";
+    gen_apply<false>("OV_", n);
+    std::cout << "\n};\n" << std::endl;
+  }
+}
+
 int main() {
 #if CPPVER_LEAST(14)
   MEflESAssert(!HasType<X>);
@@ -73,26 +97,24 @@ int main() {
   poly.clear();
   assert(!poly.holdsAny());
 
-  auto res = result_test(5);
-  assert(res.unwrap() == "5");
-  res = result_test(-3);
-  assert(!res.hasValue());
-  res = result_test(453);
-  std::cout << "res: " << res.unwrap() << std::endl;
-
-  C::Result<void, int> res_v {};
-  assert(res_v.hasValue());
-  res_v = $Err(5);
-  assert(res_v.error() == 5);
-  res_v.emplace();
-  assert(res_v.hasValue());
-
-  int i = 0;
-  std::destroy_at(&i);
+  /* default instantiation */ {
+    auto res = result_test(5);
+    assert(res.unwrap() == "5");
+    res = result_test(-3);
+    assert(!res.hasValue());
+    res = result_test(453);
+    std::cout << "res: " << res.unwrap() << std::endl;
+  } /* void specialization */ {
+    C::Result<void, int> res {};
+    assert(res.hasValue());
+    res = $Err(5);
+    assert(res.error() == 5);
+    res.emplace();
+    assert(res.hasValue());
+  }
 
   char third_arg = 'a';
   std::cout << "Is multithreaded: " << efl::is_multithreaded() << std::endl;
-  auto annotated = std::make_unique<AnnotationTest>(77, 9.0f, &third_arg);
   // C::panic_();
 
   std::cout << "Tests:" << std::endl;
