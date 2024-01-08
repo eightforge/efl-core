@@ -27,4 +27,9 @@
 #ifndef EFL_CORE_UNWRAP_HPP
 #define EFL_CORE_UNWRAP_HPP
 
+#include "_Builtins.hpp"
+
+// #define $unwrap(...) ?
+// #define $assign_unwrap(name, ...) 
+
 #endif // EFL_CORE_UNWRAP_HPP

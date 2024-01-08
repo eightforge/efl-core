@@ -32,6 +32,8 @@
 # error C++17 required for this library!
 #endif
 
+// TODO: Add a pre-c++17 implementation, C++20 optimizations
+
 #if CPPVER_LEAST(17)
 //=== Basic Tuple Helpers ===//
 namespace efl::C::H {

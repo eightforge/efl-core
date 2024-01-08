@@ -53,6 +53,8 @@ EFLI_CXPR11ASSERT_PROLOGUE_
   std::char_traits<char>::length(s)
 #endif
 
+// TODO: Finish implementation (consume, parse, search functions)
+
 namespace efl {
 namespace C {
 /// Alias for `std::string`.
@@ -234,8 +236,6 @@ public:
       dst, (data_ + count), rcount);
     return static_cast<size_type>(odst - dst);
   }
-
-  // TODO: consume, parse, search functions
 
   constexpr StrRef snipPrefix(size_type n) const {
     EFLI_CXPR11ASSERT_(data_ && n <= size_);

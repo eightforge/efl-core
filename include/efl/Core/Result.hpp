@@ -33,7 +33,7 @@
 
 EFLI_CXPR11ASSERT_PROLOGUE_
 
-// TODO: Finish implementation
+// TODO: Finish implementation (swap, monadic operations)
 
 namespace efl {
 namespace C {
