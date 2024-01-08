@@ -9,7 +9,6 @@ The following are/will be found under ``Core/*.hpp``:
 - AlignedStorage
 - Fundamental
 - Mtx
-- Option
 - OverloadSet
 - Poly
 - Preload
@@ -20,6 +19,7 @@ The following are/will be found under ``Core/*.hpp``:
 ## Partially implemented
 
 - Casts
+- Option
 - Panic
 - StrRef
 - Traits
@@ -28,8 +28,11 @@ The following are/will be found under ``Core/*.hpp``:
   
 ## Unimplemented
 
+- Atomic
 - Binding
 - Enum
 - Handle
+- RawIO
+- SmartMtx
 - Stacktrace
 - Target
