@@ -33,6 +33,16 @@
 
 namespace efl {
 namespace C {
+template <typename T, typename E>
+constexpr const T& 
+ do_unwrap(const Result<T, E>& res) {
+  return res.unwrap();
+}
+
+template <typename T, typename E>
+constexpr T do_unwrap(Result<T, E>&& res) {
+  return H::cxpr_move(res).unwrap();
+}
 
 } // namespace C
 } // namespace efl

@@ -3,7 +3,7 @@ include_guard(DIRECTORY)
 
 project(
   efl-core
-  VERSION 0.1.4
+  VERSION 0.1.5
   LANGUAGES CXX
 )
 
@@ -44,5 +44,7 @@ target_compile_definitions(__efl_core PUBLIC EFL_CORE_VERSION="${PROJECT_VERSION
 
 add_library(efl::core ALIAS __efl_core)
 
-add_executable(efl-core-tests Tests.cpp)
-target_link_libraries(efl-core-tests efl::core)
+# if(EFL_CORE_TESTING)
+  add_executable(efl-core-tests Tests.cpp)
+  target_link_libraries(efl-core-tests efl::core)
+# endif()

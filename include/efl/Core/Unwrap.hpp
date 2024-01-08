@@ -18,7 +18,7 @@
 //
 //  This file implements a utility macro for unwrapping values.
 //  Doesn't work on MSVC at the moment, but I will implement a 
-//  plugin for it at some point.
+//  plugin for it at some point...maybe.
 //
 //===----------------------------------------------------------------===//
 
@@ -27,9 +27,33 @@
 #ifndef EFL_CORE_UNWRAP_HPP
 #define EFL_CORE_UNWRAP_HPP
 
+#include "Traits.hpp"
+#include "Result.hpp"
 #include "_Builtins.hpp"
 
-// #define $unwrap(...) ?
-// #define $assign_unwrap(name, ...) 
+// TODO: Implement fallback for MSVC, add plugin support?
+
+#ifndef COMPILER_MSVC
+# define $unwrap(val, ...) \
+ ({ if(!static_cast<bool>(val)) return { __VA_ARGS__ }; \
+    ::efl::unwrap(val); })
+#endif
+
+#ifndef COMPILER_MSVC
+# define $assign_unwrap(name, ...) \
+ auto&& name = $unwrap(val, __VA_ARGS__)
+#endif
+
+namespace efl {
+/// @brief Allows for generic unwrapping via ADL.
+/// @param t The value to unwrap, assumed to be valid.
+/// @return The unwrapped value.
+template <typename T>
+constexpr auto unwrap(T&& t) 
+ -> decltype(do_unwrap(CH::Decl<T>())) {
+  return do_unwrap(CH::cxpr_forward<T>(t));
+}
+
+} // namespace efl
 
 #endif // EFL_CORE_UNWRAP_HPP

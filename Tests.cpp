@@ -103,7 +103,8 @@ int main() {
     res = result_test(-3);
     assert(!res.hasValue());
     res = result_test(453);
-    std::cout << "res: " << res.unwrap() << std::endl;
+    auto unwrapped = $unwrap(res);
+    std::cout << "res: " << unwrapped << std::endl;
   } /* void specialization */ {
     C::Result<void, int> res {};
     assert(res.hasValue());

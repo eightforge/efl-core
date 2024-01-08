@@ -48,6 +48,18 @@ template <typename T, typename U, typename...TT>
 constexpr Option<T> make_option(H::InitList<U> il, TT&&...tt) {
   return Option<T> { in_place, il, FWD(tt)... };
 }
+
+template <typename T>
+constexpr const T& 
+ do_unwrap(const Option<T>& opt) {
+  return opt.unwrap();
+}
+
+template <typename T>
+constexpr T do_unwrap(Option<T>&& opt) {
+  return H::cxpr_move(opt).unwrap();
+}
+
 } // namespace C
 } // namespace efl
 
