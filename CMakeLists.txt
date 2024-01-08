@@ -7,7 +7,7 @@ project(
   LANGUAGES CXX
 )
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 option(EFL_MULTITHREADED "Enable testing for efl::core." ON)
 option(EFL_CORE_TESTING "Enable testing for efl::core." OFF)
