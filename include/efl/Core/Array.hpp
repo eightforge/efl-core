@@ -34,7 +34,7 @@ using Array = std::array<T, N>;
 /// @brief Creates an `Array` like the C++17 deduction guide.
 /// @return An array constructed from the inputs.
 template <typename T, typename...TT>
-constexpr Array<remove_cvref_t<T>, sizeof...(TT) + 1>
+constexpr Array<decay_t<T>, sizeof...(TT) + 1>
  make_array(T&& t, TT&&...tt) {
   return {{ FWD_CAST(t), FWD_CAST(tt)... }};
 }

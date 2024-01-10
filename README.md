@@ -14,27 +14,29 @@ The following are/will be found under ``Core/*.hpp``:
 - Poly
 - Preload
 - Ref
-- Result
 - Tuple
 - Unwrap
+- Wrapper
 
 ## Partially implemented
 
 - Casts
+- Enum
 - Option
-- Panic
+- Panic?
+- Result
 - StrRef
 - Traits
-- Wrapper
   
 ## Unimplemented
 
 - ArrayRef
 - Atomic
 - Binding
-- Enum
 - Handle
+- Hash
 - RawIO
 - SmartMtx
 - Stacktrace
 - Target
+- TypeSwitch

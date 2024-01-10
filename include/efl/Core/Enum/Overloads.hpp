@@ -1,6 +1,6 @@
-//===- Core/Fwd_/Tuple.hpp ------------------------------------------===//
+//===- Core/Enum/Overloads.hpp --------------------------------------===//
 //
-// Copyright (C) 2023 Eightfold
+// Copyright (C) 2024 Eightfold
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,20 +16,23 @@
 //
 //===----------------------------------------------------------------===//
 //
-//  Forward declarations for Tuple<...>. Requires C++17.
+//  This file defines functions/macros for using strongly typed
+//  enums as if they were their underlying types.
 //
 //===----------------------------------------------------------------===//
 
-#ifndef EFL_CORE_FWD__TUPLE_HPP
-#define EFL_CORE_FWD__TUPLE_HPP
+#pragma once
 
-#include <CoreCommon/ConfigCache.hpp>
+#ifndef EFL_CORE_ENUM_OVERLOADS_HPP
+#define EFL_CORE_ENUM_OVERLOADS_HPP
+
+#include "Flags.hpp"
+#include <efl/Core/Traits/Functions.hpp>
 
 namespace efl {
 namespace C {
-template <typename...TT>
-struct Tuple;
+
 } // namespace C
 } // namespace efl
 
-#endif // EFL_CORE_FWD__TUPLE_HPP
+#endif // EFL_CORE_ENUM_OVERLOADS_HPP

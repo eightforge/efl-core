@@ -1,8 +1,8 @@
 #include <efl/Core.hpp>
 #include <iostream>
 
-namespace C = efl::C;
-namespace HH = efl::C::H;
+namespace C = efl::core;
+namespace HH = efl::core::H;
 
 template <typename...Args>
 using And = C::conjunction<Args...>;
@@ -39,6 +39,19 @@ struct Z {
 };
 
 struct Z1 : Z { };
+
+struct MyBase {
+  virtual ~MyBase() {}
+  virtual void saySomething() = 0;
+};
+
+struct Meower : MyBase {
+  void saySomething() override { std::printf("Meow!\n"); }
+};
+
+struct Woofer : MyBase {
+  void saySomething() override { std::printf("Woof!\n"); }
+};
 
 template <typename T, typename U>
 bool compare_all(const T& t, const U& u) {
@@ -100,6 +113,50 @@ void strref_tests() {
   constexpr C::StrRef sl = 
     str.snipPrefix(2).snipSuffix(2);
   MEflESAssert(sl[0] == 'l' && sl[1] == 'l');
+}
+
+void poly_tests() {
+  C::Poly<MyBase, Meower, Woofer> poly { };
+  poly.asBase();
+  poly = Meower();
+  poly->saySomething();
+  poly = Woofer();
+  poly->saySomething();
+  poly.clear();
+  assert(!poly.holdsAny());
+}
+
+auto result_test2(int i) 
+ -> C::Result<C::Str, C::ubyte> {
+  if(i >= 0) return $Ok(std::to_string(i));
+  else return $Err(C::ubyte(i));
+}
+
+int result_tests() {
+  /* default instantiation */ {
+    auto res = result_test2(5);
+    assert(res.unwrap() == "5");
+    res = result_test2(-3);
+    assert(!res.hasValue());
+    res = result_test2(453);
+    auto unwrapped = $unwrap(res, 1);
+    std::cout << "res: " << unwrapped << std::endl;
+  } /* void specialization */ {
+    C::Result<void, int> res {};
+    assert(res.hasValue());
+    res = $Err(5);
+    assert(res.error() == 5);
+    res.emplace();
+    assert(res.hasValue());
+  }
+  return 0;
+}
+
+void array_tests() {
+  int i = 0;
+  auto arr3 = C::make_array(i, 1, 2);
+  auto arr2 = C::make_array_of<C::Str>("0", "1");
+  auto arr0 = C::make_array();
 }
 
 int option_tests() {

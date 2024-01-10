@@ -24,14 +24,58 @@
 #include <tuple>
 #include "Invoke.hpp"
 
+#ifdef __cpp_lib_apply
+# include <efl/Core/_Fwd/Tuple.hpp>
+# include <efl/Core/_Builtins.hpp>
+#endif
+
 namespace efl {
 namespace C {
 namespace H {
 #ifdef __cpp_lib_apply
-using ::std::apply;
+template <typename F, typename Tup>
+FICONSTEXPR decltype(auto) 
+ apply(F&& f, Tup&& tup) {
+  using ::std::apply;
+  return apply(cxpr_forward<F>(f), 
+    cxpr_forward<Tup>(tup));
+}
+
+/* These are required because for some reason
+ * it won't be able to find the overloads via
+ * ADL with post-C++17 glibcxx. Weird stuff...
+ */
+
+template <typename F, typename...TT>
+FICONSTEXPR decltype(auto) 
+ apply(F&& f, Tuple<TT...>& tup) {
+  return std::apply(cxpr_forward<F>(f), 
+    tup.getStdTuple());
+}
+
+template <typename F, typename...TT>
+FICONSTEXPR decltype(auto) 
+ apply(F&& f, Tuple<TT...>&& tup) {
+  return apply(cxpr_forward<F>(f), 
+    std::move(tup).getStdTuple());
+}
+
+template <typename F, typename...TT>
+FICONSTEXPR decltype(auto) 
+ apply(F&& f, const Tuple<TT...>& tup) {
+  return apply(cxpr_forward<F>(f), 
+    tup.getStdTuple());
+}
+
+template <typename F, typename...TT>
+FICONSTEXPR decltype(auto) 
+ apply(F&& f, const Tuple<TT...>&& tup) {
+  return apply(cxpr_forward<F>(f), 
+    std::move(tup).getStdTuple());
+}
 #else
 namespace apply_ {
-  using std::get;
+  using ::std::get;
 
   template <typename F, typename Tup, H::SzType...II>
   struct apply_i_result {

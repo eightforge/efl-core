@@ -63,6 +63,12 @@ using usize = std::size_t;
 #if EFLI_HAS_I128_
 using i128 = signed __int128;
 using u128 = unsigned __int128;
+
+using imax = i128;
+using umax = u128;
+#else
+using imax = i64;
+using umax = u64;
 #endif
 
 //=== Floating Point ===//

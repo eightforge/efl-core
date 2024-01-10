@@ -28,18 +28,15 @@
 #define EFL_CORE_HPP
 
 #include <CoreCommon/ConfigCache.hpp>
-
-//=== C++11 Includes ===//
-
 #include "Core/AlignedStorage.hpp"
 #include "Core/Array.hpp"
 #include "Core/Binding.hpp"
 #include "Core/Casts.hpp"
+#include "Core/Enum.hpp"
 #include "Core/Fundamental.hpp"
 #include "Core/Mtx.hpp"
 #include "Core/Option.hpp"
 #include "Core/OverloadSet.hpp"
-// #include "Core/Panic.hpp" // Unfinished
 #include "Core/Poly.hpp"
 #include "Core/Preload.hpp"
 #include "Core/Ref.hpp"
@@ -48,5 +45,8 @@
 #include "Core/Traits.hpp"
 #include "Core/Tuple.hpp"
 #include "Core/Unwrap.hpp"
+#include "Core/Wrapper.hpp"
+
+// Panic
 
 #endif // EFL_CORE_HPP

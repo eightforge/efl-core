@@ -26,6 +26,7 @@
 #ifndef EFLH_CORE_CXX11ASSERT_HPP
 #define EFLH_CORE_CXX11ASSERT_HPP
 
+#include <cassert>
 #include "_Builtins.hpp"
 
 #if CPPVER_LEAST(14) || \

@@ -1,6 +1,6 @@
 //===- Core/Traits/Functions.hpp ------------------------------------===//
 //
-// Copyright (C) 2023 Eightfold
+// Copyright (C) 2023-2024 Eightfold
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -117,6 +117,15 @@ namespace H {
       (!!t) ? void(t->~T()) : void(0);
     }
   } // namespace xx11
+
+  /// Casts an enum value to its underlying type. 
+  template <typename E, MEflEnableIf(
+    std::is_enum<E>::value)>
+  FICONSTEXPR underlying_type_t<E>
+   to_underlying(E e) NOEXCEPT {
+    return static_cast<
+      underlying_type_t<E>>(e);
+  }
 } // namespace H
 } // namespace C
 } // namespace efl

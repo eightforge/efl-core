@@ -1,6 +1,6 @@
-//===- Core/Fwd_/Tuple.hpp ------------------------------------------===//
+//===- Core/Enum/EnumArray.hpp --------------------------------------===//
 //
-// Copyright (C) 2023 Eightfold
+// Copyright (C) 2024 Eightfold
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,20 +16,27 @@
 //
 //===----------------------------------------------------------------===//
 //
-//  Forward declarations for Tuple<...>. Requires C++17.
+//  This file defines utilities for creating a statically-sized
+//  array that accepts enumeration values.
 //
 //===----------------------------------------------------------------===//
 
-#ifndef EFL_CORE_FWD__TUPLE_HPP
-#define EFL_CORE_FWD__TUPLE_HPP
+#pragma once
 
-#include <CoreCommon/ConfigCache.hpp>
+#ifndef EFL_CORE_ENUM_FLAGS_HPP
+#define EFL_CORE_ENUM_FLAGS_HPP
+
+#include "Macros.hpp"
+#include <efl/Core/_Cxx11Assert.hpp>
+#include <efl/Core/Traits/Functions.hpp>
 
 namespace efl {
 namespace C {
-template <typename...TT>
-struct Tuple;
+
+
 } // namespace C
 } // namespace efl
 
-#endif // EFL_CORE_FWD__TUPLE_HPP
+EFLI_CXPR11ASSERT_EPILOGUE_
+
+#endif // EFL_CORE_ENUM_FLAGS_HPP

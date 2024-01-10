@@ -26,6 +26,7 @@
 #ifndef EFL_CORE_TUPLE_HPP
 #define EFL_CORE_TUPLE_HPP
 
+#include <tuple>
 #include "_Version.hpp"
 
 #if CPPVER_LEAST(17)
@@ -115,6 +116,7 @@ namespace C {
 template <typename...TT>
 struct Tuple {
   using BaseType = H::tuple_type<TT...>;
+  using SeqType = H::MkIdSeq<sizeof...(TT)>;
   static constexpr auto isArray_ = BaseType::isArray_;
   static constexpr H::SzType size = sizeof...(TT);
   
@@ -154,12 +156,44 @@ public:
     return H::extract_leaf<I>(static_cast<const BaseType&&>(data_));
   }
 
+  ALWAYS_INLINE EFLI_CXX14_CXPR_ std::tuple<TT...> getStdTuple()& 
+   NOEXCEPT { return GetAsStdTuple(*this, SeqType{}); }
+
+  ALWAYS_INLINE EFLI_CXX14_CXPR_ std::tuple<TT...> getStdTuple()&& 
+   NOEXCEPT { return GetAsStdTuple(H::cxpr_move(*this), SeqType{}); }
+
+  FICONSTEXPR std::tuple<TT...> getStdTuple() const& 
+   NOEXCEPT { return GetAsStdTuple(*this, SeqType{}); }
+
+  FICONSTEXPR std::tuple<TT...> getStdTuple() const&&
+   NOEXCEPT { return GetAsStdTuple(H::cxpr_move(*this), SeqType{}); }
+  
+  /// Constructs an object of type `U` from a tuple.
+  template <typename U>
+  constexpr U constructWithSelf() const {
+    return ConstructWithTuple<U>(*this, SeqType{});
+  }
+
   /// Returns sizeof...(TT).
   FICONSTEXPR static H::SzType Size() NOEXCEPT { return sizeof...(TT); }
   /// Returns `true` if Size() == 0.
   FICONSTEXPR static bool Empty() NOEXCEPT { return sizeof...(TT) == 0U; }
   /// Returns `true` if using array storage
   FICONSTEXPR static bool IsArray() NOEXCEPT { return Tuple::isArray_; }
+
+private:
+  template <typename Tup, H::IdType...II>
+  constexpr static std::tuple<TT...>
+   GetAsStdTuple(Tup&& tup, H::IdSeq<II...>) NOEXCEPT {
+    return std::tuple<TT...>(
+      FWD_CAST(tup[H::Id<II>{}])...);
+  }
+
+  template <typename U, typename Tup, H::IdType...II>
+  FICONSTEXPR static U ConstructWithTuple(
+   Tup&& tup, H::IdSeq<II...>) NOEXCEPT {
+    return U(FWD_CAST(tup[H::Id<II>{}])...);
+  }
 
 public:
   BaseType data_;
@@ -172,7 +206,7 @@ using tuple_element_t = typename
 namespace H {
   template <H::SzType I, typename...TT>
   using tuple_element2_t = typename
-  std::tuple_element<I, Tuple<TT...>>::type;
+    std::tuple_element<I, Tuple<TT...>>::type;
 } // namespace H
 
 #ifdef __cpp_deduction_guides
@@ -256,5 +290,10 @@ struct std::tuple_element<I, const efl::C::Tuple<TT...>> {
 template <typename...TT>
 struct std::tuple_size<efl::C::Tuple<TT...>>
  : std::integral_constant<std::size_t, sizeof...(TT)> { };
+
+//=== Import Get ===//
+namespace std {
+using efl::C::get;
+} // namespace std
 
 #endif // EFL_CORE_TUPLE_HPP

@@ -29,17 +29,24 @@
 
 #include "Traits.hpp"
 #include "Result.hpp"
+#include "Unwrap.hpp"
 #include "_Builtins.hpp"
 
-// TODO: Implement fallback for MSVC, add plugin support?
+// TODO: Implement fallback for MSVC
 
-#ifndef COMPILER_MSVC
+#if !defined(EFLI_UNWRAP_FALLBACK_) && \
+ (defined(COMPILER_MSVC) && !__has_plugin(statement_exprs))
+# define EFLI_UNWRAP_FALLBACK_ 1
+#endif
+
+#ifndef EFLI_UNWRAP_FALLBACK_
 # define $unwrap(val, ...) \
- ({ if(!static_cast<bool>(val)) return { __VA_ARGS__ }; \
+ ({ if(!static_cast<bool>(val)) \
+   return ::efl::C::make_wrapper(__VA_ARGS__); \
     ::efl::unwrap(val); })
 #endif
 
-#ifndef COMPILER_MSVC
+#ifndef EFLI_UNWRAP_FALLBACK_
 # define $assign_unwrap(name, ...) \
  auto&& name = $unwrap(val, __VA_ARGS__)
 #endif
@@ -55,5 +62,7 @@ constexpr auto unwrap(T&& t)
 }
 
 } // namespace efl
+
+#undef EFLI_UNWRAP_FALLBACK_
 
 #endif // EFL_CORE_UNWRAP_HPP

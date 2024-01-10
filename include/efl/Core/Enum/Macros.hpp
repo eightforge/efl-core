@@ -1,6 +1,6 @@
-//===- Core/Fwd_/Tuple.hpp ------------------------------------------===//
+//===- Core/Enum/Macros.hpp -----------------------------------------===//
 //
-// Copyright (C) 2023 Eightfold
+// Copyright (C) 2024 Eightfold
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,21 +15,21 @@
 //     limitations under the License.
 //
 //===----------------------------------------------------------------===//
-//
-//  Forward declarations for Tuple<...>. Requires C++17.
-//
-//===----------------------------------------------------------------===//
 
-#ifndef EFL_CORE_FWD__TUPLE_HPP
-#define EFL_CORE_FWD__TUPLE_HPP
+#pragma once
 
-#include <CoreCommon/ConfigCache.hpp>
+#include <efl/Core/_Builtins.hpp>
 
-namespace efl {
-namespace C {
-template <typename...TT>
-struct Tuple;
-} // namespace C
-} // namespace efl
+#ifndef EFL_CORE_ENUM_MACROS_HPP
+#define EFL_CORE_ENUM_MACROS_HPP
 
-#endif // EFL_CORE_FWD__TUPLE_HPP
+#define MEflFlagEnd(id) EFLI_ENUM_FLAG_END_ = id
+#define MEflEnumEnd(id) EFLI_ENUM_END_ = id
+
+#define EFL_ENUM_FLAG_END EFLI_ENUM_FLAG_END_
+#define EFL_ENUM_END EFLI_ENUM_END_
+
+#define EFLI_ENUM_FLAG_END_ MaxFlag
+#define EFLI_ENUM_END_ MaxValue
+
+#endif // EFL_CORE_ENUM_MACROS_HPP

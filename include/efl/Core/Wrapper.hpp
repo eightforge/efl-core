@@ -27,37 +27,49 @@
 #ifndef EFL_CORE_WRAPPER_HPP
 #define EFL_CORE_WRAPPER_HPP
 
-#include "Traits.hpp"
+#include "Tuple.hpp"
+#include "_Fwd/Result.hpp"
 #include "_Builtins.hpp"
-
-// TODO: Use tuple?
 
 namespace efl {
 namespace C {
 /// @brief A wrapper for forwarding values.
 /// @tparam T The type of the value.
-template <typename T>
+template <typename...TT>
 struct Wrapper {
-  Wrapper(T t) : data_(H::cxpr_forward<T>(t)) { }
-  FICONSTEXPR T unwrap() { return this->data_; }
-  FICONSTEXPR T value() { return this->data_; }
-public:
-  T data_;
+  constexpr Wrapper(TT...tt) 
+   : data_{H::cxpr_forward<TT>(tt)...} { }
+  
+  template <typename U>
+  constexpr operator U() const {
+    return data_.template
+      constructWithSelf<U>();
+  }
+
+  template <typename U, typename E>
+  constexpr operator Result<U, E>() const {
+    return data_.template
+      constructWithSelf<Error<E>>();
+  }
+
+private:
+  mutable Tuple<TT...> data_;
 };
 
 #ifdef __cpp_deduction_guides
-template <typename T>
-Wrapper(T&&) -> Wrapper<T>;
+template <typename...TT>
+Wrapper(TT&&...) -> Wrapper<TT...>;
 #endif // Deduction guides (C++17)
 
 /// Takes a type, wraps and returns.
-template <typename T>
-FICONSTEXPR Wrapper<T> 
- make_wrapper(T&& t) noexcept {
-  return Wrapper<T>(H::cxpr_forward<T>(t));
+template <typename...TT>
+FICONSTEXPR Wrapper<TT...> 
+ make_wrapper(TT&&...tt) noexcept {
+  return Wrapper<TT...>(
+    H::cxpr_forward<TT>(tt)...);
 }
 
 } // namespace C
 } // namespace efl
 
-#undef // EFL_CORE_WRAPPER_HPP
+#endif // EFL_CORE_WRAPPER_HPP
