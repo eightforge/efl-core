@@ -39,57 +39,7 @@
  * efl::Enum<SigTokenAttr>::HasFlag(tok.attr);
  */
 
-/*
-  template <typename T>
-  FICONSTEXPR bool operator!(T r) NOEXCEPT {
-    using U = underlying_type_t<T>;
-    return !U(r);
-  }
-
-  template <typename T>
-  FICONSTEXPR T operator~(T r) NOEXCEPT {
-    using U = underlying_type_t<T>;
-    return T(~U(r));
-  }
-
-  template <typename T>
-  FICONSTEXPR T operator|(T l, T r) NOEXCEPT {
-    using U = underlying_type_t<T>;
-    return T(U(l) | U(r));
-  }
-
-  template <typename T>
-  FICONSTEXPR T operator&(T l, T r) NOEXCEPT {
-    using U = underlying_type_t<T>;
-    return T(U(l) & U(r));
-  }
-
-  template <typename T>
-  FICONSTEXPR T operator^(T l, T r) NOEXCEPT {
-    using U = underlying_type_t<T>;
-    return T(U(l) ^ U(r));
-  }
-
-  template <typename T>
-  FICONSTEXPR T& operator|=(T& l, T r) NOEXCEPT {
-    using U = underlying_type_t<T>;
-    return (l = T(U(l) | U(r)));
-  }
-
-  template <typename T>
-  FICONSTEXPR T& operator&=(T& l, T r) NOEXCEPT {
-    using U = underlying_type_t<T>;
-    return (l = T(U(l) & U(r)));
-  }
-
-  template <typename T>
-  FICONSTEXPR T& operator^=(T& l, T r) NOEXCEPT {
-    using U = underlying_type_t<T>;
-    return (l = T(U(l) ^ U(r)));
-  }
-*/
-
-#include "Enum/Flags.hpp"
+#include "Enum/EnumsAndFlags.hpp"
 #include "Enum/Overloads.hpp"
 
 namespace efl {

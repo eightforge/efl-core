@@ -26,11 +26,68 @@
 #ifndef EFL_CORE_ENUM_OVERLOADS_HPP
 #define EFL_CORE_ENUM_OVERLOADS_HPP
 
-#include "Flags.hpp"
-#include <efl/Core/Traits/Functions.hpp>
+#include "EnumsAndFlags.hpp"
+#include "Macros.hpp"
+
+/// Pulls bitwise operators for marked enums and flags 
+//  into the current namespace.
+#define MEflEnableEnumOperators()       \
+ using ::efl::C::H::enum_::operator!;   \
+ using ::efl::C::H::enum_::operator~;   \
+ using ::efl::C::H::enum_::operator|;   \
+ using ::efl::C::H::enum_::operator&;   \
+ using ::efl::C::H::enum_::operator^;   \
+ using ::efl::C::H::enum_::operator|=;  \
+ using ::efl::C::H::enum_::operator&=;  \
+ using ::efl::C::H::enum_::operator^=   \
 
 namespace efl {
 namespace C {
+namespace H {
+namespace enum_ {
+  template <typename E, MEflEnableIf(is_marked_enum<E>::value)>
+  HINT_INLINE constexpr bool operator!(E r) NOEXCEPT {
+    return !underlying(r);
+  }
+
+  template <typename E, MEflEnableIf(is_efl_enum<E>::value)>
+  HINT_INLINE constexpr E operator~(E r) NOEXCEPT {
+    return E(~underlying(r));
+  }
+
+  template <typename E, MEflEnableIf(is_efl_enum<E>::value)>
+  HINT_INLINE constexpr E operator|(E l, E r) NOEXCEPT {
+    return E(underlying(l) | underlying(r));
+  }
+
+  template <typename E, MEflEnableIf(is_efl_enum<E>::value)>
+  HINT_INLINE constexpr E operator&(E l, E r) NOEXCEPT {
+    return E(underlying(l) & underlying(r));
+  }
+
+  template <typename E, MEflEnableIf(is_efl_enum<E>::value)>
+  HINT_INLINE constexpr E operator^(E l, E r) NOEXCEPT {
+    return E(underlying(l) ^ underlying(r));
+  }
+
+  template <typename E, MEflEnableIf(is_efl_enum<E>::value)>
+  HINT_INLINE constexpr E& operator|=(E& l, E r) NOEXCEPT {
+    return (l = E(underlying(l) | underlying(r)));
+  }
+
+  template <typename E, MEflEnableIf(is_efl_enum<E>::value)>
+  HINT_INLINE constexpr E& operator&=(E& l, E r) NOEXCEPT {
+    return (l = E(underlying(l) & underlying(r)));
+  }
+
+  template <typename E, MEflEnableIf(is_efl_enum<E>::value)>
+  HINT_INLINE constexpr E& operator^=(E& l, E r) NOEXCEPT {
+    return (l = E(underlying(l) ^ underlying(r)));
+  }
+} // namespace enum_
+} // namespace H
+
+MEflEnableEnumOperators();
 
 } // namespace C
 } // namespace efl

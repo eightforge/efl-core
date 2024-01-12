@@ -24,12 +24,12 @@
 #define EFL_CORE_ENUM_MACROS_HPP
 
 #define MEflFlagEnd(id) EFLI_ENUM_FLAG_END_ = id
-#define MEflEnumEnd(id) EFLI_ENUM_END_ = id
+#define MEflEnumEnd(id) EFLI_ENUM_MARK_END_ = id
 
 #define EFL_ENUM_FLAG_END EFLI_ENUM_FLAG_END_
-#define EFL_ENUM_END EFLI_ENUM_END_
+#define EFL_ENUM_MARK_END EFLI_ENUM_MARK_END_
 
 #define EFLI_ENUM_FLAG_END_ MaxFlag
-#define EFLI_ENUM_END_ MaxValue
+#define EFLI_ENUM_MARK_END_ MaxValue
 
 #endif // EFL_CORE_ENUM_MACROS_HPP

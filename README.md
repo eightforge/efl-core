@@ -4,6 +4,8 @@ Basic objects and utilities for other libraries.
 
 The following are/will be found under ``Core/*.hpp``:
 
+*Items marked with \* may be moved to efl::sys.*
+
 ## Fully implemented
 
 - AlignedStorage
@@ -23,7 +25,7 @@ The following are/will be found under ``Core/*.hpp``:
 - Casts
 - Enum
 - Option
-- Panic?
+- Panic*
 - Result
 - StrRef
 - Traits
@@ -36,7 +38,7 @@ The following are/will be found under ``Core/*.hpp``:
 - Handle
 - Hash
 - RawIO
-- SmartMtx
-- Stacktrace
-- Target
+- SmartMtx*
+- Stacktrace*
+- Target*
 - TypeSwitch

@@ -162,7 +162,7 @@ public:
   }
 
 public:
-  static CONSTEVAL H::SzType
+  static constexpr H::SzType
    Size() NOEXCEPT {
     return sizeof...(Derived);
   }

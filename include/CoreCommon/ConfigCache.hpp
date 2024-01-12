@@ -16,7 +16,8 @@
 //
 //===----------------------------------------------------------------===//
 //
-//  This file just applies `pragma once` to `efl/Config.hpp`
+//  This file applies `pragma once` to `efl/Config.hpp`, also
+//  defining general macros/aliases used throughout the library.
 //
 //===----------------------------------------------------------------===//
 
@@ -43,7 +44,7 @@
 #endif
 
 namespace efl {
-/// Core, chrinks symbol size.
+/// Core namespace, shrinks symbol size.
 namespace C {
   namespace H {
     namespace xx11 { }
@@ -57,7 +58,7 @@ namespace C {
   namespace X17 = H::xx17;
   namespace X20 = H::xx20;
 } // namespace C
-// External core alias.
+/// External core alias.
 namespace core = C;
 namespace CH = C::H;
 } // namespace efl

@@ -1,6 +1,6 @@
 //===- Core/_Version.hpp --------------------------------------------===//
 //
-// Copyright (C) 2023 Eightfold
+// Copyright (C) 2023-2024 Eightfold
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 //
 //  This file is a workaround for versioning info used internally.
 //  Made this its own file since the macros were randomly 
-//  getting undefined, still no clue why.
+//  getting undefined. Keeping this because it simplifies things.
 //
 //===----------------------------------------------------------------===//
 
@@ -48,3 +48,11 @@
 #else
 # define EFLI_CXX20_CXPR_
 #endif
+
+// C++23 constexpr
+#if CPPVER_LEAST(23)
+# define EFLI_CXX23_CXPR_ constexpr
+#else
+# define EFLI_CXX23_CXPR_
+#endif
+

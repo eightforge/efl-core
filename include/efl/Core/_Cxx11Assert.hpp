@@ -1,6 +1,6 @@
 //===- Core/_Cxx11Assert.hpp ----------------------------------------===//
 //
-// Copyright (C) 2023 Eightfold
+// Copyright (C) 2023-2024 Eightfold
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,15 +26,17 @@
 #ifndef EFLH_CORE_CXX11ASSERT_HPP
 #define EFLH_CORE_CXX11ASSERT_HPP
 
-#include <cassert>
-#include "_Builtins.hpp"
+#include "_Builtins/Assert.hpp"
+#include "_Builtins/IConfig.hpp"
 
 #if CPPVER_LEAST(14) || \
  (defined(COMPILER_GCC) || defined(COMPILER_CLANG))
 # define EFLI_CXPR11ASSERT_(...) \
   EFLI_DBGASSERT_(__VA_ARGS__)
 #else
-# define EFLI_CXPR11ASSERT_(...) (void)(0)
+/// Empty because only one expression is allowed
+/// in C++11 constexpr functions.
+# define EFLI_CXPR11ASSERT_(...)
 #endif
 
 #if CPPVER_MATCH(11) && \

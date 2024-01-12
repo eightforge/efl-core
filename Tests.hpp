@@ -88,9 +88,9 @@ void invoke_tests() {
   Z1 z1 { };
   auto iz = HH::invoke(p, z1, 1.0f, &z1);
   HH::invoke(&X::operator(), X{});
-  assert(iz == 1);
+  $raw_assert(iz == 1);
   iz = HH::invoke(z1, 7.9f, &p);
-  assert(iz == 7);
+  $raw_assert(iz == 7);
 }
 
 void ref_tests() {
@@ -117,13 +117,15 @@ void strref_tests() {
 
 void poly_tests() {
   C::Poly<MyBase, Meower, Woofer> poly { };
-  poly.asBase();
+  (void)poly.asBase();
   poly = Meower();
+  $raw_assert(poly.holdsAny());
   poly->saySomething();
   poly = Woofer();
+  $raw_assert(poly.holdsType<Woofer>());
   poly->saySomething();
   poly.clear();
-  assert(!poly.holdsAny());
+  $raw_assert(!poly.holdsAny());
 }
 
 auto result_test2(int i) 
@@ -143,11 +145,11 @@ int result_tests() {
     std::cout << "res: " << unwrapped << std::endl;
   } /* void specialization */ {
     C::Result<void, int> res {};
-    assert(res.hasValue());
+    $raw_assert(res.hasValue());
     res = $Err(5);
-    assert(res.error() == 5);
+    $raw_assert(res.error() == 5);
     res.emplace();
-    assert(res.hasValue());
+    $raw_assert(res.hasValue());
   }
   return 0;
 }

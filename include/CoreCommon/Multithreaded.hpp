@@ -15,10 +15,6 @@
 //     limitations under the License.
 //
 //===----------------------------------------------------------------===//
-//
-//  This file implements some checks for multithreading.
-//
-//===----------------------------------------------------------------===//
 
 #pragma once
 
