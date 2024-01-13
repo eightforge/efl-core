@@ -34,10 +34,7 @@
 
 namespace std {
 #if defined(EFLI_STL_LIBCPP_)
-
 #elif defined (EFLI_STL_GLIBCXX_)
-
-
 #endif // STL Check
 } // namespace std
 

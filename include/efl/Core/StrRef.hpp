@@ -28,11 +28,10 @@
 
 #include <algorithm>
 #include <cstring>
-#include <string>
 #if CPPVER_LEAST(17)
 # include <string_view>
 #endif
-
+#include "Str.hpp"
 #include "Traits.hpp"
 #include "_Cxx11Assert.hpp"
 #include "_Version.hpp"
@@ -57,9 +56,6 @@ EFLI_CXPR11ASSERT_PROLOGUE_
 
 namespace efl {
 namespace C {
-/// Alias for `std::string`.
-using Str = std::string;
-
 /**
  * @brief Non-owning view over a constant string.
  * 

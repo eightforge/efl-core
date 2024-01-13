@@ -26,6 +26,7 @@
 #ifndef EFLH_CORE_BUILTINS_ASSERT_HPP
 #define EFLH_CORE_BUILTINS_ASSERT_HPP
 
+#include "CxprEval.hpp"
 #include "IConfig.hpp"
 #include "UndAssert.hpp"
 

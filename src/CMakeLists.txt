@@ -1,5 +1,6 @@
 set(__EFL_CORE_SRCS
   "Panic/Handler.cpp"
+  "MimAllocator.cpp"
   # ...
 )
 

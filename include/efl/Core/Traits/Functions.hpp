@@ -120,7 +120,7 @@ namespace H {
 
   /// Casts an enum value to its underlying type. 
   template <typename E, MEflEnableIf(
-    std::is_enum<E>::value)>
+    is_enum<E>::value)>
   FICONSTEXPR underlying_type_t<E>
    to_underlying(E e) NOEXCEPT {
     return static_cast<

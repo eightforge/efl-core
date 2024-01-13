@@ -100,6 +100,26 @@ EFLI_PUNCAST_CXPR_ T pun_cast(U u) {
   MEflESAssert(sizeof(T) == sizeof(U));
   return H::PunHelper<T, U>(u).get();
 }
+
+/// Casts enum to its underlying type.
+template <typename E>
+FICONSTEXPR underlying_type_t<E>
+ underlying_cast(E e) NOEXCEPT {
+  static_assert(is_enum<E>::value, 
+    "underlying_cast can only be called with enums.");
+  return H::to_underlying(e);
+}
+
+/// Converts signed integer to unsigned.
+template <typename T, MEflEnableIf(is_signed<T>::value)>
+FICONSTEXPR make_unsigned_t<T> unsigned_cast(T t) NOEXCEPT {
+  return static_cast<make_unsigned_t<T>>(t);
+}
+
+/// Already unsigned, noop.
+template <typename T, MEflEnableIf(is_unsigned<T>::value)>
+FICONSTEXPR T unsigned_cast(T t) NOEXCEPT { return t; }
+
 } // namespace C
 } // namespace efl
 

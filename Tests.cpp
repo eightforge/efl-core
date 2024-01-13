@@ -12,7 +12,7 @@ enum FlagEnum : unsigned {
   MEflFlagEnd(E4)
 };
 
-enum class FlagEnumI { 
+enum class FlagEnumI : unsigned { 
   E1 = 1, E2 = 2, E3 = 4, E4 = 8
 };
 

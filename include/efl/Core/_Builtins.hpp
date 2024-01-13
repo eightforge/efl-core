@@ -43,6 +43,8 @@
 #define EFL_UNLIKELY(...) EFLI_EXPECT_FALSE_((__VA_ARGS__))
 /// Marks code as unlikely to be executed.
 #define EFL_COLD_PATH EFLI_COLD_PATH_
+/// Unlikely at runtime. May help optimize.
+#define EFL_RT_CXPREVAL() (EFL_UNLIKELY(EFLI_CXPREVAL_()))
 
 /// Simple, `static_cast` based forwarding.
 /// Prefer `std::forward` or `X11::cxpr_forward`.

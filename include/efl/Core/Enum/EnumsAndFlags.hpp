@@ -26,8 +26,8 @@
 #define EFL_CORE_ENUM_ENUMSANDFLAGS_HPP
 
 #include "Macros.hpp"
+#include <efl/Core/Casts.hpp>
 #include <efl/Core/_Cxx11Assert.hpp>
-#include <efl/Core/Traits/Functions.hpp>
 
 /**
  * Creates an explicit definition for a marked enum.
@@ -95,8 +95,10 @@ namespace H {
   template <typename E>
   struct EnumBitInfo {
     using UndType = underlying_type_t<E>;
+    static_assert(is_unsigned<UndType>::value,
+      "Flags can only be set for unsigned enumerations.");
     static constexpr auto allSet_ = ~UndType(0);
-    static constexpr auto topBit_ = allSet_ ^ (allSet_ >> 1);
+    static constexpr UndType topBit_ = allSet_ ^ (allSet_ >> 1);
   };
 } // namespace H
 

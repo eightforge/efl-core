@@ -34,6 +34,7 @@
 #include "Core/Casts.hpp"
 #include "Core/Enum.hpp"
 #include "Core/Fundamental.hpp"
+#include "Core/MimAllocator.hpp"
 #include "Core/Mtx.hpp"
 #include "Core/Option.hpp"
 #include "Core/OverloadSet.hpp"
@@ -41,11 +42,13 @@
 #include "Core/Preload.hpp"
 #include "Core/Ref.hpp"
 #include "Core/Result.hpp"
+#include "Core/Str.hpp"
 #include "Core/StrRef.hpp"
 #include "Core/Traits.hpp"
 #include "Core/Tuple.hpp"
 #include "Core/Unwrap.hpp"
 #include "Core/Wrapper.hpp"
+#include "Core/Vec.hpp"
 
 // Panic
 

@@ -1,23 +1,31 @@
 cmake_minimum_required(VERSION 3.11)
 include_guard(DIRECTORY)
 
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
 project(
   efl-core
-  VERSION 0.1.9
+  VERSION 0.2.0
   LANGUAGES CXX
 )
 
 set(CMAKE_CXX_STANDARD 17)
 
 option(EFL_MULTITHREADED "Enable testing for efl::core." ON)
+option(EFL_MIMALLOC_NEW "Use mimalloc as the default allocator." ON)
+
 option(EFL_CORE_TESTING "Enable testing for efl::core." OFF)
 option(EFL_CORE_PANICGUARD "Use a mutex for the panic handler." ON)
 option(EFL_CORE_PANICSINGLE "Only allow the panic handler to be set once." OFF)
 
 set(__EFL_MULTITHREADED ${EFL_MULTITHREADED} CACHE
   BOOL "Caches multithreaded selection to avoid odr violations.")
+set(__EFL_MIMALLOC_NEW ${EFL_MIMALLOC_NEW} CACHE
+  BOOL "Caches allocator selection to avoid odr violations.")
 
 message("[efl::core] is-multithreaded: ${__EFL_MULTITHREADED}")
+message("[efl::core] mimalloc-new: ${__EFL_MIMALLOC_NEW}")
 message("[efl::core] panic-guard: ${EFL_CORE_PANICGUARD}")
 message("[efl::core] panic-single: ${EFL_CORE_PANICSINGLE}")
 
@@ -27,15 +35,19 @@ else()
   message(DEBUG "[efl::core] core-tests: ${EFL_CORE_TESTING}")
 endif()
 
+add_subdirectory(mimalloc) # mimalloc-static
 add_subdirectory(src) # EFL_CORE_SRCS
 include(EflGetModules)
 Efl_Getmodules(efl::config)
 
 add_library(__efl_core STATIC ${EFL_CORE_SRCS})
 target_link_libraries(__efl_core PUBLIC efl::config)
+# target_link_libraries(__efl_core PRIVATE mimalloc-static)
+target_link_libraries(__efl_core PRIVATE mimalloc)
 target_include_directories(__efl_core PUBLIC include)
 
 target_compile_definitions(__efl_core PUBLIC "EFL_MULTITHREADED=$<BOOL:${__EFL_MULTITHREADED}>")
+target_compile_definitions(__efl_core PUBLIC "EFL_MIMALLOC_NEW=$<BOOL:${__EFL_MIMALLOC_NEW}>")
 target_compile_definitions(__efl_core PRIVATE "EFLI_PANICGUARD_=$<BOOL:${EFL_CORE_PANICGUARD}>")
 target_compile_definitions(__efl_core PRIVATE "EFLI_PANICSINGLE_=$<BOOL:${EFL_CORE_PANICSINGLE}>")
 

@@ -11,14 +11,17 @@ The following are/will be found under ``Core/*.hpp``:
 - AlignedStorage
 - Array
 - Fundamental
+- MimAllocator
 - Mtx
 - OverloadSet
 - Poly
 - Preload
 - Ref
+- Str
 - Tuple
 - Unwrap
 - Wrapper
+- Vec
 
 ## Partially implemented
 
@@ -33,7 +36,7 @@ The following are/will be found under ``Core/*.hpp``:
 ## Unimplemented
 
 - ArrayRef
-- Atomic
+- Atomic*
 - Binding
 - Handle
 - Hash
