@@ -25,7 +25,9 @@
 
 // __int128 check
 #ifndef EFLI_HAS_I128_
-# if defined(EFLI_STL_GLIBCXX_) && \
+# if defined(__SIZEOF_INT128__)
+#  define EFLI_HAS_I128_ 1
+# elif defined(EFLI_STL_GLIBCXX_) && \
  !defined(__STRICT_ANSI__) && \
  defined(__GLIBCXX_TYPE_INT_N_0)
 // GCC supports __int128

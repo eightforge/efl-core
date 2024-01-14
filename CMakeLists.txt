@@ -35,14 +35,13 @@ else()
   message(DEBUG "[efl::core] core-tests: ${EFL_CORE_TESTING}")
 endif()
 
-add_subdirectory(mimalloc) # mimalloc-static
+add_subdirectory(mimalloc) # mimalloc
 add_subdirectory(src) # EFL_CORE_SRCS
 include(EflGetModules)
 Efl_Getmodules(efl::config)
 
 add_library(__efl_core STATIC ${EFL_CORE_SRCS})
 target_link_libraries(__efl_core PUBLIC efl::config)
-# target_link_libraries(__efl_core PRIVATE mimalloc-static)
 target_link_libraries(__efl_core PRIVATE mimalloc)
 target_include_directories(__efl_core PUBLIC include)
 

@@ -1,7 +1,7 @@
 include_guard(DIRECTORY)
 include(FetchContent)
 
-macro(__efl_core_propagate __var)
+macro(__efl_propagate __var)
   set(${__var} ${${__var}} PARENT_SCOPE)
 endmacro()
 

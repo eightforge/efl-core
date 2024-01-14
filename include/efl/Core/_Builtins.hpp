@@ -41,6 +41,10 @@
 #define EFL_LIKELY(...) EFLI_EXPECT_TRUE_((__VA_ARGS__))
 /// For use inside statements, assume false.
 #define EFL_UNLIKELY(...) EFLI_EXPECT_FALSE_((__VA_ARGS__))
+/// For a less aggressive assumption.
+#define EFL_SOFT_LIKELY(...) EFLI_SOFT_TEXPECT_(bool, (__VA_ARGS__), true)
+/// For a less aggressive assumption.
+#define EFL_SOFT_UNLIKELY(...) EFLI_SOFT_TEXPECT_(bool, (__VA_ARGS__), false)
 /// Marks code as unlikely to be executed.
 #define EFL_COLD_PATH EFLI_COLD_PATH_
 /// Unlikely at runtime. May help optimize.

@@ -1,6 +1,6 @@
 //===- Core/Fwd_/Mtx.hpp --------------------------------------------===//
 //
-// Copyright (C) 2023 Eightfold
+// Copyright (C) 2023-2024 Eightfold
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ using ScopedLock = std::scoped_lock<TT...>;
 template <typename...TT>
 struct ScopedLock;
 #endif // C++17 Check
-}
+} // namespace C
 } // namespace efl
 
 #endif // EFL_CORE_FWD__MTX_HPP

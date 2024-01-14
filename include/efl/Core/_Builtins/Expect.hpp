@@ -32,10 +32,12 @@
 #if __has_builtin(__builtin_expect_with_probability) || (__GNUC__ >= 9)
 # define EFLI_CORE_EXPECT_(expr, val) \
   __builtin_expect_with_probability((expr), val, 1.0)
+# define EFLI_CORE_EXPECTPROB_ 1
 #elif __has_builtin(__builtin_expect) || defined(__GNUC__)
 # define EFLI_CORE_EXPECT_(expr, val) 
   __builtin_expect((expr), val)
-#elif CPPVER_LEAST(20) || (CPPVER_LEAST(11) && defined(__clang__))
+#elif (CPPVER_LEAST(20) && !defined(COMPILER_MSVC)) || \
+ (CPPVER_LEAST(11) && defined(__clang__))
 # define EFLI_CORE_EXPECT_(expr, val) ::efl::C::X20:: \
   expect_outcome_<decltype((expr)), (val)>((expr))
 namespace efl::C::H::xx20 {
@@ -47,8 +49,7 @@ namespace efl::C::H::xx20 {
 } // namespace efl::C::H::xx20   
 #else
 # define EFLI_CORE_EXPECT_FALLBACK_ 1
-# define EFLI_CORE_EXPECT_(expr, val) \
-  ((expr) == (val))
+# define EFLI_CORE_EXPECT_(expr, val) (expr)
 #endif
 
 /// Cast to type `ty` before passing to `expect(...)`.
@@ -59,6 +60,17 @@ namespace efl::C::H::xx20 {
   EFLI_TEXPECT_(bool, true, (__VA_ARGS__))
 #define EFLI_EXPECT_FALSE_(...) \
   EFLI_TEXPECT_(bool, false, (__VA_ARGS__))
+
+#ifdef EFLI_CORE_EXPECTPROB_
+# undef EFLI_CORE_EXPECTPROB_
+// Assume __builtin_expect exists
+# define EFLI_SOFT_TEXPECT_(ty, val, expr) \
+   __builtin_expect(static_cast<ty>(expr), \
+    static_cast<ty>(val))
+#else
+# define EFLI_SOFT_TEXPECT_(ty, val, expr) \
+   EFLI_TEXPECT_(ty, (val), (expr))
+#endif
 
 #if CPPVER_LEAST(23)
 # define EFLI_CORE_ASSUME_(expr) [[assume(expr)]]
