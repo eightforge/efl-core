@@ -136,8 +136,7 @@ public:
     }
   }
 
-  Option(Option&& op) noexcept(
-   is_nothrow_move_constructible<T>::value)
+  Option(Option&& op) NOEXCEPT
    : H::OptionBase<T>() {
     if(op.hasValue()) {
       (void) X11::construct(pdata(), std::move(*op));

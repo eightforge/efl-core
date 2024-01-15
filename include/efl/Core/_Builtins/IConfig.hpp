@@ -28,6 +28,10 @@
 #include <CoreCommon/ConfigCache.hpp>
 #include <CoreCommon/Multithreaded.hpp>
 
+#if CPPVER_LEAST(20) || __has_include(<version>)
+# include <version>
+#endif
+
 #if __has_include(<__config>)
 # include <__config>
 # define EFLI_STL_LIBCPP_ 1
@@ -39,7 +43,7 @@
 # define EFLI_STL_MSVC_ 1
 #endif
 
-#if defined(PLATFORM_APPLE) && \
+#if defined(PLATFORM_APPLE) || \
  __has_include(<sys/cdefs.h>)
 # include <sys/cdefs.h>
 #endif

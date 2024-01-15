@@ -1,4 +1,4 @@
-//===- Mimalloc.hpp -------------------------------------------------===//
+//===- Core/ArrayRef.hpp --------------------------------------------===//
 //
 // Copyright (C) 2024 Eightfold
 //
@@ -16,21 +16,35 @@
 //
 //===----------------------------------------------------------------===//
 //
-//  This file is a wrapper around mimalloc. 
+//  This file defines a generic interface for viewing contiguous data.
 //
 //===----------------------------------------------------------------===//
 
 #pragma once
 
-#ifndef EFL_MIMALLOC_NEW
-# error EFL_MIMALLOC_NEW must be defined!
-#endif
+#ifndef EFL_CORE_ARRAYREF_HPP
+#define EFL_CORE_ARRAYREF_HPP
 
-#if (EFL_MIMALLOC_NEW == 1) && \
- defined(EFLI_MIMALLOCATOR_INTERNAL_) && \
- (EFLI_MIMALLOCATOR_INTERNAL_ == 1)
-# include <mimalloc-new-delete.h>
-#else
-# include <mimalloc.h>
-#endif
+#include "Array.hpp"
+#include "Vec.hpp"
+#include "_Builtins.hpp"
 
+namespace efl {
+namespace C {
+template <typename T>
+struct NODISCARD ImmutArrayRef;
+
+template <typename T>
+struct GSL_POINTER NODISCARD ArrayRef {
+
+};
+
+template <typename T>
+struct NODISCARD ImmutArrayRef {
+
+};
+
+} // namespace C
+} // namespace efl
+
+#endif // EFL_CORE_ARRAYREF_HPP

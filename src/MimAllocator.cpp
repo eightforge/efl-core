@@ -29,11 +29,6 @@ using namespace efl::C;
 static_assert(MIMALLOC_BASE::smallAllocMax <= MI_SMALL_SIZE_MAX,
   "Incorrectly estimated the max size. Let us know about this.");
 
-ALWAYS_INLINE static constexpr bool 
- is_power_of_2(H::SzType sz) NOEXCEPT {
-  return !(sz & (sz - 1));
-}
-
 void* MIMALLOC_BASE::Allocate(H::SzType size) {
   return mi_malloc(size);
 }
@@ -49,7 +44,7 @@ void* MIMALLOC_BASE::AllocateSmall(H::SzType size) {
 }
 
 void* MIMALLOC_BASE::AllocateAligned(H::SzType align, H::SzType size) {
-  $raw_assert((align <= MI_ALIGNMENT_MAX) && is_power_of_2(align));
+  $raw_assert((align <= MI_ALIGNMENT_MAX) && H::is_power_of_2(align));
   return mi_aligned_alloc(align, size);
 }
 

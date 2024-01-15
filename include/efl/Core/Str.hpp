@@ -32,10 +32,15 @@ namespace efl {
 namespace C {
 /// `std::basic_string` alias utilizing mimalloc.
 template <typename CharType,
-  typename Traits = std::char_traits<CharType>,
   typename Allocator = MimAllocator<CharType>>
 using BasicStr = std::basic_string<
-  CharType, Traits, Allocator>;
+  CharType, std::char_traits<CharType>, Allocator>;
+
+/// String with an alignment larger than `alignof(char)`.
+template <H::SzType Align = 1, // alignof(char) must be 1.
+  typename Allocator = MimAllocator<char, Align>>
+using OveralignedStr = 
+  BasicStr<char, MimAllocator<char, Align>>;
 
 using Str = BasicStr<char>;
 using WStr = BasicStr<wchar_t>;

@@ -47,8 +47,11 @@
 #endif
 
 #ifndef EFLI_UNWRAP_FALLBACK_
+/// Direct unwrapped assignment.
 # define $assign_unwrap(name, ...) \
  auto&& name = $unwrap(val, __VA_ARGS__)
+#else // Fallback
+
 #endif
 
 namespace efl {

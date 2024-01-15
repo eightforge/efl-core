@@ -37,6 +37,9 @@
 # define EFLI_MI_CXPR_ ALWAYS_INLINE
 #endif
 
+// TODO: Benchmark mimalloc perf on 32bit.
+// See https://github.com/microsoft/mimalloc/issues/825.
+
 namespace efl {
 namespace C {
 #if CPPVER_LEAST(23)
@@ -73,12 +76,18 @@ ALWAYS_INLINE EFLI_CXX20_CXPR_ auto to_typed_alloc_result(
 }
 
 namespace H {
-  GLOBAL SzType mimalloc_small_count = 128;
+  GLOBAL SzType mi_small_count = 128;
+  GLOBAL SzType mi_align_minimum = (sizeof(void*) == 8) ? 8 : 4;
 
+  /**
+   * Generic interface for interfacing with mimalloc.
+   * Hides the implementation details to keep things simple,
+   * and avoids exposing the mimalloc headers.
+   */
   struct MimAllocatorBase {
     using VoidAllocResult = AllocationResult<void*, SzType>;
     static constexpr SzType smallAllocMax = 
-      sizeof(void*) * mimalloc_small_count;
+      sizeof(void*) * mi_small_count;
   public:
     constexpr MimAllocatorBase() = default;
     constexpr MimAllocatorBase(const MimAllocatorBase&) = default;
@@ -96,14 +105,14 @@ namespace H {
   };
 
   template <typename T, MEflEnableIf(
-    (sizeof(T) <= mimalloc_small_count))>
+    (sizeof(T) <= mi_small_count))>
   FICONSTEXPR bool is_small_alloc(SzType size) NOEXCEPT {
     return EFLI_EXPECT_TRUE_(
       size < MimAllocatorBase::smallAllocMax);
   }
 
   template <typename T, MEflEnableIf(
-    (sizeof(T) > mimalloc_small_count) &&
+    (sizeof(T) > mi_small_count) &&
     (sizeof(T) <= MimAllocatorBase::smallAllocMax))>
   FICONSTEXPR bool is_small_alloc(SzType size) NOEXCEPT {
     return EFLI_EXPECT_FALSE_(
@@ -115,12 +124,46 @@ namespace H {
   FICONSTEXPR bool is_small_alloc(SzType size) NOEXCEPT {
     return false;
   }
+
+  template <typename T, SzType Align = alignof(T),
+    bool NotOveraligned = (alignof(T) <= mi_align_minimum)>
+  struct MSVC_EMPTY_BASES 
+   AlignedMimAllocatorBase : MimAllocatorBase {
+    static_assert(is_power_of_2(Align), 
+      "Alignment MUST be a power of 2.");
+  public:
+    NODISCARD EFLI_MI_CXPR_ static void*
+     SmartAllocate(SzType n) NOEXCEPT {
+      const auto size = sizeof(T) * n;
+      if(is_small_alloc<T>(n)) 
+        return MimAllocatorBase::AllocateSmall(size);
+      else 
+        return MimAllocatorBase::Allocate(size);
+    }
+  };
+
+  template <typename T, SzType Align>
+  struct MSVC_EMPTY_BASES 
+   AlignedMimAllocatorBase<T, Align, false> : MimAllocatorBase {
+    static_assert(is_power_of_2(Align), 
+      "Alignment MUST be a power of 2.");
+  public:
+    NODISCARD EFLI_MI_CXPR_ static void*
+     SmartAllocate(SzType n) NOEXCEPT {
+      const auto size = sizeof(T) * n;
+      return MimAllocatorBase::AllocateAligned(Align, size);
+    }
+  };
 } // namespace H
 
-template <typename T>
+template <typename T, H::SzType Align = alignof(T)>
 struct MSVC_EMPTY_BASES MimAllocator 
- : H::MimAllocatorBase {
+ : H::AlignedMimAllocatorBase<T, Align> {
+  static_assert(Align >= alignof(T), 
+    "Alignment requirement must be >= alignof(T).");
+public:
   using value_type = T;
+  using SmartAllocator = H::AlignedMimAllocatorBase<T, Align>;
   using propagate_on_container_move_assignment = H::TrueType;
 
 #if CPPVER_MOST(17)
@@ -130,14 +173,16 @@ struct MSVC_EMPTY_BASES MimAllocator
   using const_reference = const T&;
   using is_always_equal = H::TrueType;
 
-  template <typename U>
+  template <typename U, 
+    H::SzType UAlign = alignof(U)>
   struct rebind {
-    using type = MimAllocator<U>;
+    using other = MimAllocator<U, UAlign>;
   };
 #endif // Member Check (C++20)
 
   using size_type = H::SzType;
   using difference_type = std::ptrdiff_t;
+  static constexpr H::SzType alignment_value = Align;
 
 public:
   constexpr MimAllocator() NOEXCEPT = default;
@@ -147,18 +192,10 @@ public:
   //=== Member Functions ===//
 
 private:
-  NODISCARD EFLI_MI_CXPR_ static void* 
-   SmartAllocateImpl(size_type n) NOEXCEPT {
-    const auto size = sizeof(T) * n;
-    if(H::is_small_alloc<T>(n)) 
-      return H::MimAllocatorBase::AllocateSmall(size);
-    else 
-      return H::MimAllocatorBase::Allocate(size);
-  }
-
   NODISCARD EFLI_MI_CXPR_ static T* 
    SmartAllocate(size_type n) NOEXCEPT {
-    return static_cast<T*>(SmartAllocateImpl(n));
+    return static_cast<T*>(
+      SmartAllocator::SmartAllocate(n));
   }
 
 public:

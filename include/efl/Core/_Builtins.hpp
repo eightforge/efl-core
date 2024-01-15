@@ -54,15 +54,18 @@
 /// Prefer `std::forward` or `X11::cxpr_forward`.
 #define FWD_CAST(e) static_cast<decltype(e)&&>(e)
 
-/// Classic assert pseudofunction.
-#define $raw_assert(expr) ( \
- (EFLI_EXPECT_TRUE_(!!(expr))) ? (void)(0) : \
-  EFLI_UNDASSERT_(#expr) )
-
+#if (COMPILER_DEBUG == 1)
 /// Assert with message.
-#define $assert(expr, msg) ( \
- (EFLI_EXPECT_TRUE_(!!(expr))) ? (void)(0) : \
-  EFLI_UNDASSERT_(msg) )
+# define $assert(expr, msg) ( \
+  (EFLI_EXPECT_TRUE_(!!(expr))) ? (void)(0) : \
+   EFLI_UNDASSERT_(msg) )
+#else
+/// Release, does nothing.
+# define $assert(expr, msg) (void)(0)
+#endif
+
+/// Classic assert pseudofunction.
+#define $raw_assert(expr) $assert((expr), #expr)
 
 // Zig-style unreachable.
 #if (COMPILER_DEBUG == 1)

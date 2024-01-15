@@ -32,6 +32,7 @@
 #include "Core/Array.hpp"
 #include "Core/Binding.hpp"
 #include "Core/Casts.hpp"
+#include "Core/Endian.hpp"
 #include "Core/Enum.hpp"
 #include "Core/Fundamental.hpp"
 #include "Core/MimAllocator.hpp"

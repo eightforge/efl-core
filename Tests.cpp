@@ -56,6 +56,14 @@ namespace N {
   }
 } // namespace N
 
+int scope_exit_test() {
+  goto __efl_skip; __efl_fail_unwrap: {
+    return ::efl::C::make_wrapper();
+  } __efl_skip: void(0);
+
+  return 1;
+}
+
 int main() {
 #if CPPVER_LEAST(14)
   MEflESAssert(!HasType<X>);

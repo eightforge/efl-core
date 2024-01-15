@@ -35,6 +35,11 @@ template <typename T,
   typename Allocator = MimAllocator<T>>
 using Vec = std::vector<T, Allocator>;
 
+/// Vector with an alignment larger than `alignof(T)`.
+template <typename T, H::SzType Align>
+using OveralignedVec = std::vector<
+  T, MimAllocator<T, Align>>;
+
 } // namespace C
 } // namespace efl
 

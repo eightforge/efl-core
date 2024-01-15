@@ -175,10 +175,7 @@ public:
       (void) X11::construct(perr(), res.data_.err_);
   }
 
-  constexpr Result(Result&& res)
-   noexcept(conjunction<
-     is_nothrow_move_constructible<type_>,
-     is_nothrow_move_constructible<E>>::value) {
+  constexpr Result(Result&& res) NOEXCEPT {
     H::ResultBase<T, E>::active_ = res.active_;
     if(res.has_value())
       (void) X11::construct(pdata(),

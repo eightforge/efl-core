@@ -10,6 +10,7 @@ The following are/will be found under ``Core/*.hpp``:
 
 - AlignedStorage
 - Array
+- Endian*
 - Fundamental
 - MimAllocator
 - Mtx

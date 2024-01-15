@@ -178,13 +178,27 @@ namespace H {
   /// Alias for std::initializer_list<T>.
   template <typename T>
   using InitList = std::initializer_list<T>;
+
+  ALWAYS_INLINE static constexpr bool 
+   is_power_of_2(SzType sz) NOEXCEPT {
+    return !(sz & (sz - 1));
+  }
+
+#if EFLI_HAS_I128_
+  ALWAYS_INLINE static constexpr bool 
+   is_power_of_2(u128 mx) NOEXCEPT {
+    return !(mx & (mx - 1));
+  }
+#endif
 } // namespace H
 
+/// Array type alias.
 template <typename T, H::SzType N>
 using array_t = T[N];
 
+/// Character array type alias.
 template <H::SzType N>
-using carray_t = array_t<const char, N>;
+using carray_t = const char[N];
 
 namespace H {
 namespace fundamental_ {
