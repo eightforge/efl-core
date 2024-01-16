@@ -216,21 +216,21 @@ public:
 
   template <typename T, 
     MEflEnableIf(matchesAny<T>)>
-  T& forceCast()& NOEXCEPT {
+  T& downcast()& NOEXCEPT {
     EFLI_DBGASSERT_(this->holdsType<T>());
     return *launder_cast<T>(data_.data);
   }
 
   template <typename T, 
     MEflEnableIf(matchesAny<T>)>
-  const T& forceCast() const& NOEXCEPT {
+  const T& downcast() const& NOEXCEPT {
     EFLI_DBGASSERT_(this->holdsType<T>());
     return *launder_cast<const T>(data_.data);
   }
 
   template <typename T, 
     MEflEnableIf(matchesAny<T>)>
-  T&& forceCast()&& NOEXCEPT {
+  T&& downcast()&& NOEXCEPT {
     EFLI_DBGASSERT_(this->holdsType<T>());
     return std::move(*launder_cast<T>(data_.data));
   }
@@ -267,7 +267,7 @@ private:
     if(holds) {
       MAYBE_UNUSED auto* p = 
        new (data_.data) 
-       T(rhs.forceCast<T>());
+       T(rhs.template downcast<T>());
     }
     return holds;
   }
@@ -278,7 +278,7 @@ private:
     if(holds) {
       MAYBE_UNUSED auto* p = 
        new (data_.data) 
-       T(std::move(rhs.forceCast<T>()));
+       T(std::move(rhs.template downcast<T>()));
     }
     return holds;
   }

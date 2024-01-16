@@ -12,7 +12,7 @@ The following are/will be found under ``Core/*.hpp``:
 
 - AlignedStorage
 - Array
-- Endian*
+- Endian
 - Fundamental
 - MimAllocator
 - Mtx
@@ -29,7 +29,7 @@ The following are/will be found under ``Core/*.hpp``:
 
 ## Partially implemented
 
-- ArrayRef
+- ArrayRef  <
 - Casts
 - Enum
 - Option
@@ -40,12 +40,11 @@ The following are/will be found under ``Core/*.hpp``:
 ## Unimplemented
 
 - Atomic*
-- Binding
-- Box
+- Binding   <
+- Box       <
 - Handle
 - Hash
 - RawIO
 - SmartMtx*
 - Stacktrace*
 - Target*
-- TypeSwitch?

@@ -200,13 +200,11 @@ private:
 
 public:
 #if CPPVER_MOST(17)
-  HINT_INLINE T* address(
-   T& r) const NOEXCEPT {
-    return X11::addressof(r);
-  }
+  HINT_INLINE static T* address(T& r) NOEXCEPT 
+  { return X11::addressof(r); }
 #endif // C++20 Removal Check
 
-  NODISCARD EFLI_MI_CXPR_ T* allocate(size_type n) {
+  NODISCARD EFLI_MI_CXPR_ static T* allocate(size_type n) {
 #if (EFLI_HAS_CXPREVAL_ == 1)
     if(EFL_RT_CXPREVAL()) UNLIKELY {
       return static_cast<T*>(::operator new(n));
@@ -215,7 +213,7 @@ public:
     return SmartAllocate(n);
   }
 
-  EFLI_MI_CXPR_ void deallocate(T* ptr, MAYBE_UNUSED size_type n) {
+  EFLI_MI_CXPR_ static void deallocate(T* ptr, MAYBE_UNUSED size_type n) {
 #if (EFLI_HAS_CXPREVAL_ == 1)
     if(EFL_RT_CXPREVAL()) UNLIKELY {
       ::operator delete(ptr);
@@ -228,17 +226,17 @@ public:
   }
 
 #if CPPVER_MOST(17)
-  size_type max_size() const NOEXCEPT {
+  static constexpr size_type max_size() NOEXCEPT {
     return H::Max<size_type>::value / sizeof(T);
   }
 
   template <typename U, typename...Args>
-  void construct(U* p, Args&&...args) {
+  static void construct(U* p, Args&&...args) {
     (void) new((void*)p) U(FWD(args)...);
   }
 
   template <typename U>
-  void destroy(U* p) { p->~U(); }
+  static void destroy(U* p) { p->~U(); }
 #endif // C++20 Removal Check
 };
 

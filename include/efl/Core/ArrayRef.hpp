@@ -476,6 +476,7 @@ ImmutArrayRef(const H::InitList<T>&) -> ImmutArrayRef<T>;
 
 EFLI_CXPR11ASSERT_EPILOGUE_
 
+#undef EFLI_ARRAYREF_DEPR_
 #undef EFLI_LIFETIME_EPILOGUE_
 #undef EFLI_LIFETIME_PROLOGUE_
 

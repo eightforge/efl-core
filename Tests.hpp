@@ -51,6 +51,7 @@ struct Meower : MyBase {
 
 struct Woofer : MyBase {
   void saySomething() override { std::printf("Woof!\n"); }
+  void woof() { std::printf("Woof woof!\n"); }
 };
 
 template <typename T, typename U>
@@ -124,6 +125,7 @@ void poly_tests() {
   poly = Woofer();
   $raw_assert(poly.holdsType<Woofer>());
   poly->saySomething();
+  poly.downcast<Woofer>().woof();
   poly.clear();
   $raw_assert(!poly.holdsAny());
 }
