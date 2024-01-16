@@ -200,14 +200,9 @@ private:
 
 public:
 #if CPPVER_MOST(17)
-  HINT_INLINE pointer address(
-   reference r) const NOEXCEPT {
+  HINT_INLINE T* address(
+   T& r) const NOEXCEPT {
     return X11::addressof(r);
-  }
-
-  HINT_INLINE const_pointer address(
-   const_reference cr) const NOEXCEPT {
-    return X11::addressof(cr);
   }
 #endif // C++20 Removal Check
 
@@ -245,21 +240,19 @@ public:
   template <typename U>
   void destroy(U* p) { p->~U(); }
 #endif // C++20 Removal Check
+};
 
-  //=== Non-Member Functions ===//
-
-  template <typename T1, typename T2>
-  friend constexpr bool operator==(
-   const MimAllocator<T1>& t1, const MimAllocator<T2>& t2)
-   NOEXCEPT { return true; }
+template <typename T1, typename T2, H::SzType A1, H::SzType A2>
+HINT_INLINE constexpr bool operator==(
+ const MimAllocator<T1, A1>& t1, const MimAllocator<T2, A2>& t2)
+ NOEXCEPT { return true; }
 
 #if CPPVER_MOST(17)
-  template <typename T1, typename T2>
-  friend constexpr bool operator!=(
-   const MimAllocator<T1>& t1, const MimAllocator<T2>& t2)
-   NOEXCEPT { return false; }
+template <typename T1, typename T2, H::SzType A1, H::SzType A2>
+HINT_INLINE constexpr bool operator!=(
+ const MimAllocator<T1, A1>& t1, const MimAllocator<T2, A2>& t2)
+ NOEXCEPT { return false; }
 #endif // Three-way Comparison Check (C++20)
-};
 
 } // namespace C
 } // namespace efl

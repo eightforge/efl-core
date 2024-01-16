@@ -32,15 +32,23 @@
 # include <version>
 #endif
 
-#if __has_include(<__config>)
+#if defined(COMPILER_GCC)
+# define EFLI_GCCVER_LEAST_(n) (__GNUC__ >= n)
+#else // Not GCC
+# define EFLI_GCCVER_LEAST_(n) (0)
+#endif
+
+#if __has_include(<__config>) && \
+ defined(COMPILER_CLANG)
 # include <__config>
 # define EFLI_STL_LIBCPP_ 1
+#elif __has_include(<yvals_core.h>) && \
+ defined(COMPILER_MSVC)
+# include <yvals_core.h>
+# define EFLI_STL_MSVC_ 1
 #elif __has_include(<bits/c++config.h>)
 # include <bits/c++config.h>
 # define EFLI_STL_GLIBCXX_ 1
-#elif __has_include(<yvals_core.h>)
-# include <yvals_core.h>
-# define EFLI_STL_MSVC_ 1
 #endif
 
 #if defined(PLATFORM_APPLE) || \

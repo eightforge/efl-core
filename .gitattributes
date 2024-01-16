@@ -5,5 +5,6 @@
 mimalloc/mimalloc/** linguist-vendored
 
 # Highlight files with internal conventions
+*.h     linguist-language=cpp
 *.mac   linguist-language=cpp
 *.impl  linguist-language=cpp

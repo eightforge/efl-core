@@ -95,5 +95,6 @@ int main() {
   poly_tests();
   assert(result_tests() == 0);
   array_tests();
+  arrayref_tests();
   return option_tests();
 }

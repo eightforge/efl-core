@@ -103,8 +103,8 @@ private:
   MEflESAssert(!H::result_::IsReservedTag<T>::value);
   MEflESAssert(!H::result_::IsError<remove_cv_t<T>>::value );
   MEflESAssert(H::result_::IsValidError<E>::value);
-  using type_ = typename
-    H::ResultBase<T, E>::type_;
+  using BaseType_ = H::ResultBase<T, E>;
+  using type_ = typename BaseType_::type_;
 public:
   using value_type = T;
   using error_type = E;
@@ -114,33 +114,33 @@ public:
   using rebind = Result<U, E>;
 
   FICONSTEXPR bool has_value() const NOEXCEPT {
-    return H::ResultBase<T, E>::active_;
+    return BaseType_::active_;
   }
 
 private:
   ALWAYS_INLINE EFLI_CXX14_CXPR_ void 
    clear() NOEXCEPT {
-    H::ResultBase<T, E>::destroy();
+    BaseType_::destroy();
   }
 
   ALWAYS_INLINE EFLI_CXX14_CXPR_ type_* pdata() {
     return std::addressof(
-      H::ResultBase<T, E>::data_.data_);
+      BaseType_::data_.data_);
   }
 
   FICONSTEXPR const type_* pdata() const {
     return H::xx11::addressof(
-      H::ResultBase<T, E>::data_.data_);
+      BaseType_::data_.data_);
   }
 
   ALWAYS_INLINE EFLI_CXX14_CXPR_ E* perr() {
     return std::addressof(
-      H::ResultBase<T, E>::data_.err_);
+      BaseType_::data_.err_);
   }
 
   FICONSTEXPR const E* perr() const {
     return H::xx11::addressof(
-      H::ResultBase<T, E>::data_.err_);
+      BaseType_::data_.err_);
   }
 
   template <typename...Args>
@@ -149,7 +149,7 @@ private:
     this->clear();
     (void) X11::construct(
       pdata(), FWD(args)...);
-    H::ResultBase<T, E>::active_ = true;
+    BaseType_::active_ = true;
   }
 
   template <typename...Args>
@@ -158,7 +158,7 @@ private:
     this->clear();
     (void) X11::construct(
       perr(), FWD(args)...);
-    H::ResultBase<T, E>::active_ = false;
+    BaseType_::active_ = false;
   }
 
 public:
@@ -168,7 +168,7 @@ public:
    noexcept(conjunction<
      is_nothrow_copy_constructible<type_>,
      is_nothrow_copy_constructible<E>>::value) {
-    H::ResultBase<T, E>::active_ = res.active_;
+    BaseType_::active_ = res.active_;
     if(res.has_value())
       (void) X11::construct(pdata(), res.data_.data_);
     else
@@ -176,7 +176,7 @@ public:
   }
 
   constexpr Result(Result&& res) NOEXCEPT {
-    H::ResultBase<T, E>::active_ = res.active_;
+    BaseType_::active_ = res.active_;
     if(res.has_value())
       (void) X11::construct(pdata(),
         H::cxpr_move(res).data_.data_);
@@ -266,24 +266,24 @@ public:
 
   EFLI_CXX14_CXPR_ T& unwrap()& {
     EFLI_CXPRASSERT_(this->has_value());
-    return H::ResultBase<T, E>::data_.data_;
+    return BaseType_::data_.data_;
   }
 
   EFLI_CXX14_CXPR_ T&& unwrap()&& {
     EFLI_CXPRASSERT_(this->has_value());
     return H::cxpr_move(
-      H::ResultBase<T, E>::data_.data_);
+      BaseType_::data_.data_);
   }
 
   constexpr const T& unwrap() const& {
     EFLI_CXPR11ASSERT_(this->has_value());
-    return H::ResultBase<T, E>::data_.data_;
+    return BaseType_::data_.data_;
   }
 
   constexpr const T& unwrap() const&& {
     EFLI_CXPR11ASSERT_(this->has_value());
     return H::cxpr_move(
-      H::ResultBase<T, E>::data_.data_);
+      BaseType_::data_.data_);
   }
 
   EFLI_CXX14_CXPR_ type_* operator->() {
@@ -318,24 +318,24 @@ public:
 
   EFLI_CXX14_CXPR_ E& error()& {
     EFLI_CXPRASSERT_(!this->has_value());
-    return H::ResultBase<T, E>::data_.err_;
+    return BaseType_::data_.err_;
   }
 
   EFLI_CXX14_CXPR_ E&& error()&& {
     EFLI_CXPRASSERT_(!this->has_value());
     return H::cxpr_move(
-      H::ResultBase<T, E>::data_.err_);
+      BaseType_::data_.err_);
   }
 
   constexpr const E& error() const& {
     EFLI_CXPR11ASSERT_(!this->has_value());
-    return H::ResultBase<T, E>::data_.err_;
+    return BaseType_::data_.err_;
   }
 
   constexpr const E& error() const&& {
     EFLI_CXPR11ASSERT_(!this->has_value());
     return H::cxpr_move(
-      H::ResultBase<T, E>::data_.err_);
+      BaseType_::data_.err_);
   }
 
   template <typename U>
@@ -373,8 +373,8 @@ struct Result<void, E> : private H::ResultBase<void, E> {
 private:
   MEflESAssert(H::result_::IsValidError<E>::value);
   using T = void;
-  using type_ = typename
-    H::ResultBase<T, E>::type_;
+  using BaseType_ = H::ResultBase<T, E>;
+  using type_ = typename BaseType_::type_;
 public:
   using value_type = T;
   using error_type = E;
@@ -384,28 +384,28 @@ public:
   using rebind = Result<U, E>;
 
   FICONSTEXPR bool has_value() const NOEXCEPT {
-    return H::ResultBase<T, E>::active_;
+    return BaseType_::active_;
   }
 
 private:
   ALWAYS_INLINE EFLI_CXX14_CXPR_ void 
    clear() NOEXCEPT {
-    H::ResultBase<T, E>::destroy();
+    BaseType_::destroy();
   }
 
   ALWAYS_INLINE EFLI_CXX14_CXPR_ E* perr() {
     return std::addressof(
-      H::ResultBase<T, E>::data_.err_);
+      BaseType_::data_.err_);
   }
 
   FICONSTEXPR const E* perr() const {
     return H::xx11::addressof(
-      H::ResultBase<T, E>::data_.err_);
+      BaseType_::data_.err_);
   }
 
   EFLI_CXX14_CXPR_ void initialize_data() NOEXCEPT {
     this->clear();
-    H::ResultBase<T, E>::active_ = true;
+    BaseType_::active_ = true;
   }
 
   template <typename...Args>
@@ -414,7 +414,7 @@ private:
     this->clear();
     (void) X11::construct(
       perr(), FWD(args)...);
-    H::ResultBase<T, E>::active_ = false;
+    BaseType_::active_ = false;
   }
 
 public:
@@ -422,14 +422,14 @@ public:
 
   constexpr Result(const Result& res)
    noexcept(is_nothrow_copy_constructible<E>::value) {
-    H::ResultBase<T, E>::active_ = res.active_;
+    BaseType_::active_ = res.active_;
     if(!res.has_value())
       (void) X11::construct(perr(), res.data_.err_);
   }
 
   constexpr Result(Result&& res)
    noexcept(is_nothrow_move_constructible<E>::value) {
-    H::ResultBase<T, E>::active_ = res.active_;
+    BaseType_::active_ = res.active_;
     if(!res.has_value())
       (void) X11::construct(perr(),
         H::cxpr_move(res).data_.err_);
@@ -509,24 +509,24 @@ public:
 
   EFLI_CXX14_CXPR_ E& error()& {
     EFLI_CXPRASSERT_(!this->has_value());
-    return H::ResultBase<T, E>::data_.err_;
+    return BaseType_::data_.err_;
   }
 
   EFLI_CXX14_CXPR_ E&& error()&& {
     EFLI_CXPRASSERT_(!this->has_value());
     return H::cxpr_move(
-      H::ResultBase<T, E>::data_.err_);
+      BaseType_::data_.err_);
   }
 
   constexpr const E& error() const& {
     EFLI_CXPR11ASSERT_(!this->has_value());
-    return H::ResultBase<T, E>::data_.err_;
+    return BaseType_::data_.err_;
   }
 
   constexpr const E& error() const&& {
     EFLI_CXPR11ASSERT_(!this->has_value());
     return H::cxpr_move(
-      H::ResultBase<T, E>::data_.err_);
+      BaseType_::data_.err_);
   }
 
   //=== Modifiers ===//

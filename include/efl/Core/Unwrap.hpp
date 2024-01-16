@@ -51,7 +51,7 @@
 # define $assign_unwrap(name, ...) \
  auto&& name = $unwrap(val, __VA_ARGS__)
 #else // Fallback
-
+// TODO: Add MSVC fallback
 #endif
 
 namespace efl {
@@ -63,7 +63,6 @@ constexpr auto unwrap(T&& t)
  -> decltype(do_unwrap(CH::Decl<T>())) {
   return do_unwrap(CH::cxpr_forward<T>(t));
 }
-
 } // namespace efl
 
 #undef EFLI_UNWRAP_FALLBACK_

@@ -30,7 +30,8 @@
 #include <CoreCommon/ConfigCache.hpp>
 #include "Core/AlignedStorage.hpp"
 #include "Core/Array.hpp"
-#include "Core/Binding.hpp"
+#include "Core/ArrayRef.hpp"
+// #include "Core/Binding.hpp"
 #include "Core/Casts.hpp"
 #include "Core/Endian.hpp"
 #include "Core/Enum.hpp"

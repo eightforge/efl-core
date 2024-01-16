@@ -111,7 +111,7 @@ void strref_tests() {
   MEflESAssert(lc == 'H');
 
   constexpr C::StrRef sl = 
-    str.snipPrefix(2).snipSuffix(2);
+    str.dropFront(2).dropBack(2);
   MEflESAssert(sl[0] == 'l' && sl[1] == 'l');
 }
 
@@ -159,6 +159,19 @@ void array_tests() {
   auto arr3 = C::make_array(i, 1, 2);
   auto arr2 = C::make_array_of<C::Str>("0", "1");
   auto arr0 = C::make_array();
+}
+
+void arrayref_tests() {
+ /* Constexpr */ {
+  static constexpr C::i32 arr[8] { };
+  constexpr C::ArrayRef arrref(arr);
+ } /* Vec */ {
+  C::Vec<C::u64> vec { 1, 2, 3 };
+  vec.push_back(4);
+  C::ImmutArrayRef<C::u64> iar(vec);
+  $raw_assert(iar[3] == 4);
+  $raw_assert(iar.toVec() == vec);
+ }
 }
 
 int option_tests() {

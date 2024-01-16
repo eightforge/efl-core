@@ -33,7 +33,8 @@
 #define EFLI_RMREF_(...) typename \
   ::std::remove_reference<__VA_ARGS__>::type
 
-#if __has_builtin(__builtin_addressof)
+#if __has_builtin(__builtin_addressof) || \
+ EFLI_GCCVER_LEAST_(7)
 # define EFLI_ADDRESSOF_(x) __builtin_addressof(x)
 # define EFLI_ADDRESSOF_ATTRIB_ NODISCARD FICONSTEXPR
 #else

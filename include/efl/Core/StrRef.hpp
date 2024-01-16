@@ -70,7 +70,6 @@ struct GSL_POINTER StrRef {
   using iterator = const char*;
   using const_iterator = const char*;
   using reverse_iterator = std::reverse_iterator<iterator>;
-  using const_reverse_iterator = std::reverse_iterator<const_iterator>;
   using size_type = H::SzType;
   using difference_type = std::ptrdiff_t;
   static constexpr size_type npos = ~size_type(0);
@@ -82,6 +81,17 @@ private:
    const char* l, const char* r, size_type len) NOEXCEPT {
     if(EFL_UNLIKELY(len == 0)) return 0;
     return std::memcmp(l, r, len);
+  }
+
+  ALWAYS_INLINE EFLI_CXX20_CXPR_ static bool CxprMemcmp(
+   const char* l, const char* r, size_type len) NOEXCEPT {
+#if CPPVER_LEAST(20)
+    if(EFL_RT_CXPREVAL()) UNLIKELY {
+      if(len == 0) return 0;
+      return std::equal(l, l + len, r); 
+    }
+#endif // C++20 Check
+    return !!StrRef::Memcmp(l, r, len);
   }
 
 public:
@@ -118,29 +128,17 @@ public:
 
   //=== Iterators ===//
 
-  constexpr iterator begin() const
+  FICONSTEXPR iterator begin() const
   { return data_; }
 
-  constexpr iterator end() const
+  FICONSTEXPR iterator end() const
   { return data_ + size_; } 
 
-  constexpr iterator cbegin() const
-  { return data_; }
-
-  constexpr iterator cend() const
-  { return data_ + size_; }
-
   EFLI_CXX17_CXPR_ reverse_iterator rbegin() const 
-  { return reverse_iterator(this->begin()); }
+  { return reverse_iterator(begin()); }
 
   EFLI_CXX17_CXPR_ reverse_iterator rend() const 
-  { return reverse_iterator(this->end()); }
-
-  EFLI_CXX17_CXPR_ reverse_iterator rcbegin() const 
-  { return const_reverse_iterator(this->cbegin()); }
-
-  EFLI_CXX17_CXPR_ reverse_iterator rcend() const 
-  { return const_reverse_iterator(this->cend()); }
+  { return reverse_iterator(end()); }
 
   //=== Element Access ===//
 
@@ -184,19 +182,26 @@ public:
     return data_[size_ - 1];
   }
 
-  //=== Capacity ===//
+  //=== Observers ===//
 
   /// Get a pointer to the beginning of the string.
   EFLI_CXX17_CXPR_ const char* data() const 
   { return data_; }
 
   /// Get the size of the string.
-  constexpr size_type size() const 
+  FICONSTEXPR size_type size() const 
   { return size_; }
 
   /// Check if the string is empty (`size() == 0`).
-  constexpr bool isEmpty() const 
+  FICONSTEXPR bool isEmpty() const 
   { return size_ == 0; }
+
+  /// Check if two strings are equal.
+  EFLI_CXX20_CXPR_ bool isEqual(StrRef str) const {
+    if(size_ != str.size_) return false;
+    return StrRef::CxprMemcmp(
+      begin(), str.begin(), size_);
+  }
 
   //=== Modifiers ===//
 
@@ -237,7 +242,7 @@ public:
     s = tmp;
   }
 
-  //=== Mutators ===//
+  //=== Operations ===//
 
   EFLI_CXX20_CXPR_ size_type copy(Type* dst, 
    size_type count, size_type pos = 0) const {
@@ -249,39 +254,60 @@ public:
     return static_cast<size_type>(odst - dst);
   }
 
-  //=== Chaining Operations ===//
+  /// Return a `StrRef` starting at `pos` with `n` characters.
+  FICONSTEXPR StrRef slice(size_type pos, size_type n) const {
+    EFLI_CXPR11ASSERT_(data_ && (pos + n) <= size_);
+    return StrRef(data_ + pos, n);
+  }
 
-  /// Return a `StrRef` with `n`
-  /// characters removed from the start of the string.
-  constexpr StrRef snipPrefix(size_type n) const {
+  /// Return a `StrRef` with `n` characters removed.
+  FICONSTEXPR StrRef slice(size_type n) const {
     EFLI_CXPR11ASSERT_(data_ && n <= size_);
-    return { data_ + n, size_ - n };
+    return StrRef(data_ + n, size_ - n);
   }
 
-  /// Return a `StrRef` with `n`
-  /// characters removed from the end of the string.
-  constexpr StrRef snipSuffix(size_type n) const {
+  /// Return a `StrRef` with `n` characters removed
+  /// from the start of the string.
+  constexpr StrRef dropFront(size_type n = 1) const 
+  { return slice(n); }
+
+  /// Return a `StrRef` with `n` characters removed
+  /// from the end of the string.
+  constexpr StrRef dropBack(size_type n = 1) const {
     EFLI_CXPR11ASSERT_(n <= size_);
-    return { data_, size_ - n };
+    return slice(0, size_ - n);
   }
 
-  /// Return a `StrRef` with `sizeof(s) - 1`
-  /// characters removed from the start of the string.
-  template <H::SzType N>
-  constexpr StrRef snipPrefixWith(carray_t<N>&) const {
-    EFLI_CXPR11ASSERT_(data_ && (N - 1) <= size_);
-    return { data_ + (N - 1), size_ - (N - 1) };
+  /// Return a `StrRef` with `n` characters
+  /// from the start of the string.
+  constexpr StrRef takeFront(size_type n = 1) const {
+    if(n >= size_) return *this;
+    return dropBack(size_ - n);
   }
 
-  /// Return a `StrRef` with `sizeof(s) - 1`
-  /// characters removed from the end of the string.
-  template <H::SzType N>
-  constexpr StrRef snipSuffixWith(carray_t<N>&) const {
-    EFLI_CXPR11ASSERT_((N - 1) <= size_);
-    return { data_, size_ - (N - 1) };
+  /// Return a `StrRef` with `n` characters
+  /// from the end of the string.
+  constexpr StrRef takeBack(size_type n = 1) const {
+    if(n >= size_) return *this;
+    return dropFront(size_ - n);
   }
 
   // find, findSlow (cxpr) [and associated functions]
+
+  /// Copy contents of `StrRef` to a new `Str`.
+  HINT_INLINE Str toStr() const { 
+    return Str(data(), size()); 
+  }
+
+  /// Copy contents of `StrRef` to a new `OveralignedStr<N>`.
+  template <H::SzType N> 
+  HINT_INLINE OveralignedStr<N>
+   toOveralignedStr() const {
+    return OveralignedStr<N>(data(), size());
+  }
+  
+  /// Implicitly create new `Str` from `StrRef`.
+  operator Str() const { return this->toStr(); }
 
 public:
   const char* data_ = nullptr;

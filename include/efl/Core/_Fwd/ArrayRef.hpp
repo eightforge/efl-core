@@ -1,4 +1,4 @@
-//===- Core/Fwd_/Hash.hpp -------------------------------------------===//
+//===- Core/Fwd_/ArrayRef.hpp ---------------------------------------===//
 //
 // Copyright (C) 2024 Eightfold
 //
@@ -16,27 +16,24 @@
 //
 //===----------------------------------------------------------------===//
 //
-//  Forward declarations for Hash<...>.
+//  Forward declarations for ArrayRef<...> and ImmutArrayRef<...>.
 //
 //===----------------------------------------------------------------===//
 
-#ifndef EFL_CORE_FWD__HASH_HPP
-#define EFL_CORE_FWD__HASH_HPP
+#ifndef EFL_CORE_FWD__ARRAYREF_HPP
+#define EFL_CORE_FWD__ARRAYREF_HPP
 
 #include <CoreCommon/ConfigCache.hpp>
 
-// TODO: Implement wyhash
-
 namespace efl {
 namespace C {
-/// Faster hash implementation.
-template <typename T, typename = void>
-struct Hash {
-  COMPILE_FAILURE(T, 
-    "Hash has not been implemented for this type.")
-};
+template <typename T>
+struct NODISCARD ImmutArrayRef;
+
+template <typename T>
+struct GSL_POINTER NODISCARD ArrayRef;
 
 } // namespace C
 } // namespace efl
 
-#endif // EFL_CORE_FWD__HASH_HPP
+#endif // EFL_CORE_FWD__ARRAYREF_HPP

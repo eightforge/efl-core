@@ -34,7 +34,7 @@
 # define EFLI_LAUNDER_(...) ::std::launder((__VA_ARGS__))
 # define EFLI_LAUNDERCAST_CXPR_ AGGRESSIVE_INLINE constexpr
 # define EFLI_LAUNDER_BUILTIN_ 1
-#elif __has_builtin(__builtin_launder) || defined(__GNUC__) || \
+#elif __has_builtin(__builtin_launder) || EFLI_GCCVER_LEAST_(7) || \
  (defined(COMPILER_MSVC) && defined(_BUILTIN_LAUNDER_SUPPORTED))
 # define EFLI_LAUNDER_(...) __builtin_launder((__VA_ARGS__))
 # define EFLI_LAUNDERCAST_CXPR_ ALWAYS_INLINE EFLI_CXX14_CXPR_
