@@ -15,10 +15,6 @@
 //     limitations under the License.
 //
 //===----------------------------------------------------------------===//
-//
-//  This file defines storage for types like variant and optional.
-//
-//===----------------------------------------------------------------===//
 
 #pragma once
 
