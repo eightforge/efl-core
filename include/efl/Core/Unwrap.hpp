@@ -59,7 +59,7 @@ namespace efl {
 /// @param t The value to unwrap, assumed to be valid.
 /// @return The unwrapped value.
 template <typename T>
-constexpr auto unwrap(T&& t) 
+NDBG_INLINE constexpr auto unwrap(T&& t) 
  -> decltype(do_unwrap(CH::Decl<T>())) {
   return do_unwrap(CH::cxpr_forward<T>(t));
 }

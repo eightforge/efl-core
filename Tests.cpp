@@ -83,6 +83,10 @@ int main() {
   volatile bool b = true;
   if(!b) $unreachable;
 
+  auto box = C::Box<C::Str>::New("Hello ");
+  box->append("there!");
+  std::cout << *box << std::endl;
+
 #if CPPVER_LEAST(20)
   using Lit = HH::LitC<"Hello">;
   constexpr auto lit = C::Ls<"world!">;

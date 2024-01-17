@@ -33,6 +33,13 @@
 
 /// Makes things more compact :P
 #define FICONSTEXPR ALWAYS_INLINE constexpr
+
+#ifdef __clang__
+# define NDBG_INLINE [[gnu::nodebug, gnu::always_inline]] inline
+#else
+# define NDBG_INLINE ALWAYS_INLINE
+#endif
+
 /// Allows for "empty" `static_assert`s pre C++17.
 #define MEflESAssert(...) EFLI_EMPTY_SASSERT_(__VA_ARGS__)
 

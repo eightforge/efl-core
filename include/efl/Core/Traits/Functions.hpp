@@ -42,6 +42,8 @@
 # define EFLI_ADDRESSOF_ATTRIB_ NODISCARD ALWAYS_INLINE
 #endif
 
+// TODO: set up nodebug
+
 namespace efl {
 namespace C {
 // TODO: Function traits
@@ -54,13 +56,13 @@ namespace H {
   }
 
   template <typename T>
-  NODISCARD FICONSTEXPR T&& cxpr_forward(
-   EFLI_RMREF_(T)& t) NOEXCEPT 
+  NODISCARD NDBG_INLINE constexpr T&& 
+   cxpr_forward(EFLI_RMREF_(T)& t) NOEXCEPT 
   { return static_cast<T&&>(t); }
 
   template <typename T>
-  NODISCARD FICONSTEXPR T&& cxpr_forward(
-   EFLI_RMREF_(T)&& t) NOEXCEPT {
+  NODISCARD NDBG_INLINE constexpr T&& 
+   cxpr_forward(EFLI_RMREF_(T)&& t) NOEXCEPT {
     static_assert(!std::is_lvalue_reference<T>::value,
       "`cxpr_forward` cannot be used to "
       "convert an l-value to an r-value.");
@@ -68,7 +70,7 @@ namespace H {
   }
 
   template <typename T>
-  NODISCARD FICONSTEXPR EFLI_RMREF_(T)&& 
+  NODISCARD NDBG_INLINE constexpr EFLI_RMREF_(T)&& 
    cxpr_move(T&& t) NOEXCEPT 
   { return static_cast<EFLI_RMREF_(T)&&>(t); }
 
@@ -108,14 +110,14 @@ namespace H {
 
     template <typename T, MEflEnableIf(
       is_trivially_destructible<T>::value)>
-    EFLI_CXX14_CXPR_ void destruct(T*) { }
+    HINT_INLINE EFLI_CXX14_CXPR_ void destruct(T*) { }
 
     template <typename T, MEflEnableIf(
       (!is_trivially_destructible<T>::value))>
     EFLI_CXX14_CXPR_ void destruct(T* t) {
       static_assert(!is_void<T>::value, 
         "You cannot pass a void* to destruct.");
-      (!!t) ? void(t->~T()) : void(0);
+      EFL_SOFT_LIKELY(!!t) ? void(t->~T()) : void(0);
     }
   } // namespace xx11
 

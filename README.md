@@ -30,6 +30,7 @@ The following are/will be found under ``Core/*.hpp``:
 ## Partially implemented
 
 - ArrayRef  <
+- Box       <
 - Casts
 - Enum
 - Option
@@ -41,7 +42,6 @@ The following are/will be found under ``Core/*.hpp``:
 
 - Atomic*
 - Binding   <
-- Box       <
 - Handle
 - Hash
 - RawIO

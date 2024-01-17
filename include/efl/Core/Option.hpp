@@ -34,8 +34,9 @@
 
 EFLI_CXPR11ASSERT_PROLOGUE_
 
+namespace efl {
+namespace C {
 #if CPPVER_LEAST(17)
-namespace efl::C {
 /// Wrapper around `std::optional<...>`.
 template <typename T>
 struct Option : std::optional<T> {
@@ -69,14 +70,11 @@ struct Option : std::optional<T> {
   }
 };
 
-#ifdef __cpp_deduction_guides
+# ifdef __cpp_deduction_guides
 template <typename T>
 Option(T) -> Option<T>;
-#endif // Deduction guides (C++17)
-} // namespace efl::C
+# endif // Deduction guides (C++17)
 #else
-namespace efl {
-namespace C {
 /// C++11/14 optional implementation.
 template <typename T>
 struct Option : private H::OptionBase<T> {
@@ -394,9 +392,10 @@ public:
       *this : H::cxpr_forward<F>(f)();
   }
 };
+#endif
+
 } // namespace C
 } // namespace efl
-#endif
 
 #include "Option/Compare.hpp"
 #include "Option/Helpers.hpp"

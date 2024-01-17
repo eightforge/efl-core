@@ -47,6 +47,7 @@ struct MyBase {
 
 struct Meower : MyBase {
   void saySomething() override { std::printf("Meow!\n"); }
+  void meow() { std::printf("Meow meow!\n"); }
 };
 
 struct Woofer : MyBase {
@@ -119,13 +120,18 @@ void strref_tests() {
 void poly_tests() {
   C::Poly<MyBase, Meower, Woofer> poly { };
   (void)poly.asBase();
+
   poly = Meower();
   $raw_assert(poly.holdsAny());
   poly->saySomething();
+  if(auto* K = poly.downcast<Meower>()) 
+    K->meow();
+
   poly = Woofer();
   $raw_assert(poly.holdsType<Woofer>());
   poly->saySomething();
-  poly.downcast<Woofer>().woof();
+  poly.downcastUnchecked<Woofer>().woof();
+
   poly.clear();
   $raw_assert(!poly.holdsAny());
 }

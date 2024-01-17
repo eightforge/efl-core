@@ -216,21 +216,35 @@ public:
 
   template <typename T, 
     MEflEnableIf(matchesAny<T>)>
-  T& downcast()& NOEXCEPT {
+  T* downcast()& NOEXCEPT {
+    if(!this->holdsType<T>()) return nullptr;
+    return launder_cast<T>(data_.data);
+  }
+
+  template <typename T, 
+    MEflEnableIf(matchesAny<T>)>
+  const T* downcast() const& NOEXCEPT {
+    if(!this->holdsType<T>()) return nullptr;
+    return launder_cast<const T>(data_.data);
+  }
+
+  template <typename T, 
+    MEflEnableIf(matchesAny<T>)>
+  T& downcastUnchecked()& NOEXCEPT {
     EFLI_DBGASSERT_(this->holdsType<T>());
     return *launder_cast<T>(data_.data);
   }
 
   template <typename T, 
     MEflEnableIf(matchesAny<T>)>
-  const T& downcast() const& NOEXCEPT {
+  const T& downcastUnchecked() const& NOEXCEPT {
     EFLI_DBGASSERT_(this->holdsType<T>());
     return *launder_cast<const T>(data_.data);
   }
 
   template <typename T, 
     MEflEnableIf(matchesAny<T>)>
-  T&& downcast()&& NOEXCEPT {
+  T&& downcastUnchecked()&& NOEXCEPT {
     EFLI_DBGASSERT_(this->holdsType<T>());
     return std::move(*launder_cast<T>(data_.data));
   }
