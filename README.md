@@ -13,6 +13,7 @@ The following are/will be found under ``Core/*.hpp``:
 - AlignedStorage
 - Array
 - ArrayRef
+- Binding
 - Endian
 - Fundamental
 - MimAllocator
@@ -41,7 +42,6 @@ The following are/will be found under ``Core/*.hpp``:
 ## Unimplemented
 
 - Atomic*
-- Binding   <
 - Handle
 - Hash
 - RawIO
