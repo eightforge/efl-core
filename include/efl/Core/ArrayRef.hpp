@@ -266,7 +266,7 @@ public:
 };
 
 template <typename T>
-struct NODISCARD ImmutArrayRef : ArrayRef<const T> {
+struct NODISCARD ImmutArrayRef : public ArrayRef<const T> {
   using Type = T;
   using SelfType = ImmutArrayRef<T>;
   using BaseType = ArrayRef<const T>;
@@ -422,6 +422,50 @@ public:
 
 //=== Deduction Guides - ArrayRef ===//
 
+template <typename T>
+NODEBUG EFLI_CXX17_CXPR_ ArrayRef<T>
+ make_arrayref(T& t) NOEXCEPT {
+  return ArrayRef<T>(t);
+}
+
+template <typename T>
+NODEBUG constexpr ArrayRef<T>
+ make_arrayref(T* data, H::SzType size) NOEXCEPT {
+  return ArrayRef<T>(data, size);
+}
+
+template <typename T>
+NODEBUG constexpr ArrayRef<T>
+ make_arrayref(T* begin, T* end) NOEXCEPT {
+  return ArrayRef<T>(begin, end);
+}
+
+// SmallVec
+
+template <typename T, typename A>
+NODEBUG EFLI_CXX20_CXPR_ ArrayRef<T>
+ make_arrayref(std::vector<T, A>& vec) NOEXCEPT {
+  return ArrayRef<T>(vec);
+}
+
+template <typename T, H::SzType N>
+NODEBUG constexpr ArrayRef<T>
+ make_arrayref(Array<T, N>& arr) NOEXCEPT {
+  return ArrayRef<T>(arr);
+}
+
+template <typename T, H::SzType N>
+NODEBUG constexpr ArrayRef<T>
+ make_arrayref(array_t<T, N>& raw_arr) NOEXCEPT {
+  return ArrayRef<T>(raw_arr);
+}
+
+template <typename T>
+NODEBUG constexpr ArrayRef<T>&
+ make_arrayref(ArrayRef<T>& self) NOEXCEPT {
+  return self;
+}
+
 #ifdef __cpp_deduction_guides
 template <typename T>
 ArrayRef(T&) -> ArrayRef<T>;
@@ -445,6 +489,56 @@ ArrayRef(array_t<T, N>&) -> ArrayRef<T>;
 #endif
 
 //=== Deduction Guides - ImmutArrayRef ===//
+
+template <typename T>
+NODEBUG EFLI_CXX17_CXPR_ ImmutArrayRef<T>
+ make_immutarrayref(const T& t) NOEXCEPT {
+  return ImmutArrayRef<T>(t);
+}
+
+template <typename T>
+NODEBUG constexpr ImmutArrayRef<T>
+ make_immutarrayref(const T* data, H::SzType size) NOEXCEPT {
+  return ImmutArrayRef<T>(data, size);
+}
+
+template <typename T>
+NODEBUG constexpr ImmutArrayRef<T>
+ make_immutarrayref(const T* begin, const T* end) NOEXCEPT {
+  return ImmutArrayRef<T>(begin, end);
+}
+
+// SmallVec
+
+template <typename T, typename A>
+NODEBUG EFLI_CXX20_CXPR_ ImmutArrayRef<T>
+ make_immutarrayref(const std::vector<T, A>& vec) NOEXCEPT {
+  return ImmutArrayRef<T>(vec);
+}
+
+template <typename T, H::SzType N>
+NODEBUG constexpr ImmutArrayRef<T>
+ make_immutarrayref(const Array<T, N>& arr) NOEXCEPT {
+  return ImmutArrayRef<T>(arr);
+}
+
+template <typename T, H::SzType N>
+NODEBUG constexpr ImmutArrayRef<T>
+ make_immutarrayref(const array_t<T, N>& raw_arr) NOEXCEPT {
+  return ImmutArrayRef<T>(raw_arr);
+}
+
+template <typename T>
+NODEBUG constexpr ImmutArrayRef<T>
+ make_immutarrayref(const H::InitList<T>& il) NOEXCEPT {
+  return ImmutArrayRef<T>(il);
+}
+
+template <typename T>
+NODEBUG constexpr const ImmutArrayRef<T>&
+ make_immutarrayref(const ImmutArrayRef<T>& self) NOEXCEPT {
+  return self;
+}
 
 #ifdef __cpp_deduction_guides
 template <typename T>
@@ -471,6 +565,38 @@ template <typename T>
 ImmutArrayRef(const H::InitList<T>&) -> ImmutArrayRef<T>;
 #endif
 
+//=== Comparisons ===//
+
+namespace ops_ {
+  template <typename T, typename U>
+  NODEBUG EFLI_CXX20_CXPR_ bool operator==(
+   ArrayRef<T> lhs, U&& u) NOEXCEPT {
+    const ArrayRef<T> rhs(FWD_CAST(u));
+    return lhs.isEqual(rhs);
+  }
+
+  template <typename T, typename U>
+  NODEBUG EFLI_CXX20_CXPR_ bool operator==(
+   ImmutArrayRef<T> lhs, U&& u) NOEXCEPT {
+    const ImmutArrayRef<T> rhs(FWD_CAST(u));
+    return lhs.isEqual(rhs);
+  }
+
+  template <typename T, typename U>
+  NODEBUG EFLI_CXX20_CXPR_ bool operator!=(
+   ArrayRef<T> lhs, U&& u) NOEXCEPT {
+    const ArrayRef<T> rhs(FWD_CAST(u));
+    return !lhs.isEqual(rhs);
+  }
+
+  template <typename T, typename U>
+  NODEBUG EFLI_CXX20_CXPR_ bool operator!=(
+   ImmutArrayRef<T> lhs, U&& u) NOEXCEPT {
+    const ImmutArrayRef<T> rhs(FWD_CAST(u));
+    return !lhs.isEqual(rhs);
+  }
+} // namespace ops_
+
 } // namespace C
 } // namespace efl
 
@@ -479,5 +605,7 @@ EFLI_CXPR11ASSERT_EPILOGUE_
 #undef EFLI_ARRAYREF_DEPR_
 #undef EFLI_LIFETIME_EPILOGUE_
 #undef EFLI_LIFETIME_PROLOGUE_
+
+using namespace efl::C::ops_;
 
 #endif // EFL_CORE_ARRAYREF_HPP

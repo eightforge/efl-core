@@ -138,7 +138,10 @@ void poly_tests() {
 
 auto result_test2(int i) 
  -> C::Result<C::Str, C::ubyte> {
-  if(i >= 0) return $Ok(std::to_string(i));
+  if(i >= 0) {
+    auto str = std::to_string(i);
+    return $Ok(C::StrRef(str).toStr());
+  }
   else return $Err(C::ubyte(i));
 }
 
@@ -172,11 +175,13 @@ void array_tests() {
 void arrayref_tests() {
  /* Constexpr */ {
   static constexpr C::i32 arr[8] { };
-  constexpr C::ArrayRef arrref(arr);
+  constexpr C::ImmutArrayRef<C::i32> arrref(arr);
+  C::ImmutArrayRef<C::i32> arrref2(arr, arr + 8);
+  $raw_assert(arrref == arrref2);
  } /* Vec */ {
   C::Vec<C::u64> vec { 1, 2, 3 };
   vec.push_back(4);
-  C::ImmutArrayRef<C::u64> iar(vec);
+  C::ArrayRef<C::u64> iar(vec);
   $raw_assert(iar[3] == 4);
   $raw_assert(iar.toVec() == vec);
  }

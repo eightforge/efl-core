@@ -12,6 +12,7 @@ The following are/will be found under ``Core/*.hpp``:
 
 - AlignedStorage
 - Array
+- ArrayRef
 - Endian
 - Fundamental
 - MimAllocator
@@ -29,9 +30,8 @@ The following are/will be found under ``Core/*.hpp``:
 
 ## Partially implemented
 
-- ArrayRef  <
 - Box       <
-- Casts
+- Casts     <
 - Enum
 - Option
 - Panic*

@@ -205,8 +205,10 @@ public:
   pointer get() const NOEXCEPT 
   { return this->data_; }
 
-  T* operator->() const NOEXCEPT 
-  { return this->data_; }
+  T* operator->() const NOEXCEPT {
+    $raw_assert(!this->isEmpty());
+    return this->data_;
+  }
 
   Type& operator*() NOEXCEPT {
     $raw_assert(!this->isEmpty());

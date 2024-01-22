@@ -101,7 +101,7 @@ union ResultStorage<T, E, false> {
   constexpr ResultStorage() NOEXCEPT : data_() { }
 
   template <typename...TT>
-  constexpr ResultStorage(in_place_t, TT&&...tt)
+  constexpr ResultStorage(in_place_t ip, TT&&...tt)
    : data_(cxpr_forward<TT>(tt)...) { }
   
   template <typename U, typename...TT>
@@ -143,7 +143,7 @@ public:
   
   template <typename U, typename...TT>
   constexpr ResultBase(InitList<U> il, TT&&...tt)
-   : data_(in_place, il, cxpr_forward<TT>(tt)...), active_(true) { }
+   : data_(il, cxpr_forward<TT>(tt)...), active_(true) { }
   
   template <typename...TT>
   constexpr ResultBase(Unexpect ux, TT&&...tt)

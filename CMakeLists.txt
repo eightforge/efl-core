@@ -6,11 +6,11 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 project(
   efl-core
-  VERSION 0.2.3
+  VERSION 0.2.4
   LANGUAGES CXX
 )
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 11)
 
 option(EFL_MULTITHREADED "Enable multithreading for the efl library." ON)
 option(EFL_MIMALLOC_NEW "Use mimalloc as the default allocator." ON)

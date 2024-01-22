@@ -16,9 +16,11 @@ enum class FlagEnumI : unsigned {
   E1 = 1, E2 = 2, E3 = 4, E4 = 8
 };
 
-namespace efl::C {
+namespace efl {
+namespace C {
   MEflDeclareFlags(FlagEnumI, E4);
-} // namespace efl::C
+} // namespace C
+} // namespace efl
 
 struct ToApply {
 private:
@@ -83,9 +85,12 @@ int main() {
   volatile bool b = true;
   if(!b) $unreachable;
 
-  auto box = C::Box<C::Str>::New("Hello ");
-  box->append("there!");
+  auto box = C::Box<C::Str>::New();
+  box->append("Hello ");
+  auto bound = C::make_binding(box);
+  bound->append("there!");
   std::cout << *box << std::endl;
+  
 
 #if CPPVER_LEAST(20)
   using Lit = HH::LitC<"Hello">;

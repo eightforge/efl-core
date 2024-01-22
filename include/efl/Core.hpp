@@ -31,7 +31,7 @@
 #include "Core/AlignedStorage.hpp"
 #include "Core/Array.hpp"
 #include "Core/ArrayRef.hpp"
-// #include "Core/Binding.hpp"
+#include "Core/Binding.hpp"
 #include "Core/Box.hpp"
 #include "Core/Casts.hpp"
 #include "Core/Endian.hpp"

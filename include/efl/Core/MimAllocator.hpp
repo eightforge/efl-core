@@ -32,7 +32,7 @@
 #include "_Version.hpp"
 
 #if (EFLI_HAS_CXPREVAL_ == 1)
-# define EFLI_MI_CXPR_ HINT_INLINE constexpr
+# define EFLI_MI_CXPR_ HINT_INLINE EFLI_CXX14_CXPR_
 #else
 # define EFLI_MI_CXPR_ ALWAYS_INLINE
 #endif

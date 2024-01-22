@@ -32,6 +32,8 @@
 #include "Option/Cxx14Base.hpp"
 #include "_Version.hpp"
 
+// TODO: Add Option<T&> overloads
+
 EFLI_CXPR11ASSERT_PROLOGUE_
 
 namespace efl {
@@ -67,6 +69,114 @@ struct Option : std::optional<T> {
   template <typename U>
   FICONSTEXPR T unwrapOr(U&& u) const& {
     return std::optional<T>::value_or(FWD(u));
+  }
+
+  //=== Monads ===//
+
+  template <typename F>
+  constexpr auto andThen(F&& f)& 
+   -> remove_cvref_t<invoke_result_t<F, T&>> {
+    if(*this) {
+      return H::cxpr_forward<F>(f)(**this);
+    } else {
+      return remove_cvref_t<
+        invoke_result_t<F, T&>>{ };
+    }
+  }
+
+  template <typename F>
+  constexpr auto andThen(F&& f)&&
+   -> remove_cvref_t<invoke_result_t<F, T&&>> {
+    if(*this) {
+      return H::cxpr_forward<F>(f)(
+        H::cxpr_move(**this));
+    } else {
+      return remove_cvref_t<
+        invoke_result_t<F, T&&>>{ };
+    }
+  }
+
+  template <typename F>
+  constexpr auto andThen(F&& f) const& 
+   -> remove_cvref_t<invoke_result_t<F, const T&>> {
+    if(*this) {
+      return H::cxpr_forward<F>(f)(**this);
+    } else {
+      return remove_cvref_t<
+        invoke_result_t<F, const T&>>{ };
+    }
+  }
+
+  template <typename F>
+  constexpr auto andThen(F&& f) const&&
+   -> remove_cvref_t<invoke_result_t<F, const T&&>> {
+    if(*this) {
+      return H::cxpr_forward<F>(f)(
+        H::cxpr_move(**this));
+    } else {
+      return remove_cvref_t<
+        invoke_result_t<F, const T&&>>{ };
+    }
+  }
+
+#if CPPVER_MOST(20)
+  template <typename F>
+  constexpr auto transform(F&& f)&
+   -> Option<remove_cv_t<invoke_result_t<F, T&>>> {
+    if(*this) {
+      return { H::invoke(FWD_CAST(f)(**this)) };
+    } else {
+      return { nullopt };
+    }
+  }
+
+  template <typename F>
+  constexpr auto transform(F&& f)&&
+   -> Option<remove_cv_t<invoke_result_t<F, T>>> {
+    if(*this) {
+      return { H::invoke(FWD_CAST(f)(
+        H::cxpr_move(**this))) };
+    } else {
+      return { nullopt };
+    }
+  }
+
+  template <typename F>
+  constexpr auto transform(F&& f) const&
+   -> Option<remove_cv_t<invoke_result_t<F, const T&>>> {
+    if(*this) {
+      return { H::invoke(FWD_CAST(f)(**this)) };
+    } else {
+      return { nullopt };
+    }
+  }
+
+  template <typename F>
+  constexpr auto transform(F&& f) const&& 
+   -> Option<remove_cv_t<invoke_result_t<F, const T>>> {
+    if(*this) {
+      return { H::invoke(FWD_CAST(f)(
+        H::cxpr_move(**this))) };
+    } else {
+      return { nullopt };
+    }
+  }
+#else
+  using std::optional<T>::transform;
+#endif // C++23 Check (std::optional<...>::transform)
+
+  template <typename F>
+  constexpr Option orElse(F&& f)&& {
+    static_assert(is_same_v<Option, invoke_result_t<F>>);
+    return (*this) ? 
+      H::cxpr_move(*this) : H::cxpr_forward<F>(f)();
+  }
+
+  template <typename F>
+  constexpr Option orElse(F&& f) const& {
+    static_assert(is_same_v<Option, invoke_result_t<F>>);
+    return (*this) ? 
+      *this : H::cxpr_forward<F>(f)();
   }
 };
 
@@ -372,6 +482,48 @@ public:
     } else {
       return remove_cvref_t<
         invoke_result_t<F, const T&&>>{ };
+    }
+  }
+
+  template <typename F>
+  EFLI_CXX14_CXPR_ auto transform(F&& f)&
+   -> Option<remove_cv_t<invoke_result_t<F, T&>>> {
+    if(this->active()) {
+      return { H::invoke(FWD_CAST(f)(**this)) };
+    } else {
+      return { nullopt };
+    }
+  }
+
+  template <typename F>
+  EFLI_CXX14_CXPR_ auto transform(F&& f)&&
+   -> Option<remove_cv_t<invoke_result_t<F, T>>> {
+    if(this->active()) {
+      return { H::invoke(FWD_CAST(f)(
+        H::cxpr_move(**this))) };
+    } else {
+      return { nullopt };
+    }
+  }
+
+  template <typename F>
+  constexpr auto transform(F&& f) const&
+   -> Option<remove_cv_t<invoke_result_t<F, const T&>>> {
+    if(this->active()) {
+      return { H::invoke(FWD_CAST(f)(**this)) };
+    } else {
+      return { nullopt };
+    }
+  }
+
+  template <typename F>
+  constexpr auto transform(F&& f) const&& 
+   -> Option<remove_cv_t<invoke_result_t<F, const T>>> {
+    if(this->active()) {
+      return { H::invoke(FWD_CAST(f)(
+        H::cxpr_move(**this))) };
+    } else {
+      return { nullopt };
     }
   }
 

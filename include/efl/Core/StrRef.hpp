@@ -114,8 +114,9 @@ public:
   constexpr StrRef(carray_t<N>& str) NOEXCEPT
    : data_(str), size_(N) { }
   
-  /// Constructs from a `Str`.
-  StrRef(const Str& str) 
+  /// Constructs from a `std::string` variant.
+  template <typename A>
+  StrRef(const BasicStr<char, A>& str)
    : data_(str.data()), size_(str.size()) { }
 
 #if CPPVER_LEAST(17)

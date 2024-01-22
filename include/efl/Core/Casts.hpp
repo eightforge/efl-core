@@ -35,6 +35,8 @@
 # define EFLI_PUNCAST_CXPR_
 #endif
 
+// TODO: Add isa, dyn_cast, etc. (handle casts?)
+
 /// Uses the available "laundering" function.
 #define EFL_LAUNDER(...) EFLI_LAUNDER_(__VA_ARGS__)
 
