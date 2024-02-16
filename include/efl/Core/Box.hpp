@@ -26,61 +26,12 @@
 #ifndef EFL_CORE_BOX_HPP
 #define EFL_CORE_BOX_HPP
 
-#include "MimAllocator.hpp"
-#include "Traits/Functions.hpp"
-#include "_Builtins.hpp"
+#include "StatelessAllocator.hpp"
 // Casts.hpp -> dyn_cast
 // Handle.hpp -> PointerHandle<...>
 
 namespace efl {
 namespace C {
-namespace H {
-  template <typename A, 
-    typename HasStaticAllocate = void, 
-    typename HasStaticDeallocate = void>
-  struct IsStatelessAllocator 
-   : H::FalseType { };
-  
-  template <typename A>
-  struct IsStatelessAllocator<A,
-    void_t<decltype(A::allocate(0UL))>,
-    void_t<decltype(A::deallocate(
-      (typename A::value_type*)(nullptr), 0UL))>>
-   : H::BoolC<is_empty<A>::value> { };
-} // namespace H
-
-template <typename A, 
-  bool = H::IsStatelessAllocator<A>::value>
-struct StatelessAllocator {
-  COMPILE_FAILURE(A, "Allocator must provide a static "
-    "allocate/deallocate function, and be empty.");
-};
-
-template <typename A>
-struct StatelessAllocator<A, true> {
-  using Type = typename A::value_type;
-  using Allocator = A;
-  using value_type = Type;
-  using pointer = typename A::pointer;
-public:
-  /// Invokes the allocator's `allocate` function.
-  static pointer Allocate(H::SzType n = 1) {
-    $assert(n, "Cannot allocate 0 objects.");
-    return Allocator::allocate(n);
-  }
-
-  /// Invokes the allocator's `deallocate` function.
-  static void Deallocate(pointer data, H::SzType n = 1) {
-    if(EFL_UNLIKELY(!data || n == 0)) return;
-    Allocator::deallocate(data, n);
-  }
-};
-
-template <typename T, 
-  H::SzType Align = alignof(T)>
-using StatelessMimAllocator =
-  StatelessAllocator<MimAllocator<T, Align>>;
-
 /**
  * 
  */
