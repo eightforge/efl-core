@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.16)
 include_guard(DIRECTORY)
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
@@ -9,8 +9,6 @@ project(
   VERSION 0.3.0
   LANGUAGES CXX
 )
-
-set(CMAKE_CXX_STANDARD 11)
 
 option(EFL_MULTITHREADED "Enable multithreading for the efl library." ON)
 option(EFL_MIMALLOC_NEW "Use mimalloc as the default allocator." ON)
@@ -44,6 +42,7 @@ add_library(__efl_core STATIC ${EFL_CORE_SRCS})
 target_link_libraries(__efl_core PUBLIC efl::config)
 target_link_libraries(__efl_core PRIVATE mimalloc)
 target_include_directories(__efl_core PUBLIC include)
+target_compile_features(__efl_core PRIVATE cxx_std_11)
 
 target_compile_definitions(__efl_core PUBLIC "EFL_MULTITHREADED=$<BOOL:${__EFL_MULTITHREADED}>")
 target_compile_definitions(__efl_core PUBLIC "EFL_MIMALLOC_NEW=$<BOOL:${__EFL_MIMALLOC_NEW}>")
@@ -55,7 +54,7 @@ target_compile_definitions(__efl_core PUBLIC EFL_CORE_VERSION="${PROJECT_VERSION
 
 add_library(efl::core ALIAS __efl_core)
 
-# if(EFL_CORE_TESTING)
+if(EFL_CORE_TESTING)
   add_executable(efl-core-tests Tests.cpp)
   target_link_libraries(efl-core-tests efl::core)
-# endif()
+endif()

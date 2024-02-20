@@ -22,7 +22,9 @@
 //===----------------------------------------------------------------===//
 
 #pragma once
-#include <efl/Config.hpp>
+#ifndef EFLI_CONFIG_PCH_
+# include <efl/Config.hpp>
+#endif
 
 #if !CPPVER_LEAST(11)
 # error This library requires C++11!
