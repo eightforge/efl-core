@@ -30,6 +30,7 @@
 //=== Option Base ===//
 namespace efl {
 namespace C {
+
 template <typename T>
 struct Option;
 
@@ -38,6 +39,7 @@ namespace H {
   template <typename T>
   using decay_option_t = Option<
     typename std::decay<T>::type>;
+
 } // namespace H
 } // namespace C
 } // namespace efl

@@ -17,11 +17,6 @@ option(EFL_CORE_TESTING "Enable testing for efl::core." OFF)
 option(EFL_CORE_PANICGUARD "Use a mutex for the panic handler." ON)
 option(EFL_CORE_PANICSINGLE "Only allow the panic handler to be set once." OFF)
 
-set(__EFL_MULTITHREADED ${EFL_MULTITHREADED} CACHE
-  BOOL "Caches multithreaded selection to avoid odr violations.")
-set(__EFL_MIMALLOC_NEW ${EFL_MIMALLOC_NEW} CACHE
-  BOOL "Caches allocator selection to avoid odr violations.")
-
 message("[efl::core] is-multithreaded: ${__EFL_MULTITHREADED}")
 message("[efl::core] mimalloc-new: ${__EFL_MIMALLOC_NEW}")
 message("[efl::core] panic-guard: ${EFL_CORE_PANICGUARD}")
@@ -44,8 +39,8 @@ target_link_libraries(__efl_core PRIVATE mimalloc)
 target_include_directories(__efl_core PUBLIC include)
 target_compile_features(__efl_core PRIVATE cxx_std_11)
 
-target_compile_definitions(__efl_core PUBLIC "EFL_MULTITHREADED=$<BOOL:${__EFL_MULTITHREADED}>")
-target_compile_definitions(__efl_core PUBLIC "EFL_MIMALLOC_NEW=$<BOOL:${__EFL_MIMALLOC_NEW}>")
+target_compile_definitions(__efl_core PUBLIC "EFL_MULTITHREADED=$<BOOL:${EFL_MULTITHREADED}>")
+target_compile_definitions(__efl_core PUBLIC "EFL_MIMALLOC_NEW=$<BOOL:${EFL_MIMALLOC_NEW}>")
 target_compile_definitions(__efl_core PRIVATE "EFLI_PANICGUARD_=$<BOOL:${EFL_CORE_PANICGUARD}>")
 target_compile_definitions(__efl_core PRIVATE "EFLI_PANICSINGLE_=$<BOOL:${EFL_CORE_PANICSINGLE}>")
 

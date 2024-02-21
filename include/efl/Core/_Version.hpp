@@ -22,6 +22,8 @@
 //
 //===----------------------------------------------------------------===//
 
+#pragma once
+
 #include <CoreCommon/ConfigCache.hpp>
 
 // C++11 constexpr

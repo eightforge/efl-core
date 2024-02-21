@@ -1,4 +1,4 @@
-//===- Core/AlignedStorage.hpp --------------------------------------===//
+//===- Core/Fwd_/Box.hpp --------------------------------------------===//
 //
 // Copyright (C) 2023 Eightfold
 //
@@ -16,38 +16,20 @@
 //
 //===----------------------------------------------------------------===//
 //
-//  This file defines storage for types like variant and optional.
+//  Forward declarations for Box<...>.
 //
 //===----------------------------------------------------------------===//
 
-#pragma once
+#ifndef EFL_CORE_FWD__BOX_HPP
+#define EFL_CORE_FWD__BOX_HPP
 
-#ifndef EFL_CORE_ALIGNEDSTORAGE_HPP
-#define EFL_CORE_ALIGNEDSTORAGE_HPP
-
-#include "Fundamental.hpp"
+#include <CoreCommon/ConfigCache.hpp>
 
 namespace efl {
 namespace C {
-/// Basic `std::aligned_storage`-esque container.
-template <H::SzType Bytes, H::SzType Align>
-struct BasicAlignedStorage {
-  alignas(Align) ubyte data[Bytes];
-};
-
-/// Aligned storage for a specific type.
-template <typename T>
-using AlignedStorage = 
-  BasicAlignedStorage<sizeof(T), alignof(T)>;
-
-/// Aligned "union" for a set of types.
-template <typename T, typename...TT>
-struct AlignedUnion {
-  using baseType_ = std::aligned_union<0, T, TT...>;
-  alignas(baseType_) ubyte data[sizeof(baseType_)]; 
-};
-
+template <typename T, typename A>
+struct GSL_OWNER NODISCARD Box;
 } // namespace C
 } // namespace efl
 
-#endif // EFL_CORE_ALIGNEDSTORAGE_HPP
+#endif // EFL_CORE_FWD__BOX_HPP

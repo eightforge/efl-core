@@ -39,6 +39,7 @@
 
 namespace efl {
 namespace C {
+
 namespace H {
   template <bool>
   struct Mtx;
@@ -57,6 +58,7 @@ using ScopedLock = std::scoped_lock<TT...>;
 template <typename...TT>
 struct ScopedLock;
 #endif // C++17 Check
+
 } // namespace C
 } // namespace efl
 
