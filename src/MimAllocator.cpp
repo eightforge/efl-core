@@ -53,8 +53,8 @@ MIMALLOC_BASE::VoidAllocResult
   return { mi_malloc(size), size };
 }
 
-void MIMALLOC_BASE::Deallocate(void* p) 
-{ mi_free(p); }
+void MIMALLOC_BASE::Deallocate(void* P) 
+{ mi_free(P); }
 
 bool MIMALLOC_BASE::IsMallocRedirected() {
 #if defined(PLATFORM_WINDOWS)
@@ -64,7 +64,7 @@ bool MIMALLOC_BASE::IsMallocRedirected() {
 #endif
 }
 
-bool MIMALLOC_BASE::IsInHeapRegion(const void* p) {
-  return mi_is_in_heap_region(p);
+bool MIMALLOC_BASE::IsInHeapRegion(const void* P) {
+  return mi_is_in_heap_region(P);
 }
 
