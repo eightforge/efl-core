@@ -38,8 +38,10 @@
 
 #ifdef __clang__
 # define NDBG_INLINE [[gnu::nodebug, gnu::always_inline]] inline
+# define LLVM_TAIL [[clang::musttail]] return
 #else
 # define NDBG_INLINE ALWAYS_INLINE
+# define LLVM_TAIL return
 #endif
 
 /// Allows for "empty" `static_assert`s pre C++17.

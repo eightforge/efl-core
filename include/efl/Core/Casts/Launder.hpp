@@ -58,17 +58,15 @@ namespace C {
 namespace H {
 template <typename T>
 struct VolatilePtr {
-  ALWAYS_INLINE VolatilePtr(T* data) 
-   : data_(data) { }
+  ALWAYS_INLINE VolatilePtr(T* P) 
+   : data_(P) { }
   
   operator T*() volatile NOEXCEPT {
     return this->data_;
   }
-
   T* operator->() volatile NOEXCEPT {
     return this->data_;
   }
-
   T& operator*() volatile NOEXCEPT {
     return *this->data_;
   }
@@ -80,14 +78,14 @@ private:
 // Converts `T*` to a `T* volatile`.
 template <typename T>
 ALWAYS_INLINE VolatilePtr<T>
- to_volatile_ptr(T* t) {
-  return VolatilePtr<T>(t);
+ to_volatile_ptr(T* V) {
+  return VolatilePtr<T>(V);
 }
 
 template <typename T>
-EFLI_LAUNDERCAST_CXPR_ auto launder_wrap(T* t)
- -> decltype(EFLI_LAUNDER_(t)) {
-  return EFLI_LAUNDER_(t);
+EFLI_LAUNDERCAST_CXPR_ auto launder_wrap(T* V)
+ -> decltype(EFLI_LAUNDER_(V)) {
+  return EFLI_LAUNDER_(V);
 }
 
 template <typename T>
