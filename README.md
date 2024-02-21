@@ -14,10 +14,12 @@ The following are/will be found under ``Core/*.hpp``:
 - Array
 - ArrayRef
 - Binding
+- Casts
 - Endian
 - Fundamental
 - MimAllocator
 - Mtx
+- Option
 - OverloadSet
 - Poly
 - Preload
@@ -32,9 +34,7 @@ The following are/will be found under ``Core/*.hpp``:
 ## Partially implemented
 
 - Box       <
-- Casts     <
 - Enum
-- Option
 - Panic*
 - Result
 - StrRef

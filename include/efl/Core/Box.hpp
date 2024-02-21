@@ -27,7 +27,6 @@
 #define EFL_CORE_BOX_HPP
 
 #include "StatelessAllocator.hpp"
-// Casts.hpp -> dyn_cast
 // Handle.hpp -> PointerHandle<...>
 
 namespace efl {
@@ -62,6 +61,7 @@ template <typename T,
   typename A = BoxAllocator<T>>
 struct GSL_OWNER NODISCARD Box {
   MEflESAssert(!is_void<T>::value);
+  using SelfType = Box<T, A>;
   using Type = T;
   using element_type = T;
   using pointer = element_type*;
@@ -99,23 +99,32 @@ private:
 
 public:
   /// Allocates and constructs a new boxed object using `args...`.
-  /// @return A new `Box<T>`.
+  /// @return A new `Box<T, A>`.
   template <typename...Args>
-  static Box<T> New(Args&&...args) {
+  NODISCARD static SelfType New(Args&&...args) {
     T* p = A::New(FWD_CAST(args)...);
-    return Box<T>(p);
+    return SelfType(p);
   }
 
   /// Allocates storage for an object using the provided allocator,
   /// then and constructs a new boxed object using `args...`.
   /// @return A new `Box<T, Allocator>`.
   template <typename Alloc, typename...Args>
-  static Box<T, Alloc> 
+  NODISCARD static Box<T, Alloc> 
    NewIn(Alloc alloc, Args&&...args) {
     MEflESAssert(H::IsStatelessAllocator<Alloc>::value);
     using PtrType = typename Alloc::pointer;
     PtrType p = alloc.New(FWD_CAST(args)...);
     return Box<T, Alloc>(p);
+  }
+
+  /// Constructs a boxed object from a `T*`.
+  /// Warning: VERY DANGEROUS!!
+  /// Only use when you know the correct allocator
+  /// was used for a given pointer.
+  /// @return A new `Box<T>`.
+  NODISCARD static SelfType NewFromPtr(T* P) {
+    return SelfType(P);
   }
 
   /// Explicitly destroys and deletes pointer.
@@ -133,10 +142,9 @@ public:
   }
 
   void reset() {
-    T* old_ptr = this->data_;
+    if(EFL_SOFT_LIKELY(this->data_))
+      A::Delete(this->data_);
     this->data_ = nullptr;
-    if(EFL_SOFT_LIKELY(old_ptr))
-      A::Delete(old_ptr);
   }
 
   void swap(Box& box) NOEXCEPT {

@@ -30,7 +30,7 @@
 
 #if CPPVER_LEAST(20)
 # include <bit>
-# define EFLI_BIT_CAST_ 1
+# define EFLI_BIT_CAST_ 2
 # define EFLI_PUNCAST_CXPR_ FICONSTEXPR
 #elif __has_builtin(__builtin_bit_cast)
 # define EFLI_BIT_CAST_ 1
@@ -43,20 +43,20 @@
 namespace efl {
 namespace C {
 namespace H {
-#if CPPVER_LEAST(20)
+#if (EFLI_BIT_CAST_ == 2)
 template <typename T, typename U>
 struct PunHelper {
-  constexpr PunHelper(U& u) : u(u) { }
+  constexpr PunHelper(U& V) : u(V) { }
   FICONSTEXPR T get() const NOEXCEPT { 
     return std::bit_cast<T>(u); 
   }
 private:
   U& u;
 };
-#elif EFLI_BIT_CAST_
+#elif (EFLI_BIT_CAST_ == 1)
 template <typename T, typename U>
 struct PunHelper {
-  constexpr PunHelper(U& u) : u(u) { }
+  constexpr PunHelper(U& V) : u(V) { }
   FICONSTEXPR T get() const NOEXCEPT { 
     return __builtin_bit_cast(T, u); 
   }
@@ -78,7 +78,7 @@ private:
 
 template <typename T>
 struct PunHelper<T, T> {
-  constexpr PunHelper(T& t) : t(t) { }
+  constexpr PunHelper(T& V) : t(V) { }
   FICONSTEXPR const T& get() const NOEXCEPT 
   { return t; }
 private:
