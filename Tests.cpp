@@ -98,6 +98,20 @@ int main() {
   print_lits(Lit{}, lit);
 #endif
 
+  C::Option<int&> iro;
+  $raw_assert(iro.isEmpty());
+  int i = 0;
+  iro = i;
+  $raw_assert(iro);
+
+  MyBase B {};
+  C::Option<MyBase&> bro {B};
+  $raw_assert(bro.hasValue());
+  Meower M {};
+  bro = M;
+  bro->saySomething();
+
+
   invoke_tests();
   ref_tests();
   strref_tests();

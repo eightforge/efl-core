@@ -44,11 +44,17 @@ template <typename T>
 struct Option : std::optional<T> {
   using baseType_ = std::optional<T>;
   using std::optional<T>::operator=;
+  using std::optional<T>::has_value;
 
   //=== Observers ===//
 
   FICONSTEXPR bool hasValue() CNOEXCEPT {
     return std::optional<T>::has_value();
+  }
+
+  /// Returns `true` if data is inactive.
+  FICONSTEXPR bool isEmpty() CNOEXCEPT {
+    return !std::optional<T>::has_value();
   }
 
   FICONSTEXPR auto unwrap() NOEXCEPT {
@@ -206,7 +212,7 @@ private:
   }
 
   FICONSTEXPR const T* pdata() const {
-    return H::xx11::addressof(
+    return X11::addressof(
       H::OptionBase<T>::data_.data_);
   }
 
@@ -237,39 +243,38 @@ public:
   constexpr Option(U&& u) 
    : H::OptionBase<T>(H::cxpr_forward<U>(u)) { }
 
-  Option(const Option& op) : H::OptionBase<T>() {
-    if(op.hasValue()) {
-      (void) X11::construct(pdata(), *op);
+  Option(const Option& O) : H::OptionBase<T>() {
+    if(O.hasValue()) {
+      (void) X11::construct(pdata(), *O);
       H::OptionBase<T>::active_ = true;
     }
   }
 
-  Option(Option&& op) NOEXCEPT
+  Option(Option&& O) NOEXCEPT
    : H::OptionBase<T>() {
-    if(op.hasValue()) {
-      (void) X11::construct(pdata(), std::move(*op));
+    if(O.hasValue()) {
+      (void) X11::construct(pdata(), std::move(*O));
       H::OptionBase<T>::active_ = true;
     }
   }
 
   template <typename U, MEflEnableIf(
     is_constructible<T, const U&>::value)>
-  Option(const Option<T>& op)
+  Option(const Option<U>& O)
    : H::OptionBase<T>() {
-    if(op.hasValue()) {
-      (void) X11::construct(pdata(), *op);
+    if(O.hasValue()) {
+      (void) X11::construct(pdata(), *O);
       H::OptionBase<T>::active_ = true;
     }
   }
 
   template <typename U, MEflEnableIf(
     is_constructible<T, U&&>::value)>
-  Option(Option<T>&& op) noexcept(
-   is_nothrow_constructible<T, U&&>::value)
+  Option(Option<U>&& O) NOEXCEPT
    : H::OptionBase<T>() {
-    if(op.hasValue()) {
+    if(O.hasValue()) {
       (void) X11::construct(
-        pdata(), std::move(*op));
+        pdata(), std::move(*O));
       H::OptionBase<T>::active_ = true;
     }
   }
@@ -290,24 +295,22 @@ public:
     return *this;
   }
 
-  Option& operator=(const Option& op) {
-    if(op.active()) {
+  Option& operator=(const Option& O) {
+    if(O.active()) {
       if(this->active()) {
-        this->unwrap() = *op;
-      } else this->initialize(*op);
+        this->unwrap() = *O;
+      } else this->initialize(*O);
     } else {
       this->clear();
     }
     return *this;
   }
 
-  Option& operator=(Option&& op) noexcept(
-   is_nothrow_move_constructible<T>::value &&
-   is_nothrow_move_assignable<T>::value) {
-    if(op.active()) {
+  Option& operator=(Option&& O) NOEXCEPT {
+    if(O.active()) {
       if(this->active()) {
-        this->unwrap() = std::move(*op);
-      } else this->initialize(std::move(*op));
+        this->unwrap() = std::move(*O);
+      } else this->initialize(std::move(*O));
     } else {
       this->clear();
     }
@@ -335,16 +338,16 @@ public:
     this->clear();
   }
 
-  void swap(Option& op) {
-    if(this->active() && op.active()) {
+  void swap(Option& O) {
+    if(this->active() && O.active()) {
       using std::swap;
-      swap(**this, *op);
+      swap(**this, *O);
     } else if(this->active()) {
-      op.emplace(std::move(**this));
+      O.emplace(std::move(**this));
       this->clear();
-    } else if(op.active()) {
-      this->emplace(std::move(*op));
-      op.clear();
+    } else if(O.active()) {
+      this->emplace(std::move(*O));
+      O.clear();
     }
   }
 
@@ -363,6 +366,11 @@ public:
   /// Returns `true` if data is active.
   FICONSTEXPR bool hasValue() CNOEXCEPT {
     return this->has_value();
+  }
+
+  /// Returns `true` if data is inactive.
+  FICONSTEXPR bool isEmpty() CNOEXCEPT {
+    return !this->has_value();
   }
 
   EFLI_CXX14_CXPR_ type_& unwrap()& {
@@ -545,6 +553,259 @@ public:
   }
 };
 #endif
+
+template <typename T>
+struct Option<T&> {
+private:
+  FICONSTEXPR bool active() CNOEXCEPT { return !!data_; }
+  void clear() NOEXCEPT { this->data_ = nullptr; }
+public:
+  using value_type = T;
+  constexpr Option() NOEXCEPT : data_(nullptr) { }
+  constexpr Option(NullOpt) NOEXCEPT : Option() { }
+  constexpr Option(T& t) : data_(X11::addressof(t)) { }
+  Option(const Option& O) : data_(O.data_) { }
+
+  Option(Option&& O) NOEXCEPT : data_(O.data_) {
+    O.data_ = nullptr;
+  }
+
+  template <typename U, MEflEnableIf(
+    is_base_of<T, U>::value)>
+  Option(U& u) : Option((T&)u) { }
+
+  template <typename U, MEflEnableIf(
+    is_base_of<T, U>::value)>
+  Option(const Option<U&>& O)
+   : data_((T*) O.data_) { }
+  
+  template <typename U, MEflEnableIf(
+    is_base_of<T, U>::value)>
+  Option(const Option<U&>&& O)
+   : data_((T*) O.data_) {
+    O.data_ = nullptr;
+  }
+
+  EFLI_CXX20_CXPR_ ~Option() = default;
+
+  Option& operator=(NullOpt) NOEXCEPT {
+    this->clear();
+    return *this;
+  }
+
+  Option& operator=(const Option& O) {
+    this->data_ = O.data_;
+    return *this;
+  }
+
+  Option& operator=(Option&& O) NOEXCEPT {
+    this->data_ = O.data_;
+    O.data_ = nullptr;
+    return *this;
+  }
+
+  template <typename U, MEflEnableIf(
+    is_base_of<T, U>::value)>
+  Option& operator=(U& u) {
+    this->data_ = X11::addressof((T&)u);
+    return *this;
+  }
+
+  //=== Modifiers ===//
+
+  template <typename U>
+  void emplace(U& u) { *this = u; }
+
+  ALWAYS_INLINE void reset() NOEXCEPT { 
+    this->clear();
+  }
+
+  void swap(Option& O) {
+    T* tmp = O.data_;
+    O.data_ = this->data_;
+    this->data_ = tmp;
+  }
+
+  //=== Observers ===//
+
+  /// Returns `true` if data is active.
+  FICONSTEXPR explicit operator bool() CNOEXCEPT {
+    return this->active();
+  }
+
+  /// STL naming, returns `true` if data is active.
+  constexpr bool has_value() CNOEXCEPT {
+    return this->active();
+  }
+
+  /// Returns `true` if data is active.
+  FICONSTEXPR bool hasValue() CNOEXCEPT {
+    return this->active();
+  }
+
+  /// Returns `true` if data is not active.
+  FICONSTEXPR bool isEmpty() CNOEXCEPT {
+    return !this->active();
+  }
+
+  EFLI_CXX14_CXPR_ T& unwrap() {
+    EFLI_CXPRASSERT_(this->active());
+    return *data_;
+  }
+
+  constexpr const T& unwrap() const {
+    EFLI_CXPR11ASSERT_(this->active());
+    return *data_;
+  }
+
+  EFLI_CXX14_CXPR_ T* operator->() {
+    EFLI_DBGASSERT_(this->active());
+    return data_;
+  }
+
+  FICONSTEXPR const T* operator->() const {
+    EFLI_CXPR11ASSERT_(this->active());
+    return data_;
+  }
+
+  EFLI_CXX14_CXPR_ T& operator*() {
+    EFLI_DBGASSERT_(this->active());
+    return this->unwrap();
+  }
+
+  constexpr const T& operator*() const {
+    EFLI_CXPR11ASSERT_(this->active());
+    return this->unwrap();
+  }
+
+  template <typename U>
+  EFLI_CXX14_CXPR_ T& unwrapOr(U& u) {
+    if(this->active()) {
+      return this->unwrap();
+    } else {
+      return static_cast<T&>(u);
+    }
+  }
+
+  template <typename U>
+  constexpr const T& unwrapOr(const U& u) const {
+    if(this->active()) {
+      return H::cxpr_move(this->unwrap());
+    } else {
+      return static_cast<const T&>(u);
+    }
+  }
+
+  //=== Monads (Not fully supported) ===//
+
+  template <typename F>
+  EFLI_CXX14_CXPR_ auto andThen(F&& f)& 
+   -> remove_cvref_t<invoke_result_t<F, T&>> {
+    if(this->active()) {
+      return H::cxpr_forward<F>(f)(**this);
+    } else {
+      return remove_cvref_t<
+        invoke_result_t<F, T&>>{ };
+    }
+  }
+
+  template <typename F>
+  EFLI_CXX14_CXPR_ auto andThen(F&& f)&&
+   -> remove_cvref_t<invoke_result_t<F, T&&>> {
+    if(this->active()) {
+      return H::cxpr_forward<F>(f)(
+        H::cxpr_move(**this));
+    } else {
+      return remove_cvref_t<
+        invoke_result_t<F, T&&>>{ };
+    }
+  }
+
+  template <typename F>
+  constexpr auto andThen(F&& f) const& 
+   -> remove_cvref_t<invoke_result_t<F, const T&>> {
+    if(this->active()) {
+      return H::cxpr_forward<F>(f)(**this);
+    } else {
+      return remove_cvref_t<
+        invoke_result_t<F, const T&>>{ };
+    }
+  }
+
+  template <typename F>
+  constexpr auto andThen(F&& f) const&&
+   -> remove_cvref_t<invoke_result_t<F, const T&&>> {
+    if(this->active()) {
+      return H::cxpr_forward<F>(f)(
+        H::cxpr_move(**this));
+    } else {
+      return remove_cvref_t<
+        invoke_result_t<F, const T&&>>{ };
+    }
+  }
+
+  template <typename F>
+  EFLI_CXX14_CXPR_ auto transform(F&& f)&
+   -> Option<remove_cv_t<invoke_result_t<F, T&>>> {
+    if(this->active()) {
+      return { H::invoke(FWD_CAST(f)(**this)) };
+    } else {
+      return { nullopt };
+    }
+  }
+
+  template <typename F>
+  EFLI_CXX14_CXPR_ auto transform(F&& f)&&
+   -> Option<remove_cv_t<invoke_result_t<F, T>>> {
+    if(this->active()) {
+      return { H::invoke(FWD_CAST(f)(
+        H::cxpr_move(**this))) };
+    } else {
+      return { nullopt };
+    }
+  }
+
+  template <typename F>
+  constexpr auto transform(F&& f) const&
+   -> Option<remove_cv_t<invoke_result_t<F, const T&>>> {
+    if(this->active()) {
+      return { H::invoke(FWD_CAST(f)(**this)) };
+    } else {
+      return { nullopt };
+    }
+  }
+
+  template <typename F>
+  constexpr auto transform(F&& f) const&& 
+   -> Option<remove_cv_t<invoke_result_t<F, const T>>> {
+    if(this->active()) {
+      return { H::invoke(FWD_CAST(f)(
+        H::cxpr_move(**this))) };
+    } else {
+      return { nullopt };
+    }
+  }
+
+  template <typename F>
+  EFLI_CXX14_CXPR_ Option orElse(F&& f)&& {
+    MEflESAssert(is_same<Option, 
+      invoke_result_t<F>>::value);
+    return (this->active()) ? 
+      H::cxpr_move(*this) : 
+      H::cxpr_forward<F>(f)();
+  }
+
+  template <typename F>
+  constexpr Option orElse(F&& f) const& {
+    MEflESAssert(is_same<Option, 
+      invoke_result_t<F>>::value);
+    return (this->active()) ? 
+      *this : H::cxpr_forward<F>(f)();
+  }
+
+private:
+  T* data_ = nullptr;
+};
 
 } // namespace C
 } // namespace efl

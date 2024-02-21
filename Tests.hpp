@@ -42,7 +42,7 @@ struct Z1 : Z { };
 
 struct MyBase {
   virtual ~MyBase() {}
-  virtual void saySomething() = 0;
+  virtual void saySomething() { }
 };
 
 struct Meower : MyBase {

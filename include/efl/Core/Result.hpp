@@ -200,8 +200,7 @@ public:
   
   template <typename Err = E, MEflEnableIf(
     is_convertible<Err&&, E>::value)>
-  constexpr Result(Error<Err>&& err)
-   noexcept(is_nothrow_move_constructible<Err>::value)
+  constexpr Result(Error<Err>&& err) NOEXCEPT
    : H::ResultBase<T, E>(
     unexpect, H::cxpr_move(err).error()) { }
   
@@ -227,7 +226,7 @@ public:
   }
 
   EFLI_CXX17_CXPR_ Result&
-   operator=(Result&& res) {
+   operator=(Result&& res) NOEXCEPT {
     if(res.has_value()) initialize_data(
       H::cxpr_move(res).unwrap());
     else initialize_err(
