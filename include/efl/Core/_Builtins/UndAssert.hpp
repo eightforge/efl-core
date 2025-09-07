@@ -17,7 +17,7 @@
 //===----------------------------------------------------------------===//
 //
 //  Implements the underlying assertion functions on different platforms.
-//  See https://gist.github.com/8ightfold/a14edbfb83e140c939b71e2939e4a237.
+//  See https://gist.github.com/9inefold/a14edbfb83e140c939b71e2939e4a237.
 //
 //===----------------------------------------------------------------===//
 
